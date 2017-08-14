@@ -3,6 +3,7 @@
 namespace slavielle\grabbag;
 
 use slavielle\grabbag\PathItem;
+use slavielle\grabbag\exceptions\PathParsingException;
 
 class Path {
 
@@ -12,7 +13,7 @@ class Path {
   public function __construct($path){
     while(1){
       $matches = [];
-      $match_result = preg_match('/^(#)?([a-zA-Z_]+)(?:\(([^\)]+)\))?\.?(.*)$/', $path, $matches);
+      $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+)(?:\(([^\)]+)\))?\.?(.*)$/', $path, $matches);
       if($match_result){
         $this->pathArray[] = new PathItem($matches[1], $matches[2], $matches[3]);
         $path = $matches[4];
@@ -21,7 +22,7 @@ class Path {
         }
       }
       else{
-        throw new \Exception('Can \t parse path');
+        throw new PathParsingException('Can \t parse path');
       }
     }
     $this->rewind();
@@ -39,7 +40,7 @@ class Path {
   public function next(){
     if($this->index !== NULL){
       $val = $this->pathArray[$this->index];
-      $this->index = $this->index <= count($this->pathArray) ? $this->index + 1 : NULL;
+      $this->index = $this->index + 1 < count($this->pathArray) ? $this->index + 1 : NULL;
       return $val;
     }
     return NULL;

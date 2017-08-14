@@ -6,6 +6,9 @@ use slavielle\grabbag\Path;
 use slavielle\grabbag\Result;
 use slavielle\grabbag\ResolverInfo;
 use slavielle\grabbag\ResolverInfoItem;
+use slavielle\grabbag\exceptions\NotAdressableException;
+use slavielle\grabbag\exceptions\PropertyNotFoundException;
+use slavielle\grabbag\exceptions\UnknownPathKeywordException;
 
 /**
  * Description of ObjectWalker
@@ -21,9 +24,15 @@ class Resolver {
     $this->pathArray = [];
   }
 
-  public function resolve(Path $path) {
+  public function resolve(Path $path, $defaultValue = NULL) {
     $infos = new ResolverInfo();
-    $objects = $this->resolveRecurse($path, [$this->object], $infos);
+    try{
+        $objects = $this->resolveRecurse($path, [$this->object], $infos);
+    } catch(NotAdressableException $e){
+        return new Result([$defaultValue], $infos);
+    } catch(PropertyNotFoundException $e){
+        return new Result([$defaultValue], $infos);
+    }
     return new Result($objects, $infos);
   }
   
@@ -58,7 +67,7 @@ class Resolver {
         } else if (is_array($object)) {
           $resultObjects[] = $this->resolveArray($pathItem, $object, $infoEach);
         } else {
-          throw new \Exception('Can\'t resolve');
+          throw new NotAdressableException('Can\'t resolve');
         }
         $info->append($infoEach);
       }
@@ -82,6 +91,8 @@ class Resolver {
           $resultObjects[] = $item;
         }
         break;
+      default :
+        throw new UnknownPathKeywordException(sprintf('Unknown keyword "#%s" in path', $pathItem->getKey()));
     }
     return $resultObjects;
   }
@@ -93,7 +104,7 @@ class Resolver {
    * @param type $object
    * @param ResolverInfoItem $info
    * @return type
-   * @throws \Exception
+   * @throws PropertyNotFoundException
    */
   private function resolveObject(PathItem $pathItem, $object, ResolverInfoItem $info) {
     $info->setObjectInfo($object);
@@ -114,7 +125,7 @@ class Resolver {
     }
     
     else {
-      throw new \Exception(sprintf('Can\'t resolve "%s"', $pathItem->getKey()));
+      throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on object', $pathItem->getKey()));
     }
   }
 
@@ -167,7 +178,10 @@ class Resolver {
   private function resolveArray(PathItem $pathItem, $object, &$info) {
 
     $info->setResolveTypeInfo('array-key');
-    return $object[$pathItem->getKey()];
+    if (isset($object[$pathItem->getKey()])){
+        return $object[$pathItem->getKey()];
+    }
+    throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on array', $pathItem->getKey()));
   }
 
 }
