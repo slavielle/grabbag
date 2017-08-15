@@ -2,6 +2,8 @@
 
 namespace slavielle\grabbag;
 
+use slavielle\grabbag\Resolver;
+
 class Result {
   
   private $value;
@@ -30,6 +32,13 @@ class Result {
     foreach($this->value as &$item){
       $item = $callable($item);
     }
+    return $this;
+  }
+  
+  public function resolveEach($path, $callable, $defaultValue = NULL, $enableException = FALSE){
+    $resolver = new Resolver($this->value);
+    $result = $callable($resolver->resolve(new Path($path), $defaultValue, $enableException));
+    $this->value = $result->getValue();
     return $this;
   }
 }

@@ -6,8 +6,8 @@ use slavielle\grabbag\Resolver;
 
 class Grabber extends Resolver {
 
-  public function grab($path, $defaultValue = NULL) {
-    return $this->resolve(new Path($path), $defaultValue);
+  public function grab($path, $defaultValue = NULL, $enableException = FALSE) {
+    return $this->resolve(new Path($path), $defaultValue, $enableException);
   }
 
 }

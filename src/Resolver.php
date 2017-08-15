@@ -9,6 +9,7 @@ use slavielle\grabbag\ResolverInfoItem;
 use slavielle\grabbag\exceptions\NotAdressableException;
 use slavielle\grabbag\exceptions\PropertyNotFoundException;
 use slavielle\grabbag\exceptions\UnknownPathKeywordException;
+use slavielle\grabbag\exceptions\PathParsingException;
 
 /**
  * Description of ObjectWalker
@@ -20,24 +21,34 @@ class Resolver {
   private $object;
 
   public function __construct($object) {
-    $this->object = $object;
+    if(is_array($object)){
+        $this->object = $object;
+    }
+    else {
+        $this->object = [$object];
+    }
     $this->pathArray = [];
   }
 
-  public function resolve(Path $path, $defaultValue = NULL) {
+  public function resolve(Path $path, $defaultValue = NULL, $enableException = FALSE) {
     $infos = new ResolverInfo();
-    try{
-        $objects = $this->resolveRecurse($path, [$this->object], $infos);
-    } catch(NotAdressableException $e){
-        return new Result([$defaultValue], $infos);
-    } catch(PropertyNotFoundException $e){
-        return new Result([$defaultValue], $infos);
+    if($enableException){
+        $objects = $this->resolveRecurse($path, $this->object, $infos);
+    }
+    else {
+        try{
+            $objects = $this->resolveRecurse($path, $this->object, $infos);
+        } catch(NotAdressableException $e){
+            return new Result([$defaultValue], $infos);
+        } catch(PropertyNotFoundException $e){
+            return new Result([$defaultValue], $infos);
+        }
     }
     return new Result($objects, $infos);
   }
   
   /**
-   * Resolve recursively for eack PathItem instance in the $path.
+   * Resolve recursively for each PathItem instance in the $path.
    * @param Path $path
    * @param type $objects
    * @param ResolverInfo $infos
@@ -51,7 +62,14 @@ class Resolver {
     return $objects;
   }
   
-  
+  /**
+   * Resolve for each object in objects regarding provided path item.
+   * @param \slavielle\grabbag\PathItem $pathItem
+   * @param type $objects
+   * @param ResolverInfo $infos
+   * @return type
+   * @throws NotAdressableException
+   */
   private function resolveEach(PathItem $pathItem, $objects, ResolverInfo $infos){
     $resultObjects = [];
     $info = new ResolverInfoItem();
@@ -62,13 +80,7 @@ class Resolver {
       else {
         $infoEach = new ResolverInfoItem();
         $infoEach->setPathItemInfo($pathItem);
-        if (is_object($object)) {
-          $resultObjects[] = $this->resolveObject($pathItem, $object, $infoEach);
-        } else if (is_array($object)) {
-          $resultObjects[] = $this->resolveArray($pathItem, $object, $infoEach);
-        } else {
-          throw new NotAdressableException('Can\'t resolve');
-        }
+        $resultObjects[] = $this->resolveType($pathItem, $object, $infoEach);
         $info->append($infoEach);
       }
     }
@@ -76,6 +88,15 @@ class Resolver {
     return $resultObjects;
   }
   
+  private function resolveType(PathItem $pathItem, $object, ResolverInfoItem $info){
+    if (is_object($object)) {
+      return $this->resolveObject($pathItem, $object, $info);
+    } else if (is_array($object)) {
+      return $this->resolveArray($pathItem, $object, $info);
+    } else {
+      throw new NotAdressableException('Can\'t resolve');
+    }
+  }
   
   /**
    * Resolve keyword : Get value from object depending on the keyword specified in $pathItem.
@@ -154,17 +175,17 @@ class Resolver {
   private function resolveObjectMethod(PathItem $pathItem, $object, ResolverInfoItem $info, $prefixWithGet = FALSE) {
     $params = [];
     if ($pathItem->hasParam()) {
-      $matches = [];
-      if (preg_match('/^"([^"]*)"$/', $pathItem->getParam(), $matches)) {
-        $params[] = $matches[1];
-      } else {
-        $params[] = $pathItem->getParam();
-      }
+      $params = $pathItem->getParams();
     }
 
     $info->setResolveTypeInfo('object-method');
     
-    return call_user_method_array($prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey(), $object, $params);
+    try{
+        return call_user_method_array($prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey(), $object, $params);
+    }
+    catch(\Exception $e){
+        throw new NotAdressableException('Parameters passed to method throw an exception');
+    }
   }
 
   
