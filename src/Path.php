@@ -9,8 +9,12 @@ class Path {
 
   private $pathArray;
   private $index;
+  private $key;
     
   public function __construct($path){
+    
+    $path = $this->parseKey($path);
+              
     while(1){
       $matches = [];
       $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+)(?:\(([^\)]+)\))?\.?(.*)$/', $path, $matches);
@@ -26,6 +30,15 @@ class Path {
       }
     }
     $this->rewind();
+  }
+  public function parseKey($path){
+      $matches = [];
+      $match_result = preg_match('/^([0-9a-zA-Z_]+:)(.*)$/', $path, $matches);
+      if($match_result){
+          $this->key = substr($matches[1], 0, -1);
+          $path = $matches[2];
+      }
+      return $path;
   }
   
   public function rewind(){
@@ -44,6 +57,10 @@ class Path {
       return $val;
     }
     return NULL;
+  }
+  
+  public function getKey(){
+      return $this->key;
   }
   
 }

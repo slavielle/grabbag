@@ -35,10 +35,36 @@ class Result {
     return $this;
   }
   
-  public function resolveEach($path, $callable, $defaultValue = NULL, $enableException = FALSE){
-    $resolver = new Resolver($this->value);
-    $result = $callable($resolver->resolve(new Path($path), $defaultValue, $enableException));
-    $this->value = $result->getValue();
+  public function grab($paths, $defaultValue = NULL, $enableException = FALSE){
+    foreach($this->value as &$item){
+        $resolver = new Resolver($item);
+        if(!is_array($paths)){
+            $paths = [$paths];
+        }
+        $values = [];
+        foreach($paths as $left=>$right){
+            $path = is_integer($left) ? $right : $left;
+            $pathArray = is_integer($left) ? NULL : $right;
+            $pathObject = new Path($path);
+            $key = $pathObject->getKey();
+            $result = $resolver->resolve($pathObject, $defaultValue, $enableException);
+            if($pathArray !== NULL){
+                $result->grab($pathArray);
+            }
+            $value = $result->getValue();
+            if($key === NULL){
+                $values[] = $value;
+            }
+            else {
+                $values[$key] = $value;
+            }
+            
+        }
+        if(count($values) === 1 && array_keys($values)[0] === 0){
+            $values = $values[0];
+        }
+        $item = $values;
+    }
     return $this;
   }
 }

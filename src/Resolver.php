@@ -75,7 +75,7 @@ class Resolver {
     $info = new ResolverInfoItem();
     foreach($objects as $object){
       if($pathItem->isKeyword()){
-        $resultObjects += $this->resolveKeyword($pathItem, $object);
+        $resultObjects = array_merge($resultObjects,$this->resolveKeyword($pathItem, $object));
       }
       else {
         $infoEach = new ResolverInfoItem();
@@ -112,6 +112,9 @@ class Resolver {
           $resultObjects[] = $item;
         }
         break;
+      case 'this':
+        $resultObjects[] = $object;
+        break;  
       default :
         throw new UnknownPathKeywordException(sprintf('Unknown keyword "#%s" in path', $pathItem->getKey()));
     }
