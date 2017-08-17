@@ -82,6 +82,7 @@ class TestStruct {
 
     public static function getDataIndexedL1() {
         $o0 = new List1('test root');
+        Leaf1::resetId();
         for ($x = 0; $x < 5; $x++) {
             $o0->appendObject(new Leaf1('test ' . $x));
         }
@@ -91,6 +92,7 @@ class TestStruct {
     public static function getDataNamedL1() {
         $o0 = new List1('test');
         $names = ['my_value_1', 'my_value_2', 'my_value_3' ];
+        Leaf1::resetId();
         foreach($names as $name){
             $o0->appendObject(new Leaf1('test ' . $name), $name);
         }
@@ -99,6 +101,7 @@ class TestStruct {
     
     public static function getDataIndexedL2() {
         $o0 = new List1('test');
+        Leaf1::resetId();
         for ($x = 0; $x < 5; $x++) {
             $o1 = new List1('test ' . $x);
             for ($y = 0; $y < 5; $y++) {
@@ -112,6 +115,7 @@ class TestStruct {
     public static function getDataNamedL2() {
         $o0 = new List1('test');
         $names = ['my_value_1', 'my_value_2', 'my_value_3' ];
+        Leaf1::resetId();
         foreach($names as $name){
             $oL2 = new List1('test ' . $name);
             for ($x = 0; $x < 5; $x++) {
@@ -154,7 +158,7 @@ final class ResolverTest extends TestCase {
         // Must raise an exception when exception activated
         $exceptionActivated = TRUE;
         $this->expectException(PropertyNotFoundException::class);
-        $grabber->grab('badpath', NULL, $exceptionActivated);
+        $grabber->grab(new Path('badpath', NULL, $exceptionActivated));
     }
 
     public function testGrabberGrabWithBadPathReturnSpecifiedDefaultValue() {
@@ -167,7 +171,7 @@ final class ResolverTest extends TestCase {
             ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
         ];
         foreach ($defaultValueSet as $defaultValue) {
-            $result = $grabber->grab('badpath', $defaultValue);
+            $result = $grabber->grab(new Path('badpath', $defaultValue));
             $this->assertEquals(
                     $defaultValue, $result->getValue()
             );
@@ -301,6 +305,7 @@ final class ResolverTest extends TestCase {
                 [
                     'getAllObjects.#each' =>[
                         'id:myId',
+                        'name:getName',
                         'content:getAllObjects.#each'=>[
                             'id:getId',
                             'name:getName'

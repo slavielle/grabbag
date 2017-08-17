@@ -30,18 +30,18 @@ class Resolver {
     $this->pathArray = [];
   }
 
-  public function resolve(Path $path, $defaultValue = NULL, $enableException = FALSE) {
+  public function resolve(Path $path) {
     $infos = new ResolverInfo();
-    if($enableException){
+    if($path->isExceptionEnabled()){
         $objects = $this->resolveRecurse($path, $this->object, $infos);
     }
     else {
         try{
             $objects = $this->resolveRecurse($path, $this->object, $infos);
         } catch(NotAdressableException $e){
-            return new Result([$defaultValue], $infos);
+            return new Result([$path->getDefaultValue()], $infos);
         } catch(PropertyNotFoundException $e){
-            return new Result([$defaultValue], $infos);
+            return new Result([$path->getDefaultValue()], $infos);
         }
     }
     return new Result($objects, $infos);

@@ -35,14 +35,14 @@ class Result {
         return $this;
     }
 
-    public function grab($paths, $defaultValue = NULL, $enableException = FALSE) {
+    public function grab($paths) {
         foreach ($this->value as &$item) {
 
             if (!is_array($paths)) {
                 $paths = [$paths];
             }
 
-            $values = $this->grabEach($item, $paths, $defaultValue, $enableException);
+            $values = $this->grabEach($item, $paths);
             if (count($values) === 1 && array_keys($values)[0] === 0) {
                 $values = $values[0];
             }
@@ -51,18 +51,23 @@ class Result {
         return $this;
     }
 
-    private function grabEach($item, $paths, $defaultValue = NULL, $enableException = FALSE) {
+    private function grabEach($item, $paths) {
         $resolver = new Resolver($item);
         $values = [];
         foreach ($paths as $left => $right) {
             
             $path = is_integer($left) ? $right : $left;
             $pathArray = is_integer($left) ? NULL : $right;
-            $pathObject = new Path($path);
+            if($path instanceof Path){
+                $pathObject = $path;
+            }
+            else{
+                $pathObject = new Path($path);
+            }
             $key = $pathObject->getKey();
             
             // Resolve
-            $result = $resolver->resolve($pathObject, $defaultValue, $enableException);
+            $result = $resolver->resolve($pathObject);
             
             // Recurse if need
             if ($pathArray !== NULL) {
