@@ -10,11 +10,15 @@ class Path {
   private $pathArray;
   private $index;
   private $key;
+  private $defaultValue;
+  private $enableException;
     
-  public function __construct($path){
+  public function __construct($path, $defaultValue = NULL, $enableException = FALSE){
     
     $path = $this->parseKey($path);
-              
+    $this->defaultValue = $defaultValue;
+    $this->enableException = $defaultValue;
+    
     while(1){
       $matches = [];
       $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+)(?:\(([^\)]+)\))?\.?(.*)$/', $path, $matches);

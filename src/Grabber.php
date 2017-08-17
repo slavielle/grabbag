@@ -3,11 +3,14 @@
 namespace slavielle\grabbag;
 
 use slavielle\grabbag\Resolver;
+use slavielle\grabbag\Result;
 
 class Grabber extends Resolver {
-
-  public function grab($path, $defaultValue = NULL, $enableException = FALSE) {
-    return $this->resolve(new Path($path), $defaultValue, $enableException);
+  
+  public function grab($paths, $defaultValue = NULL, $enableException = FALSE) {
+    $result = new Result($this->object, NULL);
+    $result->grab($paths, $defaultValue, $enableException);
+    return $result;
   }
 
 }

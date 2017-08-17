@@ -18,7 +18,7 @@ use slavielle\grabbag\exceptions\PathParsingException;
  */
 class Resolver {
 
-  private $object;
+  protected $object;
 
   public function __construct($object) {
     if(is_array($object)){

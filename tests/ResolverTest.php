@@ -297,13 +297,14 @@ final class ResolverTest extends TestCase {
  
         $grabber = new Grabber($testObject);
         $result1 = $grabber
-            ->grab('getAllObjects.#each')
             ->grab(
                 [
-                    'id:myId',
-                    'content:getAllObjects.#each'=>[
-                        'id:getId',
-                        'name:getName'
+                    'getAllObjects.#each' =>[
+                        'id:myId',
+                        'content:getAllObjects.#each'=>[
+                            'id:getId',
+                            'name:getName'
+                        ]
                     ]
                 ]
             );
