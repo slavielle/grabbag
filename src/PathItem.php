@@ -11,9 +11,9 @@ namespace slavielle\grabbag;
 use slavielle\grabbag\exceptions\PathParsingException;
 
 /**
- * Description of PathItem
+ * PathItem composing a Path.
  *
- * @author slavielle
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  */
 class PathItem {
 

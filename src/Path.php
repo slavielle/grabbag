@@ -5,6 +5,11 @@ namespace slavielle\grabbag;
 use slavielle\grabbag\PathItem;
 use slavielle\grabbag\exceptions\PathParsingException;
 
+/**
+ * Path allows to define path to be grabbed.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ */
 class Path {
 
     private $pathArray;

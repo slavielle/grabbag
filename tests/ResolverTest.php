@@ -7,8 +7,6 @@ require_once '../src/exceptions/UnknownPathKeywordException.php';
 require_once '../src/Path.php';
 require_once '../src/PathItem.php';
 require_once '../src/Result.php';
-require_once '../src/ResolverInfoItem.php';
-require_once '../src/ResolverInfo.php';
 require_once '../src/Resolver.php';
 require_once '../src/Grabber.php';
 
@@ -21,8 +19,6 @@ use slavielle\grabbag\Grabber;
 use slavielle\grabbag\Path;
 use slavielle\grabbag\PathItem;
 use slavielle\grabbag\Resolver;
-use slavielle\grabbag\ResolverInfo;
-use slavielle\grabbag\ResolverInfoItem;
 use slavielle\grabbag\Result;
 
 class Leaf1 {

@@ -4,22 +4,21 @@ namespace slavielle\grabbag;
 
 use slavielle\grabbag\Resolver;
 
+/**
+ * Result implements resolve process result.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ */
 class Result {
 
     private $value;
-    private $infos;
 
-    public function __construct($value, $infos) {
+    public function __construct($value) {
         $this->value = $value;
-        $this->infos = $infos;
     }
 
     public function getValue($forceArray = false) {
         return count($this->value) === 1 && !$forceArray ? $this->value[0] : $this->value;
-    }
-
-    public function getInfos() {
-        return $this->infos;
     }
 
     public function each($callable) {
