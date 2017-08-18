@@ -1,11 +1,10 @@
 Grabbag is a library that aims provide a simple secure way to request PHP objects chains
 
 # Features :
-* Compact and dotted syntax
-* Getter, method, property uniform syntax
-* Prevent NULL or exception while accessing object chains and provide a default value
-* Multiple objects requesting
-* Structured result
+* Compact and dotted syntax pathes using uniform syntax for getter, method or property 
+* Prevent exception while accessing objects chains and provide a default value
+* multiple results using #each
+* Structured result using path array
 
 # Example
 
@@ -23,6 +22,6 @@ $result = $grabber->grab('get("field_media_image").first.get("entity").target.va
 ```
 
 ## Comparition : 
-* Raw PHP method is not secure : Some of the properties can return NULL in some case causing an exception.
+* Raw PHP method is not secure : Some of the methods/properties can return/be NULL in some case and then cause an exception.
 * Grabbag Method is secure. If it's not possible to walk along the object chain, grab method will return NULL or a default value to be specified.
  
