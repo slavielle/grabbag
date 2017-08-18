@@ -12,15 +12,15 @@ Grabbag is a library that aims provide a simple secure way to request PHP object
 Example from Drupal 8 : getting the image URL from a node using entity reference field pointing to a media entity would give someting like this :
 
 ## raw PHP
-{code:php}
+```php
 $node->get('field_media_image')->first()->get('entity')->getTarget()->getValue()->get('field_image')->entity->getFileUri()
-{code}
+```
 
 ## Using grabbage
-{code:php}
+```php
 $grabber = new Grabber($node);
 $result = $grabber->grab('get("field_media_image").first.get("entity").target.value.get("field_image").entity.fileUri');
-{code}
+```
 
 ## Comparition : 
 * Raw PHP method is not secure : Some of the properties can return NULL in some case causing an exception.
