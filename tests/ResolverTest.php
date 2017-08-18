@@ -113,7 +113,7 @@ class TestStruct {
         Leaf1::resetId();
         foreach ($names as $name) {
             $oL2 = new List1('test ' . $name);
-            for ($x = 0; $x < 5; $x++) {
+            for ($x = 1; $x < 6; $x++) {
                 $nameL2 = $name . '_' . $x;
                 $oL2->appendObject(new Leaf1('test ' . $nameL2), $nameL2);
             }
@@ -282,19 +282,41 @@ final class ResolverTest extends TestCase {
         $testObject = TestStruct::getDataNamedL2();
 
         $grabber = new Grabber($testObject);
-        $result1 = $grabber->grab(
-            [
-                'getAllObjects.#each' => [
-                    'id:myId',
-                    'name:getName',
-                    'content:getAllObjects.#each' => [
-                        'id:getId',
-                        'name:getName'
-                    ]
+        $result1 = $grabber->grab([
+            'getAllObjects.#each' => [
+                'id:myId',
+                'name:getName',
+                'content:getAllObjects.#each' => [
+                    'id:getId',
+                    'name:getName'
                 ]
             ]
+        ]);
+        
+        $compareArray = [];
+        $count = 0;
+        for($x=1;$x<4;$x++){
+            $compareArrayL2 = [
+                'id'=>'ID#' . $count,
+                'name'=>'test my_value_' . $x,
+                'content'=>[]
+            ];
+            $count++;
+            for($y=1;$y<6;$y++){
+                $compareArrayL2['content'][] = [
+                    'id'=>'ID#' . $count,
+                    'name'=>'test my_value_' . $x . '_' . $y,
+                ];
+                $count++;
+            }
+            
+            $compareArray[] = $compareArrayL2;
+        }
+        
+        $this->assertEquals(
+            $compareArray, $result1->getValue()
         );
-        var_export($result1->getValue());
+
     }
 
 }
