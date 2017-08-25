@@ -35,7 +35,7 @@ $grabber = new Grabber($node);
 $result = $grabber->grab('get("field_media_image")/#each/get("entity")/target/value/get("field_image")/entity/fileUri');
 echo $result->getValue();
 ```
-if the value corresponding to #each in the path can be iterated, #each will resolve the path considering each one of these values.
+if the value corresponding to #each in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #each will resolve the path considering each one of these values.
 
 For instance if 
 ```php
