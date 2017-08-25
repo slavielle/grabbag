@@ -1,4 +1,4 @@
-Grabbag is a library that aims provide a simple secure way to request PHP objects chains
+Grabbag is a PHP library that aims provide a simple secure way to request PHP objects chains.
 
 # Features :
 * Compact path like syntax using uniform syntax for getter, method or property
