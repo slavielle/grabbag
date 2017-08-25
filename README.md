@@ -23,8 +23,8 @@ echo $result->getValue();
 ```
 
 ## Comparition : 
-* Raw PHP method is not secure : Some of the methods/properties can return/be NULL in some case and then cause an exception.
-* Grabbag Method is secure. If it's not possible to walk along the object chain, grab method will return NULL or a default value to be specified.
+* Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would test some of the values before accessing them.
+* Grabbag expression is implicitly secure. If it's not possible to walk along the object chain, grab method will return NULL or a default value to be specified.
 
 # Multiple value result using #each
 
