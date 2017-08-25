@@ -42,9 +42,9 @@ For instance if
 $node->get('field_media_image') 
 ```
 contains 4 items, then the result value will be an array looking like this : 
-
+```php
 ["my/image/1.jpg", "my/image/2.jpg", "my/image/3.jpg", "my/image/4.jpg"]
-
+```
 
 
 
