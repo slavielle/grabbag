@@ -74,7 +74,7 @@ class List1 extends Leaf1 {
 }
 
 class TestStruct {
-
+    
     public static function getDataIndexedL1() {
         $o0 = new List1('test root');
         Leaf1::resetId();
@@ -128,7 +128,10 @@ class TestStruct {
  * @covers Resolver
  */
 final class ResolverTest extends TestCase {
-
+    
+    /**
+     *  Test result class object
+     */
     public function testGrabberGrabReturnResult() {
         $testObject = TestStruct::getDataIndexedL2();
         $grabber = new Grabber($testObject);
@@ -139,25 +142,21 @@ final class ResolverTest extends TestCase {
         );
     }
 
+    /**
+     *  Test result when requesting with a valid but non-matching
+     */
     public function testGrabberGrabWithBadPathReturnNullByDefault() {
+        
         $testObject = TestStruct::getDataIndexedL2();
         $grabber = new Grabber($testObject);
 
-        // $result->getValue() must be NULL 
+        // Must return NULL when no default value is provided.
         $result = $grabber->grab('badpath');
         $this->assertEquals(
             NULL, $result->getValue()
         );
-
-        // Must raise an exception when exception activated
-        $exceptionActivated = TRUE;
-        $this->expectException(PropertyNotFoundException::class);
-        $grabber->grab(new Path('badpath', NULL, $exceptionActivated));
-    }
-
-    public function testGrabberGrabWithBadPathReturnSpecifiedDefaultValue() {
-        $testObject = TestStruct::getDataIndexedL2();
-        $grabber = new Grabber($testObject);
+        
+        // Must return provided default value if any.
         $defaultValueSet = [
             NULL,
             'Default String',
@@ -170,14 +169,22 @@ final class ResolverTest extends TestCase {
                 $defaultValue, $result->getValue()
             );
         }
+        
+        // Must raise an exception when exception activated and path not found.
+        $exceptionActivated = TRUE;
+        $this->expectException(PropertyNotFoundException::class);
+        
+        $grabber->grab(new Path('badpath', NULL, $exceptionActivated));
+        
     }
+
 
     public function testGrabberGrabWithIndex() {
 
         // One level structure test.
         $testObject = TestStruct::getDataIndexedL1();
         $grabber = new Grabber($testObject);
-        $pathVariants = ['getAllObjects.3.getName', 'allObjects.3.name', 'objects.3.myName'];
+        $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
         foreach ($pathVariants as $pathVariant) {
             $result1 = $grabber->grab($pathVariant);
             $this->assertEquals(
@@ -188,7 +195,7 @@ final class ResolverTest extends TestCase {
         // Two level structure test.
         $testObjectL2 = TestStruct::getDataIndexedL2();
         $grabberL2 = new Grabber($testObjectL2);
-        $pathVariantsL2 = ['getAllObjects.3.getAllObjects.2.getName', 'allObjects.3.allObjects.2.name', 'objects.3.objects.2.myName'];
+        $pathVariantsL2 = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
         foreach ($pathVariantsL2 as $pathVariantL2) {
             $resultL2 = $grabberL2->grab($pathVariantL2);
             $this->assertEquals(
@@ -201,7 +208,7 @@ final class ResolverTest extends TestCase {
         $testObject = TestStruct::getDataNamedL1();
         $grabber = new Grabber($testObject);
 
-        $pathVariants = ['getAllObjects.my_value_2.getName', 'allObjects.my_value_2.name', 'objects.my_value_2.myName'];
+        $pathVariants = ['getAllObjects/my_value_2/getName', 'allObjects/my_value_2/name', 'objects/my_value_2/myName'];
         foreach ($pathVariants as $pathVariant) {
             $result1 = $grabber->grab($pathVariant);
             $this->assertEquals(
@@ -216,8 +223,8 @@ final class ResolverTest extends TestCase {
 
         // With string parameter
         $pathVariants = [
-            ['path' => 'getOneObject("my_value_2").myName', 'expected_value' => 'test my_value_2'],
-            ['path' => 'getOneObject("unknown").myName', 'expected_value' => NULL]
+            ['path' => 'getOneObject("my_value_2")/myName', 'expected_value' => 'test my_value_2'],
+            ['path' => 'getOneObject("unknown")/myName', 'expected_value' => NULL]
         ];
         foreach ($pathVariants as $pathVariant) {
             $result1 = $grabber->grab($pathVariant['path']);
@@ -230,8 +237,8 @@ final class ResolverTest extends TestCase {
         $testObject2 = TestStruct::getDataIndexedL1();
         $grabber2 = new Grabber($testObject2);
         $pathVariants2 = [
-            ['path' => 'getOneObject(1).getName', 'expected_value' => 'test 1'],
-            ['path' => 'getOneObject(10).getName', 'expected_value' => NULL]
+            ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
+            ['path' => 'getOneObject(10)/getName', 'expected_value' => NULL]
         ];
         foreach ($pathVariants2 as $pathVariant2) {
             $result2 = $grabber2->grab($pathVariant2['path']);
@@ -245,14 +252,14 @@ final class ResolverTest extends TestCase {
         $testObject = TestStruct::getDataIndexedL1();
         $grabber = new Grabber($testObject);
         $this->expectException(UnknownPathKeywordException::class);
-        $grabber->grab('getAllObjects.#unknownkeyword');
+        $grabber->grab('getAllObjects/#unknownkeyword');
     }
 
     public function testGrabberGrabWithMalformedPath() {
         $testObject = TestStruct::getDataIndexedL1();
         $grabber = new Grabber($testObject);
         $this->expectException(PathParsingException::class);
-        $grabber->grab('getAllObjects. something');
+        $grabber->grab('getAllObjects/ something');
     }
 
     public function testGrabberGrabWithEach() {
@@ -260,19 +267,19 @@ final class ResolverTest extends TestCase {
         $grabber = new Grabber($testObject);
 
         // Access using method
-        $result1 = $grabber->grab('getAllObjects.#each.getName');
+        $result1 = $grabber->grab('getAllObjects/#each/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result1->getValue()
         );
 
         // Access using implied method
-        $result2 = $grabber->grab('allObjects.#each.getName');
+        $result2 = $grabber->grab('allObjects/#each/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result2->getValue()
         );
 
         // Access using object property
-        $result3 = $grabber->grab('objects.#each.getName');
+        $result3 = $grabber->grab('objects/#each/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result3->getValue()
         );
@@ -283,10 +290,10 @@ final class ResolverTest extends TestCase {
 
         $grabber = new Grabber($testObject);
         $result1 = $grabber->grab([
-            'getAllObjects.#each' => [
+            'getAllObjects/#each' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects.#each' => [
+                'content:getAllObjects/#each' => [
                     'id:getId',
                     'name:getName'
                 ]
@@ -317,6 +324,20 @@ final class ResolverTest extends TestCase {
             $compareArray, $result1->getValue()
         );
 
+    }
+
+    public function testSymbol() {
+        
+        $testObject = TestStruct::getDataNamedL2();
+        $grabber = new Grabber($testObject);
+        
+        $result1 = $grabber->grab([
+            'getAllObjects/#each' => [
+                'object:.',
+                'name:getName',
+            ]
+        ]);
+        var_export($result1->getValue());
     }
 
 }

@@ -7,7 +7,6 @@ use slavielle\grabbag\Result;
 use slavielle\grabbag\exceptions\NotAdressableException;
 use slavielle\grabbag\exceptions\PropertyNotFoundException;
 use slavielle\grabbag\exceptions\UnknownPathKeywordException;
-
 /**
  * Resolver allows to resolve path applied to an object in order to get a result.
  *
@@ -70,11 +69,23 @@ class Resolver {
       if($pathItem->isKeyword()){
         $resultObjects = array_merge($resultObjects,$this->resolveKeyword($pathItem, $object));
       }
+      else if($pathItem->isSymbol()){
+        $resultObjects[] = $this->resolveSymbol($pathItem, $object);
+      }
       else {
         $resultObjects[] = $this->resolveType($pathItem, $object);
       }
     }
     return $resultObjects;
+  }
+  
+  private function resolveSymbol(PathItem $pathItem, $object){
+    switch($pathItem->getKey()){
+      case '.':
+        return $object;
+      case '..':
+        break;
+    }
   }
   
   private function resolveType(PathItem $pathItem, $object){
@@ -187,5 +198,5 @@ class Resolver {
     }
     throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on array', $pathItem->getKey()));
   }
-
+ 
 }

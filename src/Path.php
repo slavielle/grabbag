@@ -26,7 +26,7 @@ class Path {
 
         while (1) {
             $matches = [];
-            $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+)(?:\(([^\)]+)\))?\.?(.*)$/', $path, $matches);
+            $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+|\.|\.\.)(?:\(([^\)]+)\))?\/?(.*)$/', $path, $matches);
             if ($match_result) {
                 $this->pathArray[] = new PathItem($matches[1], $matches[2], $matches[3]);
                 $path = $matches[4];

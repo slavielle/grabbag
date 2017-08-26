@@ -63,5 +63,9 @@ class PathItem {
     public function isKeyword() {
         return $this->special === '#';
     }
+    
+    public function isSymbol() {
+        return !$this->isKeyword() && in_array($this->key, ['.', '..']);
+    }
 
 }
