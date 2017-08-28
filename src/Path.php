@@ -17,7 +17,14 @@ class Path {
     private $key;
     private $defaultValue;
     private $enableException;
-
+    
+   /**
+    * Constructor.
+    * @param string $path The path itself.
+    * @param mixed $defaultValue The default value to be returned when a path does not apply.
+    * @param Boolean $enableException Enable exception.
+    * @throws PathParsingException 
+    */
     public function __construct($path, $defaultValue = NULL, $enableException = FALSE) {
 
         $path = $this->parseKey($path);
@@ -26,7 +33,7 @@ class Path {
 
         while (1) {
             $matches = [];
-            $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+|\.|\.\.)(?:\(([^\)]+)\))?\/?(.*)$/', $path, $matches);
+            $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+|\.\.|\.)(?:\(([^\)]+)\))?\/?(.*)$/', $path, $matches);
             if ($match_result) {
                 $this->pathArray[] = new PathItem($matches[1], $matches[2], $matches[3]);
                 $path = $matches[4];
@@ -39,7 +46,18 @@ class Path {
         }
         $this->rewind();
     }
-
+    
+   /**
+    * Parse the keypart of a path.
+    * 
+    * In some case, path can have key part. The key part is located on strart 
+    * of the path : 
+    * 
+    * "theKey:the/rest/of/my/path"
+    * 
+    * @param type $path
+    * @return array
+    */
     public function parseKey($path) {
         $matches = [];
         $match_result = preg_match('/^([0-9a-zA-Z_]+:)(.*)$/', $path, $matches);
@@ -49,7 +67,10 @@ class Path {
         }
         return $path;
     }
-
+    
+  /**
+   * Rewind the path item pointer position.
+   */
     public function rewind() {
         if (count($this->pathArray) > 0) {
             $this->index = 0;
@@ -58,6 +79,9 @@ class Path {
         }
     }
 
+  /**
+   * Move the path item pointer to next position.
+   */
     public function next() {
         if ($this->index !== NULL) {
             $val = $this->pathArray[$this->index];
@@ -66,15 +90,27 @@ class Path {
         }
         return NULL;
     }
-
+   
+   /**
+    * Get the path key.
+    * @return string
+    */
     public function getKey() {
         return $this->key;
     }
 
+   /**
+    * Indicate if exception is enabled.
+    * @return type
+    */
     public function isExceptionEnabled() {
         return $this->enableException;
     }
 
+   /**
+    * Get the default value.
+    * @return type
+    */
     public function getDefaultValue() {
         return $this->defaultValue;
     }

@@ -3,6 +3,7 @@
 namespace slavielle\grabbag;
 
 use slavielle\grabbag\Resolver;
+use slavielle\grabbag\ResolverItem;
 
 /**
  * Result implements resolve process result.
@@ -18,9 +19,31 @@ class Result {
     }
 
     public function getValue($forceArray = false) {
+        
+        $resultValue = $this->getValueRecurse($this->value);
+        return count($resultValue) === 1 && !$forceArray ? $resultValue[0] : $resultValue;
+    }
+    
+    private function getRawValue($forceArray = false) {
         return count($this->value) === 1 && !$forceArray ? $this->value[0] : $this->value;
     }
-
+    
+    private function getValueRecurse($array){
+        $resultArray = [];
+        foreach($array as $key => $arrayItem){
+            if(is_array($arrayItem)){
+                $resultArray[$key] = $this->getValueRecurse($arrayItem);
+            }
+            else if ($arrayItem instanceof ResolverItem){
+                $resultArray[$key] = $arrayItem->get();
+            }
+            else {
+                throw new \Exception('Unexpected type');
+            }
+        }
+        return $resultArray;
+    }
+    
     public function each($callable) {
         foreach ($this->value as $item) {
             $callable($item);
@@ -45,6 +68,7 @@ class Result {
             if (count($values) === 1 && array_keys($values)[0] === 0) {
                 $values = $values[0];
             }
+
             $item = $values;
         }
         return $this;
@@ -74,7 +98,7 @@ class Result {
             }
             
             // Append value
-            $value = $result->getValue();
+            $value = $result->getRawValue();
             if ($key === NULL) {
                 $values[] = $value;
             } else {

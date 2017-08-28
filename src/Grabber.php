@@ -13,7 +13,7 @@ use slavielle\grabbag\Result;
 class Grabber extends Resolver {
   
   public function grab($paths) {
-    $result = new Result($this->object, NULL);
+    $result = new Result($this->items, NULL);
     $result->grab($paths);
     return $result;
   }
