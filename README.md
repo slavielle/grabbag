@@ -3,7 +3,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 # Features :
 * Compact path like syntax using uniform syntax for getter, method or property
 * Prevent exception while accessing objects chains and provide a default value when a path cannot be resolved
-* multiple value result using #each
+* Multiple value result using #each
 * Structured result using path array
 
 # A first example
