@@ -9,6 +9,7 @@ use slavielle\grabbag\Result;
  * Grabber Allows to grab value(s) on object chain.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package slavielle\grabbag
  */
 class Grabber extends Resolver {
   

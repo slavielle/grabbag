@@ -8,6 +8,7 @@ use slavielle\grabbag\exceptions\PathParsingException;
  * PathItem composing a Path.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package slavielle\grabbag
  */
 class PathItem {
 
@@ -17,7 +18,7 @@ class PathItem {
     
    /**
     * Constructor.
-    * @param string $special Special caracter prefixing the kex (e.g. '#' in '#each).
+    * @param string $special Special character prefixing the key (e.g. '#' in '#each).
     * @param string $key Key (can be a method, à property name, an array key).
     * @param string $param (param when $key is a method with param).
     */
@@ -47,7 +48,7 @@ class PathItem {
 
    /**
     * Param property getter.
-    * @return string
+    * @return mixed Parameter value.
     * @throws PathParsingException
     */
     public function getParams() {
@@ -74,8 +75,8 @@ class PathItem {
     }
 
    /**
-    * Test if Key is a keyword prefixed with '#'
-    * @return type
+    * Test if Key is a keyword prefixed with '#'.
+    * @return bool
     */
     public function isKeyword() {
         return $this->special === '#';
@@ -83,7 +84,7 @@ class PathItem {
     
    /**
     * Test if key is a symbol
-    * @return type
+    * @return bool
     */
     public function isSymbol() {
         return !$this->isKeyword() && in_array($this->key, ['.', '..']);

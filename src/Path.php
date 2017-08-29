@@ -9,6 +9,7 @@ use slavielle\grabbag\exceptions\PathParsingException;
  * Path allows to define path to be grabbed.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package slavielle\grabbag
  */
 class Path {
 
@@ -48,15 +49,15 @@ class Path {
     }
     
    /**
-    * Parse the keypart of a path.
+    * Parse the key part of a path.
     * 
-    * In some case, path can have key part. The key part is located on strart 
+    * In some case, path can have key part. The key part is located on start
     * of the path : 
     * 
     * "theKey:the/rest/of/my/path"
     * 
-    * @param type $path
-    * @return array
+    * @param string $path Path string.
+    * @return string Unconsumed path part.
     */
     public function parseKey($path) {
         $matches = [];
@@ -81,6 +82,7 @@ class Path {
 
   /**
    * Move the path item pointer to next position.
+   * @return PathItem | NULL The next path item if any or NULL.
    */
     public function next() {
         if ($this->index !== NULL) {
