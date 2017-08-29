@@ -42,7 +42,7 @@ class Path {
                     break;
                 }
             } else {
-                throw new PathParsingException('Can \t parse path');
+                throw new PathParsingException('Can \'t parse path');
             }
         }
         $this->rewind();
@@ -61,7 +61,7 @@ class Path {
     */
     public function parseKey($path) {
         $matches = [];
-        $match_result = preg_match('/^([0-9a-zA-Z_]+:)(.*)$/', $path, $matches);
+        $match_result = preg_match('/^([0-9a-zA-Z_-]+:)(.*)$/', $path, $matches);
         if ($match_result) {
             $this->key = substr($matches[1], 0, -1);
             $path = $matches[2];
