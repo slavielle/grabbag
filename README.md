@@ -8,7 +8,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 
 # A first example
 
-Example from Drupal 8 : getting the image URL from a node using entity reference field pointing to a media entity would give someting like this :
+Lets take an example from Drupal 8 : Getting the image URL from a node using entity reference field pointing to a media entity would give someting like this :
 
 ## Raw PHP
 ```php
@@ -81,10 +81,10 @@ will produce a structured array such as :
     ]
 ]
 ```
+# Field of use
 
+Grabbag can be used in all PHP project using object intensively. This inclure project build on top of some of the most popular PHP framework or CMS such as Drupal 8, Symfony, Laravel and so on ...
 
-
-
-
-
- 
+It can be used everywhere you would have to extract values from objects in order to extract structured array. for example: 
+* Producing array for json Rest web-services.  
+* Producing array for twig templates.
