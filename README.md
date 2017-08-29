@@ -10,7 +10,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 
 Lets take an example from Drupal 8 : Getting the image URL from a node using entity reference field pointing to a media entity would give someting like this :
 
-## Raw PHP
+## Using raw PHP
 ```php
 $node->get('field_media_image')->first()->get('entity')->getTarget()->getValue()->get('field_image')->entity->getFileUri()
 ```
