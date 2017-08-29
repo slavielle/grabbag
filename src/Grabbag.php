@@ -11,7 +11,7 @@ use slavielle\grabbag\Result;
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package slavielle\grabbag
  */
-class Grabber extends Resolver {
+class Grabbag extends Resolver {
   
   public function grab($paths) {
     $result = new Result($this->items, NULL);
