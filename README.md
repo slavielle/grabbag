@@ -46,7 +46,7 @@ contains 4 items, then the result value will be an array looking like this :
 ["my/image/1.jpg", "my/image/2.jpg", "my/image/3.jpg", "my/image/4.jpg"]
 ```
 # Structured result using path array
-Path arrays allow to go a bit further.
+Path arrays allow to go a step further.
 A path array is an array gathering paths in order to produce structured arrays.
 Lets take an example : 
 
