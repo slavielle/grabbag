@@ -1,10 +1,10 @@
-Grabbag is a PHP library that aims provide a simple secure way to request PHP objects chains.
+Grabbag is a PHP library that aims provide a simple secure way to request PHP objects chains using path like expressions.
 
 # Features :
 * Compact path like syntax using uniform syntax for getter, method or property
 * Prevent exception while accessing objects chains and provide a default value when a path cannot be resolved
 * multiple value result using #each
-* multi-level result using path array
+* Structured result using path array
 
 # A first example
 
@@ -45,6 +45,45 @@ contains 4 items, then the result value will be an array looking like this :
 ```php
 ["my/image/1.jpg", "my/image/2.jpg", "my/image/3.jpg", "my/image/4.jpg"]
 ```
+# Structured result using path array
+Path arrays allow to go a bit further.
+A path array is an array gathering paths in order to produce structured arrays.
+Lets take an example : 
+
+```php
+$grabber = new Grabber($node);
+$result = $grabber->grab([
+    'contentTitle:get("title").value',
+    'images:get("field_media_image")/#each/get("entity")/target/value/get("field_image")' => [
+        'uri:entity/fileUri',
+        'alt:alt'
+    ]
+ ]);
+echo $result->getValue();
+```
+will produce a structured array such as : 
+```php
+[
+    'contentTitle' => 'My node title', 
+    'images' => [
+        [
+            'uri' => "my/image/1.jpg"
+            'alt' => "My image 1 alt"
+        ],
+        [
+            'uri' => "my/image/2.jpg"
+            'alt' => "My image 2 alt"
+        ],
+                [
+            'uri' => "my/image/3.jpg"
+            'alt' => "My image 3 alt"
+        ],
+    ]
+]
+```
+
+
+
 
 
 
