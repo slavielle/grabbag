@@ -53,7 +53,7 @@ Lets take an example :
 ```php
 $grabber = new Grabbag($node);
 $result = $grabber->grab([
-    'contentTitle:get("title").value',
+    'content-title:get("title").value',
     'images:get("field_media_image")/#each/get("entity")/target/value/get("field_image")' => [
         'uri:entity/fileUri',
         'alt:alt'
@@ -64,7 +64,7 @@ var_dump($result->getValue());
 will produce a structured array such as : 
 ```php
 [
-    'contentTitle' => 'My node title', 
+    'content-title' => 'My node title', 
     'images' => [
         [
             'uri' => "my/image/1.jpg"
