@@ -1,6 +1,6 @@
 <?php
 
-namespace slavielle\grabbag\exceptions;
+namespace Grabbag\exceptions;
 
 class UnknownPathKeywordException extends \Exception{
     //put your code here

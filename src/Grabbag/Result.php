@@ -1,9 +1,9 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
-use slavielle\grabbag\Resolver;
-use slavielle\grabbag\ResolverItem;
+use Grabbag\Resolver;
+use Grabbag\ResolverItem;
 
 /**
  * Result implements resolve process result.

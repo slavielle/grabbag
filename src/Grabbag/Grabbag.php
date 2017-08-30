@@ -1,15 +1,15 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
-use slavielle\grabbag\Resolver;
-use slavielle\grabbag\Result;
+use Grabbag\Resolver;
+use Grabbag\Result;
 
 /**
  * Grabber Allows to grab value(s) on object chain.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
- * @package slavielle\grabbag
+ * @package Grabbag
  */
 class Grabbag extends Resolver {
   

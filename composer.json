@@ -1,0 +1,21 @@
+{
+    "name": "slavielle/grabbag",
+    "description": "A simple secure way to request PHP objects chains using path like expressions",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sylvain Lavielle",
+            "email": "sylvain.lavielle@netelios.fr"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Grabbag": "src/"
+        }
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
 /**
  * Class ResolverItem
@@ -8,7 +8,7 @@ namespace slavielle\grabbag;
  * Implement resolver items used by Resolver to store item (value get from objects regarding the path) values and info.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
- * @package slavielle\grabbag
+ * @package Grabbag
  */
 
 class ResolverItem {

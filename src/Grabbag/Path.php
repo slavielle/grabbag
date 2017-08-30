@@ -1,15 +1,15 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
-use slavielle\grabbag\PathItem;
-use slavielle\grabbag\exceptions\PathParsingException;
+use Grabbag\PathItem;
+use Grabbag\exceptions\PathParsingException;
 
 /**
  * Path allows to define path to be grabbed.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
- * @package slavielle\grabbag
+ * @package Grabbag
  */
 class Path {
 

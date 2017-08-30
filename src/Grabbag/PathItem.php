@@ -1,14 +1,14 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
-use slavielle\grabbag\exceptions\PathParsingException;
+use Grabbag\exceptions\PathParsingException;
 
 /**
  * PathItem composing a Path.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
- * @package slavielle\grabbag
+ * @package Grabbag
  */
 class PathItem {
 

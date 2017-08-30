@@ -1,19 +1,19 @@
 <?php
 
-namespace slavielle\grabbag;
+namespace Grabbag;
 
-use slavielle\grabbag\Path;
-use slavielle\grabbag\Result;
-use slavielle\grabbag\ResolverItem;
-use slavielle\grabbag\exceptions\NotAdressableException;
-use slavielle\grabbag\exceptions\PropertyNotFoundException;
-use slavielle\grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\Path;
+use Grabbag\Result;
+use Grabbag\ResolverItem;
+use Grabbag\exceptions\NotAdressableException;
+use Grabbag\exceptions\PropertyNotFoundException;
+use Grabbag\exceptions\UnknownPathKeywordException;
 
 /**
  * Resolver allows to resolve path applied to an item in order to get a result.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
- * @package slavielle\grabbag
+ * @package Grabbag
  */
 class Resolver
 {
