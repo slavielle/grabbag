@@ -1,4 +1,4 @@
-# Grabbag - Grab object with ease for PHP
+# Grabbag - Grab objects with ease for PHP
 
 ## Installation
 ```
