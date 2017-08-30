@@ -24,8 +24,8 @@ $node->get('field_media_image')->first()->get('entity')->getTarget()->getValue()
 
 ### Using Grabbag
 ```php
-$grabber = new Grabbag($node);
-$result = $grabber->grab('get("field_media_image")/first/get("entity")/target/value/get("field_image")/entity/fileUri');
+$gb = new Grabbag($node);
+$result = $gb->grab('get("field_media_image")/first/get("entity")/target/value/get("field_image")/entity/fileUri');
 echo $result->getValue();
 ```
 
@@ -38,8 +38,8 @@ echo $result->getValue();
 Path can collect more than one simple value using #each keyword.
 Let's consider the following example that looks like the previous one except for the #each
 ```php
-$grabber = new Grabbag($node);
-$result = $grabber->grab('get("field_media_image")/#each/get("entity")/target/value/get("field_image")/entity/fileUri');
+$gb = new Grabbag($node);
+$result = $gb->grab('get("field_media_image")/#each/get("entity")/target/value/get("field_image")/entity/fileUri');
 var_dump($result->getValue());
 ```
 if the value corresponding to #each in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #each will resolve the path considering each one of these values.
@@ -58,8 +58,8 @@ A path array is an array gathering paths in order to produce structured arrays.
 Lets take an example : 
 
 ```php
-$grabber = new Grabbag($node);
-$result = $grabber->grab([
+$gb = new Grabbag($node);
+$result = $gb->grab([
     'content-title:get("title").value',
     'images:get("field_media_image")/#each/get("entity")/target/value/get("field_image")' => [
         'uri:entity/fileUri',
