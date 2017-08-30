@@ -1,13 +1,14 @@
 <?php
-
+/*
 // Testable classes
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Test useful classes
 require_once 'sourceData/Leaf1.php';
 require_once 'sourceData/List1.php';
 require_once 'sourceData/SourceDataHelper.php';
 require_once 'testData/TestDataHelper.php';
+*/
 
 use PHPUnit\Framework\TestCase;
 use Grabbag\exceptions\NotAdressableException;
