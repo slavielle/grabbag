@@ -10,7 +10,7 @@ use Grabbag\ResolverItem;
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  */
-class Result
+class ResolverItems
 {
 
     private $items;

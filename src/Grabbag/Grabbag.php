@@ -3,7 +3,7 @@
 namespace Grabbag;
 
 use Grabbag\Resolver;
-use Grabbag\Result;
+use Grabbag\ResolverItems;
 
 /**
  * Grabber Allows to grab value(s) on object chain.
@@ -11,12 +11,17 @@ use Grabbag\Result;
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package Grabbag
  */
-class Grabbag extends Resolver {
-  
-  public function grab($paths) {
-    $result = new Result($this->items, NULL);
-    $result->grab($paths);
-    return $result;
-  }
+class Grabbag extends Resolver
+{
+    /**
+     * @param string $paths Path to resolve.
+     * @return ResolverItems Items grabbed using path.
+     */
+    public function grab($paths)
+    {
+        $items = new ResolverItems($this->items, NULL);
+        $items->grab($paths);
+        return $items;
+    }
 
 }

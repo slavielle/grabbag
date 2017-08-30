@@ -19,7 +19,7 @@ use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
-use Grabbag\Result;
+use Grabbag\ResolverItems;
 
 
 /**
@@ -36,7 +36,7 @@ final class ResolverTest extends TestCase {
         $result = $g->grab('objects');
 
         $this->assertInstanceOf(
-            Result::class, $result
+            ResolverItems::class, $result
         );
     }
 

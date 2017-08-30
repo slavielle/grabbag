@@ -3,8 +3,8 @@
 namespace Grabbag;
 
 use Grabbag\Path;
-use Grabbag\Result;
 use Grabbag\ResolverItem;
+use Grabbag\ResolverItems;
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
@@ -37,7 +37,7 @@ class Resolver
     /**
      * Resolve path.
      * @param Path $path Path to resolve.
-     * @return Result Resolved items as a result.
+     * @return ResolverItems Resolved items as a result.
      */
     public function resolve(Path $path)
     {
@@ -48,13 +48,13 @@ class Resolver
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
-                return new Result([new ResolverItem($path->getDefaultValue())]);
+                return new ResolverItems([new ResolverItem($path->getDefaultValue())]);
             } catch (PropertyNotFoundException $e) {
-                return new Result([new ResolverItem($path->getDefaultValue())]);
+                return new ResolverItems([new ResolverItem($path->getDefaultValue())]);
             }
         }
 
-        return new Result($items);
+        return new ResolverItems($items);
     }
 
 
