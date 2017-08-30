@@ -33,7 +33,7 @@ Let's consider the following example that looks like the previous one except for
 ```php
 $grabber = new Grabbag($node);
 $result = $grabber->grab('get("field_media_image")/#each/get("entity")/target/value/get("field_image")/entity/fileUri');
-echo $result->getValue();
+var_dump($result->getValue());
 ```
 if the value corresponding to #each in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #each will resolve the path considering each one of these values.
 
@@ -59,7 +59,7 @@ $result = $grabber->grab([
         'alt:alt'
     ]
  ]);
-echo $result->getValue();
+var_dump($result->getValue());
 ```
 will produce a structured array such as : 
 ```php
@@ -85,6 +85,6 @@ will produce a structured array such as :
 
 Grabbag can be used in all PHP project using object intensively. This inclure project build on top of some of the most popular PHP framework or CMS such as Drupal 8, Symfony, Laravel and so on ...
 
-It can be used everywhere you would have to extract values from objects in order to extract structured array. for example: 
-* Producing array for json Rest web-services.  
-* Producing array for twig templates.
+It can be used everywhere you would have to get values from objects in order to extract values, array or structured array. for example: 
+* Producing data for json Rest web-services.  
+* Producing variables for twig templates.
