@@ -20,5 +20,10 @@
         "psr-0": {
             "Grabbag": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
     }
 }
