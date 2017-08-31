@@ -10,7 +10,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 ## Features :
 * Compact path like syntax using uniform syntax for getter, method or property
 * Prevent exception while accessing objects chains and provide a default value when a path cannot be resolved
-* Multiple values result using #each
+* Multiple value result using #any
 * Structured result using path array
 
 ## A first example
@@ -33,16 +33,16 @@ echo $result->getValue();
 * Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would test some of the values before accessing them.
 * Grabbag expression is implicitly secure. If it's not possible to walk along the object chain, grab method will return NULL or a default value to be specified.
 
-## Multiple values result using #each
+## Multiple value result using #any
 
-Path can collect more than one simple value using #each keyword.
-Let's consider the following example that looks like the previous one except for the #each
+Path can collect more than one simple value using #any keyword.
+Let's consider the following example that looks like the previous one except for the #any
 ```php
 $gb = new Grabbag($node);
-$result = $gb->grab('get("field_media_image")/#each/get("entity")/target/value/get("field_image")/entity/fileUri');
+$result = $gb->grab('get("field_media_image")/#any/get("entity")/target/value/get("field_image")/entity/fileUri');
 var_dump($result->getValue());
 ```
-if the value corresponding to #each in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #each will resolve the path considering each one of these values.
+if the value corresponding to #any in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #any will resolve the path considering each one of these values.
 
 For instance if 
 ```php
@@ -61,7 +61,7 @@ Lets take an example :
 $gb = new Grabbag($node);
 $result = $gb->grab([
     'content-title:get("title").value',
-    'images:get("field_media_image")/#each/get("entity")/target/value/get("field_image")' => [
+    'images:get("field_media_image")/#any/get("entity")/target/value/get("field_image")' => [
         'uri:entity/fileUri',
         'alt:alt'
     ]

@@ -41,7 +41,7 @@ final class ResolverTest extends TestCase {
     }
 
     /**
-     *  Test result when requesting with a valid but non-matching
+     *  Test result when requesting with a valid but non-matching path
      */
     public function testGrabberGrabWithBadPathReturnNullByDefault() {
         
@@ -166,19 +166,19 @@ final class ResolverTest extends TestCase {
         $g = new Grabbag($testObject);
 
         // Access using method
-        $result1 = $g->grab('getAllObjects/#each/getName');
+        $result1 = $g->grab('getAllObjects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result1->getValue()
         );
 
         // Access using implied method
-        $result2 = $g->grab('allObjects/#each/getName');
+        $result2 = $g->grab('allObjects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result2->getValue()
         );
 
         // Access using object property
-        $result3 = $g->grab('objects/#each/getName');
+        $result3 = $g->grab('objects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result3->getValue()
         );
@@ -189,10 +189,10 @@ final class ResolverTest extends TestCase {
 
         $g = new Grabbag($testObject);
         $result1 = $g->grab([
-            'getAllObjects/#each' => [
+            'getAllObjects/#any' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects/#each' => [
+                'content:getAllObjects/#any' => [
                     'id:getId',
                     'name:getName'
                 ]
@@ -211,7 +211,7 @@ final class ResolverTest extends TestCase {
         $g = new Grabbag($testObject);
         
         $result1 = $g->grab([
-            'getAllObjects/#each/objects/#each/myId' => [
+            'getAllObjects/#any/objects/#any/myId' => [
                 'myId:.'
             ]
         ]);
@@ -221,10 +221,10 @@ final class ResolverTest extends TestCase {
         );
         
         $result2 = $g->grab([
-            'getAllObjects/#each' => [
+            'getAllObjects/#any' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects/#each' => [
+                'content:getAllObjects/#any' => [
                     'id:getId',
                     'name:getName',
                     'parent-id:../../myId'

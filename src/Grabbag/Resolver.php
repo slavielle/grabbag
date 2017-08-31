@@ -134,7 +134,7 @@ class Resolver
     {
         $resultObjects = [];
         switch ($pathItem->getKey()) {
-            case 'each':
+            case 'any':
                 foreach ($item->get() as $entry) {
                     $resultObjects[] = self::makeResolverItem($item, $entry);
                 }

@@ -18,7 +18,7 @@ class PathItem {
     
    /**
     * Constructor.
-    * @param string $special Special character prefixing the key (e.g. '#' in '#each).
+    * @param string $special Special character prefixing the key (e.g. '#' in '#any).
     * @param string $key Key (can be a method, à property name, an array key).
     * @param string $param (param when $key is a method with param).
     */
