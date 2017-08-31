@@ -10,7 +10,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 ## Features :
 * Compact path like syntax using uniform syntax for getter, method or property
 * Prevent exception while accessing objects chains and provide a default value when a path cannot be resolved
-* Multiple value result using #each
+* Multiple values result using #each
 * Structured result using path array
 
 ## A first example
@@ -33,7 +33,7 @@ echo $result->getValue();
 * Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would test some of the values before accessing them.
 * Grabbag expression is implicitly secure. If it's not possible to walk along the object chain, grab method will return NULL or a default value to be specified.
 
-## Multiple value result using #each
+## Multiple values result using #each
 
 Path can collect more than one simple value using #each keyword.
 Let's consider the following example that looks like the previous one except for the #each
@@ -95,3 +95,4 @@ Grabbag can be used in all PHP project using object intensively. This inclure pr
 It can be used everywhere you would have to get values from objects in order to extract values, array or structured array. for example: 
 * Producing data for json Rest web-services.  
 * Producing variables for twig templates.
+* Data export
