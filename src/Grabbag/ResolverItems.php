@@ -4,6 +4,7 @@ namespace Grabbag;
 
 use Grabbag\Resolver;
 use Grabbag\ResolverItem;
+use Grabbag\Cnst;
 
 /**
  * Result implements resolve process result.
@@ -101,7 +102,7 @@ class ResolverItems
      * @param string | string[] $paths Path or path array.
      * @return Result Chaining
      */
-    public function grab($paths)
+    public function grab($paths, $defaultValue = NULL)
     {
         foreach ($this->items as &$item) {
 
@@ -109,10 +110,7 @@ class ResolverItems
                 $paths = [$paths];
             }
 
-            $values = $this->grabEach($item, $paths);
-            if (count($values) === 1 && array_keys($values)[0] === 0) {
-                $values = $values[0];
-            }
+            $values = $this->grabEach($item, $paths, $defaultValue);
 
             $item = $values;
         }
@@ -125,38 +123,88 @@ class ResolverItems
      * @param string | string[] $paths Path or path array.
      * @return ResolverItem[] Resolved items.
      */
-    private function grabEach(ResolverItem $item, $paths)
+    private function grabEach(ResolverItem $item, $paths, $defaultValue = NULL)
     {
-        $resolver = new Resolver($item);
-        $values = [];
+
+        $resultValues = [];
+        $handlers = [];
         foreach ($paths as $left => $right) {
+            $handlerName = is_integer($left) ? $right : $left;
+            $handlerValue = is_integer($left) ? NULL : $right;
+            if (is_string($handlerName) && substr($handlerName, 0, 1) === Cnst::MODIFIER_CHAR) {
+                $handlers[substr($handlerName, 1)] = $handlerValue;
+            }
+        }
+
+        $resolver = new Resolver($item, isset($handlers['default-value']) ? $handlers['default-value'] : $defaultValue);
+
+        $uniqueValues = [];
+
+        foreach ($paths as $left => $right) {
+
+            unset($pathObject);
 
             $path = is_integer($left) ? $right : $left;
             $pathArray = is_integer($left) ? NULL : $right;
             if ($path instanceof Path) {
                 $pathObject = $path;
             } else {
-                $pathObject = new Path($path);
+                if (substr($path, 0, 1) !== Cnst::MODIFIER_CHAR) {
+                    $pathObject = new Path($path);
+                }
+
             }
-            $key = $pathObject->getKey();
+            if (isset($pathObject)) {
+                $key = $pathObject->getKey();
 
-            // Resolve
-            $result = $resolver->resolve($pathObject);
+                // Resolve
+                $result = $resolver->resolve($pathObject);
 
-            // Recurse if need
-            if ($pathArray !== NULL) {
-                $result->grab($pathArray);
-            }
+                // Recurse if need
+                if ($pathArray !== NULL) {
+                    $result->grab($pathArray);
+                }
 
-            // Append value
-            $value = $result->getRawValue();
-            if ($key === NULL) {
-                $values[] = $value;
-            } else {
-                $values[$key] = $value;
+                $isUnique = TRUE;
+                $value = $result->getRawValue();
+
+                if ((isset($handlers['unique']) && $handlers['unique'])) {
+
+                    // Unique modifier works on value returning an array because single value is by definition unique.
+                    if (is_array($value)) {
+                        $newValues = [];
+                        foreach($value as $valueItem){
+
+                            if (!in_array($valueItem->get(), $uniqueValues)) {
+                                $uniqueValues[] = $valueItem->get();
+                                $newValues[] = $valueItem;
+                            }
+                        }
+                        $value = $newValues;
+                    }
+                }
+
+                // Append value
+                if(!(isset($handlers['unique']) && $handlers['unique']) || $isUnique === TRUE) {
+
+                    if (isset($handlers['transform'])) {
+                        $value->update($handlers['transform']($value->get(), $key));
+                    }
+                    if ($key !== NULL && substr($key, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
+                        $resultValues[$key] = $value;
+                    } else {
+                        $resultValues[] = $value;
+                    }
+                }
+
             }
         }
-        return $values;
+
+        // return the very value instead of an array result contains just one single value,
+        if (count($resultValues) === 1 && array_keys($resultValues)[0] === 0 && (!isset($handlers['keep-array']) || !$handlers['keep-array'])) {
+            $resultValues = $resultValues[0];
+        }
+        return $resultValues;
     }
 
 }

@@ -4,6 +4,7 @@ namespace Grabbag;
 
 use Grabbag\PathItem;
 use Grabbag\exceptions\PathParsingException;
+use Grabbag\Cnst;
 
 /**
  * Path allows to define path to be grabbed.
@@ -34,7 +35,12 @@ class Path {
 
         while (1) {
             $matches = [];
-            $match_result = preg_match('/^(#)?([0-9a-zA-Z_]+|\.\.|\.)(?:\(([^\)]+)\))?\/?(.*)$/', $path, $matches);
+            $regex =
+                '/^(' .
+                Cnst::REGEX_PATH_KEYWORD_PREFIX . ')?(' .
+                Cnst::REGEX_PATH_NAME . ')(?:' .
+                Cnst::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
+            $match_result = preg_match($regex, $path, $matches);
             if ($match_result) {
                 $this->pathArray[] = new PathItem($matches[1], $matches[2], $matches[3]);
                 $path = $matches[4];
@@ -61,7 +67,13 @@ class Path {
     */
     public function parseKey($path) {
         $matches = [];
-        $match_result = preg_match('/^([0-9a-zA-Z_-]+:)(.*)$/', $path, $matches);
+        $regex = '/^' .
+            '(' .
+            Cnst::REGEX_PATH_INTERNAL_ID_CHAR . '?' .
+            Cnst::REGEX_PATH_ID_NAME .
+            Cnst::REGEX_PATH_ID_SEPARATOR .
+            ')(.*)$/';
+        $match_result = preg_match($regex, $path, $matches);
         if ($match_result) {
             $this->key = substr($matches[1], 0, -1);
             $path = $matches[2];

@@ -17,10 +17,10 @@ class Grabbag extends Resolver
      * @param string $paths Path to resolve.
      * @return ResolverItems Items grabbed using path.
      */
-    public function grab($paths)
+    public function grab($paths, $defaultValue = NULL)
     {
-        $items = new ResolverItems($this->items, NULL);
-        $items->grab($paths);
+        $items = new ResolverItems($this->items);
+        $items->grab($paths, $defaultValue);
         return $items;
     }
 

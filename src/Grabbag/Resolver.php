@@ -19,12 +19,13 @@ class Resolver
 {
 
     protected $items;
+    protected $defaultValue;
 
     /**
      * Constructor.
      * @param ResolverItem | mixed $item
      */
-    public function __construct($item)
+    public function __construct($item, $defaultValue = NULL)
     {
         if (is_array($item)) {
             $this->items = $item instanceof ResolverItem ? $item : new ResolverItem($item);
@@ -32,6 +33,7 @@ class Resolver
             $this->items = $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
         }
         $this->pathArray = [];
+        $this->defaultValue = $defaultValue;
     }
 
     /**
@@ -48,9 +50,9 @@ class Resolver
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
-                return new ResolverItems([new ResolverItem($path->getDefaultValue())]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)]);
             } catch (PropertyNotFoundException $e) {
-                return new ResolverItems([new ResolverItem($path->getDefaultValue())]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)]);
             }
         }
 
