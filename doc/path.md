@@ -3,7 +3,7 @@
 Path allows to match PHP chain in order to get values.
 It looks like (on purpose) Linux path syntax to be easy use.
 
-## Path item
+## Path items
 
 Path items are separated by slashes
 ```
@@ -11,29 +11,40 @@ Path items are separated by slashes
 ```
 ## Path aliasing
 
-In a path items, array keys or object properties can be accessed the same way : 
+In a path, array keys or object properties can be accessed the same way : 
 ```
 /myObject/myProperty
 /myArray/myKey
 ```
-'get' can be omitted for getter method so can be the parenthesis if no parameter is required : 
+'get' can be omitted for getter methods so can be the parenthesis if no parameter is required : 
+
+Equivalent pathes:
 ```
 /myObject/getSometing()
 /myObject/something()
 /myObject/something
-
+```
+```
 /myObject/getSometing("param")
 /myObject/something("param")
 ```
-## Keyword
+## Keywords
 
-Keywords are prefixed by # and implement special behaviors.
+Keywords are prefixed by "#" and implement special behaviors.
 
 Available keyword (there is only one for now):
 
 * __\#any__: Get all values form an array or an object usable with foreach (such as class implemented from Iterator Interface)
 
-# Path array
+__Example :__
+```
+my/path/with/#each
+```
+Result example : 
+```
+["value 1", "value 2", "value 3"]
+```
+# Path arrays
 
 A path array is a PHP array gathering paths in order to produce structured arrays.
 
@@ -46,13 +57,10 @@ __Example :__
 ```
 Result example : 
 ```
-[
-    'my value #1',
-    'my value #2',
-]
+['my value #1', 'my value #2',]
 ```
 
-## Nested path array
+## Nested path arrays
 
 Path array can be nested in order to produce structured result. 
 Every array level contains pathes that will be resolved to produce a results in the __result scope__ defined by the array level.
@@ -80,7 +88,7 @@ Result example :
 ```
 ## Mecanisms
 
-### Path id
+### Path ids
 
 Id are used to identify path in a path array.
 It is located on start of the path and ends with a ':'
@@ -116,11 +124,11 @@ Result example :
 
 ### Symbols
 
-. : The element corresponding to the current path item
-.. : The element corresponding to the previout path item
+* . : The element corresponding to the current path item
+* .. : The element corresponding to the previout path item
 
 
-### Modifier
+### Modifiers
 
 A path array can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter the path array behavior.
