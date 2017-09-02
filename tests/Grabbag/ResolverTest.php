@@ -71,14 +71,17 @@ final class ResolverTest extends TestCase
                 $defaultValue, $result->getValue()
             );
         }
+    }
 
-
+    public function testGrabberGrabWithBadPathReturnException(){
+        $testObject = sourceDataHelper::getDataIndexedL2();
         // Must raise an exception when exception activated and path not found.
         $exceptionActivated = TRUE;
         $this->expectException(PropertyNotFoundException::class);
 
-        $g->grab(new Path('badpath', NULL, $exceptionActivated));
+        $g = new Grabbag($testObject);
 
+        $g->grab(['badpath','?exception-enabled']);
     }
 
     public function testGrabberGrabWithBadPath()

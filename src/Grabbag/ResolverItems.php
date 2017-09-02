@@ -132,11 +132,14 @@ class ResolverItems
             $handlerName = is_integer($left) ? $right : $left;
             $handlerValue = is_integer($left) ? NULL : $right;
             if (is_string($handlerName) && substr($handlerName, 0, 1) === Cnst::MODIFIER_CHAR) {
-                $handlers[substr($handlerName, 1)] = $handlerValue;
+                $handlers[substr($handlerName, 1)] = $handlerValue === NULL ? TRUE : $handlerValue;
             }
         }
 
-        $resolver = new Resolver($item, isset($handlers['default-value']) ? $handlers['default-value'] : $defaultValue);
+        $resolver = new Resolver($item,
+            isset($handlers['default-value']) ? $handlers['default-value'] : $defaultValue,
+            isset($handlers['exception-enabled']) ? $handlers['exception-enabled'] : FALSE
+        );
 
         $uniqueValues = [];
 

@@ -38,7 +38,7 @@ Available keyword (there is only one for now):
 
 __Example :__
 ```
-my/path/with/#each
+my/path/with/#any
 ```
 Result example : 
 ```

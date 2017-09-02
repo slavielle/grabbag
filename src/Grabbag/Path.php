@@ -17,21 +17,15 @@ class Path {
     private $pathArray;
     private $index;
     private $key;
-    private $defaultValue;
-    private $enableException;
     
    /**
     * Constructor.
     * @param string $path The path itself.
-    * @param mixed $defaultValue The default value to be returned when a path does not apply.
-    * @param Boolean $enableException Enable exception.
     * @throws PathParsingException 
     */
-    public function __construct($path, $defaultValue = NULL, $enableException = FALSE) {
+    public function __construct($path) {
 
         $path = $this->parseKey($path);
-        $this->defaultValue = $defaultValue;
-        $this->enableException = $enableException;
 
         while (1) {
             $matches = [];
@@ -111,22 +105,6 @@ class Path {
     */
     public function getKey() {
         return $this->key;
-    }
-
-   /**
-    * Indicate if exception is enabled.
-    * @return type
-    */
-    public function isExceptionEnabled() {
-        return $this->enableException;
-    }
-
-   /**
-    * Get the default value.
-    * @return type
-    */
-    public function getDefaultValue() {
-        return $this->defaultValue;
     }
 
 }

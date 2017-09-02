@@ -20,12 +20,13 @@ class Resolver
 
     protected $items;
     protected $defaultValue;
+    protected $exceptionEnabled;
 
     /**
      * Constructor.
      * @param ResolverItem | mixed $item
      */
-    public function __construct($item, $defaultValue = NULL)
+    public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
         if (is_array($item)) {
             $this->items = $item instanceof ResolverItem ? $item : new ResolverItem($item);
@@ -34,6 +35,7 @@ class Resolver
         }
         $this->pathArray = [];
         $this->defaultValue = $defaultValue;
+        $this->exceptionEnabled = $exceptionEnabled;
     }
 
     /**
@@ -43,10 +45,9 @@ class Resolver
      */
     public function resolve(Path $path)
     {
-        if ($path->isExceptionEnabled()) {
+        if ($this->exceptionEnabled) {
             $items = $this->resolveRecurse($path, $this->items);
         } else {
-
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
