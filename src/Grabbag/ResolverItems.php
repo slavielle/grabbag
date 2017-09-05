@@ -126,10 +126,15 @@ class ResolverItems
             if ((isset($modifiers['unique']) && $modifiers['unique'])) {
                 $value = self::keepUniqueValuesOnly($value);
             }
-            
+
             // Transform value
             if (isset($modifiers['transform'])) {
-                $value->update($modifiers['transform']($value->get(), $key));
+                $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+            }
+
+            // Transform value
+            if (isset($modifiers['debug'])) {
+                self::debugVariable($modifiers['debug'], $value->get(), $key);
             }
 
             // Append value
@@ -225,5 +230,24 @@ class ResolverItems
             return $newValues;
         }
         return $values;
+    }
+
+    /**
+     * Build debug info array and pass it as agument to a callable.
+     * @param $callable
+     * @param $value
+     * @param $key
+     */
+    static private function debugVariable($callable, $value, $key)
+    {
+        $debug = [];
+        if (is_object($value)) {
+            $reflection = new \ReflectionClass($value);
+            $debug['class-name'] = $reflection->getName();
+            $debug['method'] = get_class_methods($value);
+            $debug['object-var'] = array_keys(get_object_vars($value));
+        }
+
+        call_user_func_array($callable, [$key, $debug]);
     }
 }

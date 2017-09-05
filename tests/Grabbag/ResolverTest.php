@@ -262,6 +262,22 @@ final class ResolverTest extends TestCase
 
     }
 
+    public function testDebugModifier()
+    {
+        $testObject = sourceDataHelper::getDataNamedL2();
+
+        $g = new Grabbag($testObject);
+        $result1 = $g->grab([
+            'getAllObjects/#any' => [
+                '~debug:.',
+                '?debug' => function($key,$debug){
+                    var_dump($debug);
+                }
+            ]
+        ]);
+
+
+    }
     /**
      * Test
      */
@@ -284,7 +300,7 @@ final class ResolverTest extends TestCase
                 ]
             ]
         ]);
-        var_export ($result1->getValue());
+        //var_export ($result1->getValue());
         /*
         $this->assertEquals(
             TestDataHelper::getTestData1(), $result1->getValue()
