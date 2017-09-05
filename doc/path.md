@@ -18,7 +18,7 @@ In a path, array keys or object properties can be accessed the same way :
 ```
 'get' can be omitted for getter methods so can be the parenthesis if no parameter is required : 
 
-Equivalent pathes:
+Equivalent paths:
 ```
 /myObject/getSometing()
 /myObject/something()
@@ -62,24 +62,25 @@ Result example :
 
 ## Nested path arrays
 
-Path array can be nested in order to produce structured result. 
-Every array level contains pathes that will be resolved to produce a results in the __result scope__ defined by the array level.
+Path arrays can be nested in order to produce structured result. 
+Every array level contains paths that will be resolved to produce results in the 
+Path array __result scope__.
 
 ```
-[
+[ // First result scope
     'my/first/path',
-    'my/second/path' => [
-        'continue/here',
-        'continue/there'
+    'my/second/path' => [ // Second (nested) result scope
+        'continues/here',
+        'continues/there'
     ]
     'my/first/path',
 ]
 ```
 Result example :
 ```
-[
+[ //Results from first result scope
     'Result 1',
-    [
+    [ //Results from second result scope
         'Result 2.1',
         'Result 2.2'
     ],
@@ -90,12 +91,11 @@ Result example :
 
 ### Path ids
 
-Id are used to identify path in a path array.
-It is located on start of the path and ends with a ':'
+Id are used to identify a path in a path array and is located on start of the path and ends with a ':'
 
 It can have 2 usage : 
 
-* Usage 1 : It can be used to specify key in the result scope
+* Usage 1 : It can be used to specify key in the result array
 * Usage 2 : It can be used in a __modifier__ to refer to a path element
 
 Usage 1 example : 
@@ -133,24 +133,32 @@ Result example :
 A path array can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter the path array behavior.
 
-#### unique modifier
+#### the "unique" modifier
 
 Preserve only unique value in the result scope.
 
-#### transform modifier
+#### the "transform" modifier
 
-Transform an element.
+Allows to transform a result value using a callback function.
 
-#### consider modifier
+#### the "consider" modifier
 
 Allows to test if an element must be kept or not in the result scope.
 
-#### keep-array
+#### the "keep-array" modifier
 
-When the result scope contains only one (non keyed) value the result is the value an not an array.
+When the result scope contains only one (non keyed) value the result is the value itself an not an array.
 In some case you may want to preserve the array anyway. ``keep-array`` allows it.
 
-#### default-value
+#### the "default-value" modifier
 
 Allows to define default value when a path fail to resolve.
+
+#### the "exception-enabled" modifier
+
+Allows all exception to be thrown. Useful for debug purpose.
+
+#### the "debug" modifier
+
+provide debug information on element
 
