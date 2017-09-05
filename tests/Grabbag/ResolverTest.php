@@ -240,7 +240,7 @@ final class ResolverTest extends TestCase
         );
     }
 
-    public function testResolveEach()
+    public function testPathArrayWithAny2Level()
     {
         $testObject = sourceDataHelper::getDataNamedL2();
 
@@ -260,6 +260,36 @@ final class ResolverTest extends TestCase
             TestDataHelper::getTestData1(), $result1->getValue()
         );
 
+    }
+
+    /**
+     * Test
+     */
+    public function testPathArrayWithAny3Level()
+    {
+        $testObject = sourceDataHelper::getDataNamedL3();
+
+        $g = new Grabbag($testObject);
+        $result1 = $g->grab([
+            'getAllObjects/#any' => [
+                'id:myId',
+                'name:getName',
+                'content-L2:getAllObjects/#any' => [
+                    'id:getId',
+                    'name:getName',
+                    'content-L3:getAllObjects/#any' => [
+                        'id:getId',
+                        'name:getName'
+                    ]
+                ]
+            ]
+        ]);
+        var_export ($result1->getValue());
+        /*
+        $this->assertEquals(
+            TestDataHelper::getTestData1(), $result1->getValue()
+        );
+        */
     }
 
     public function testSymbol()
