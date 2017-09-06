@@ -85,17 +85,17 @@ Usage 1 example :
 
 ```php
 [
-    'lv-1:my/first/path',
-    'lv-2:my/second/path'
-    'lv-3:my/first/path',
+    "lv-1:my/first/path",
+    "lv-2:my/second/path",
+    "lv-3:my/first/path"
 ]
 ```
 Result example :
 ```php
 [
-    'lv-1' => 'Result 1',
-    'lv-2' => 'Result 2',
-    'lv-3' => 'Result 3'
+    "lv-1" => "Result 1",
+    "lv-2" => "Result 2",
+    "lv-3" => "Result 3"
 ]
 ```
 
@@ -109,19 +109,19 @@ Usage 1 example :
 
 ```php
 [
-    'my-key-A:my/first/path',
-    'my-key-B:my/second/path' => [
-        'my-key-AA:continue/here',
-        'my-key-AB:continue/there'
+    "my-key-A:my/first/path",
+    "my-key-B:my/second/path" => [
+        "my-key-AA:continue/here",
+        "my-key-AB:continue/there"
     ]
-    'my-key-C:my/first/path',
+    "my-key-C:my/first/path",
 ]
 ```
 Result scope is an important Grabbag concepts.
 
 Let consider the following path : 
-```php
-"my/path/#any/continues/#any"
+```
+my/path/#any/continues/#any
 ```
 with the two #any correponding to iterable objects, and lets imagine last #any gets a string value.
 
