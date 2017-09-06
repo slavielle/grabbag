@@ -78,15 +78,16 @@ Id are used to identify a path in a path array and are located on start of the p
 
 It can have 2 usage : 
 
-* Usage 1 : It can be used to specify key in the result array
-* Usage 2 : It can be used in a __modifier__ to refer to a path element
+* Usage 1 : It can be used to specify key in the result scope
+* Usage 2 : It can be used in a __modifier__ to refer to a path value. 
+If you want to avoid the key to be used in result scope you must prefix it with "~".
 
 Usage 1 example : 
 
 ```php
 [
     "lv-1:my/first/path",
-    "lv-2:my/second/path",
+    "~lv-2:my/second/path",
     "lv-3:my/first/path"
 ]
 ```
@@ -94,7 +95,7 @@ Result example :
 ```php
 [
     "lv-1" => "Result 1",
-    "lv-2" => "Result 2",
+    "Result 2",
     "lv-3" => "Result 3"
 ]
 ```
