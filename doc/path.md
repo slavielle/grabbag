@@ -14,26 +14,26 @@ PHP
 myObject->myMethod()['myArrayKey']
 ```
 Grabbag path : 
-```php
+```
 /myObject/myMethod/myArrayKey
 ```
 
 ## Path syntax
 
 In a path, array keys or object properties can be accessed the same way : 
-```php
+```
 /myObject/myProperty
 /myArray/myKey
 ```
 'get' can be omitted for getter methods so can be the parenthesis if no parameter is required.
 Following paths are equivalent. 
 
-```php
+```
 /myObject/getSometing()
 /myObject/something()
 /myObject/something
 ```
-```php
+```
 /myObject/#each>getSometing("param")
 /myObject/param>something("param")
 ```
@@ -48,7 +48,7 @@ Keywords are path items prefixed by "#" and implement special behaviors. there i
 Get any values form an array or an object usable with foreach (such as array or instance of class implemented from Iterator Interface)
 
 __Example :__
-```php
+```
 my/path/with/#any
 ```
 Result example : 
