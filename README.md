@@ -74,15 +74,15 @@ will produce a structured array such as :
     'content-title' => 'My node title', 
     'images' => [
         [
-            'uri' => "my/image/1.jpg"
+            'uri' => "my/image/1.jpg",
             'alt' => "My image 1 alt"
         ],
         [
-            'uri' => "my/image/2.jpg"
+            'uri' => "my/image/2.jpg",
             'alt' => "My image 2 alt"
         ],
                 [
-            'uri' => "my/image/3.jpg"
+            'uri' => "my/image/3.jpg",
             'alt' => "My image 3 alt"
         ],
     ]
