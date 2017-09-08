@@ -79,7 +79,7 @@ class ResolverItems
      * Resolve every result items regarding the path or path array provided.
      * @param string | string[] $path Path or path array.
      */
-    public function grab($path, $defaultValue = NULL)
+    public function resolve($path, $defaultValue = NULL)
     {
 
         // Prepare
@@ -118,7 +118,7 @@ class ResolverItems
 
             // Recurse if need.
             if ($preparedPath['pathArray'] !== NULL) {
-                $resolvedItems->grab($preparedPath['pathArray']);
+                $resolvedItems->resolve($preparedPath['pathArray']);
             }
 
             // Keep only unique if requiered.
