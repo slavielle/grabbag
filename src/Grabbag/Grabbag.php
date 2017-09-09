@@ -4,6 +4,7 @@ namespace Grabbag;
 
 use Grabbag\Resolver;
 use Grabbag\ResolverItems;
+use Grabbag\Helpers;
 
 /**
  * Grabber Allows to resolve value(s) on object chain.
@@ -17,11 +18,7 @@ class Grabbag
 
     
     function __construct($item){
-        if (is_array($item)) {
-            $this->items = $item instanceof ResolverItem ? $item : new ResolverItem($item);
-        } else {
-            $this->items = $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
-        }
+        $this->items = Helpers::prepareResolverItem($item);
     }
 
     /**

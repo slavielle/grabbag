@@ -28,11 +28,7 @@ class Resolver
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        if (is_array($item)) {
-            $this->items = $item instanceof ResolverItem ? $item : new ResolverItem($item);
-        } else {
-            $this->items = $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
-        }
+        $this->items = Helpers::prepareResolverItem($item);
         $this->pathArray = [];
         $this->defaultValue = $defaultValue;
         $this->exceptionEnabled = $exceptionEnabled;
