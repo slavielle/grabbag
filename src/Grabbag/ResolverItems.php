@@ -108,7 +108,6 @@ class ResolverItems
 
         $resultValues = [];
         foreach ($preparedPaths as $preparedPath) {
-            $preparedPath['pathObject']->rewind();
             $key = $preparedPath['pathObject']->getKey();
 
             // Resolve the path

@@ -41,6 +41,7 @@ class Resolver
      */
     public function resolve(Path $path)
     {
+        $path->rewind();
         if ($this->exceptionEnabled) {
             $items = $this->resolveRecurse($path, $this->items);
         } else {
