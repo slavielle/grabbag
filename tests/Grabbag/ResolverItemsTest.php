@@ -19,7 +19,10 @@ use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
+use Grabbag\ResolverItem;
 use Grabbag\ResolverItems;
+use Grabbag\tests\sourceData\SourceDataHelper;
+use Grabbag\tests\testData\TestDataHelper;
 
 
 /**
@@ -29,22 +32,17 @@ final class ResolverItemsTest extends TestCase
 {
 
     /**
-     *  Test result when requesting with a valid but non-matching path
+     * Test default result when requesting with a valid but non-matching path
+     * Similar to ResolverTest::testResolveWithValidButNonMatchingPath but use default-value modifier.
      */
-    public function testResolverWithValidButNonMatchingPath()
+    public function testResolveWithValidButNonMatchingPath()
     {
 
-        $testObject = sourceDataHelper::getDataIndexedL2();
+        $testObject = SourceDataHelper::getDataIndexedL2();
 
         $resolverItems = new ResolverItems($testObject);
 
-        // Must return NULL when no default value is provided.
-        $resolverItems->resolve('badpath');
-        $this->assertEquals(
-            NULL, $resolverItems->getValue()
-        );
-
-        // Must return provided default value when passing it via method argument.
+        // Must return provided default value when passing it using a modifier.
         $defaultValueSet = [
             NULL,
             'Default String',
@@ -52,31 +50,22 @@ final class ResolverItemsTest extends TestCase
             ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
         ];
         foreach ($defaultValueSet as $defaultValue) {
-            $resolverItems->resolve(new Path('badpath'), $defaultValue);
+            $resolverItems->resolve([
+                'badpath',
+                '?default-value'=>$defaultValue]
+            );
             $this->assertEquals(
                 $defaultValue, $resolverItems->getValue()
             );
         }
-
-        // Must return provided default value when passing it as a modifier.
-        $defaultValueSet = [
-            NULL,
-            'Default String',
-            192,
-            ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
-        ];
-        foreach ($defaultValueSet as $defaultValue) {
-            $resolverItems->resolve(['badpath', '?default-value'=>$defaultValue]);
-            $this->assertEquals(
-                $defaultValue, $resolverItems->getValue()
-            );
-        }
-
-
     }
 
-    public function testGrabberGrabWithBadPathReturnException(){
-        $testObject = sourceDataHelper::getDataIndexedL2();
+    /**
+     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
+     */
+    public function testResolveWithBadPathReturnException(){
+        $testObject = SourceDataHelper::getDataIndexedL2();
 
         // Must raise an exception when exception activated and path not found.
         $this->expectException(PropertyNotFoundException::class);
@@ -86,118 +75,100 @@ final class ResolverItemsTest extends TestCase
         $resolverItems->resolve(['badpath','?exception-enabled']);
     }
 
-    public function testGrabberGrabWithBadPath()
+    /**
+     * Test resolving with numerical index values in path.
+     * Similar test to ResolverTest::testResolveWithIndex but on a set of ResolverItem.
+     */
+    public function testResolveWithIndex()
     {
-
-        $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
-
-        $expected = [];
-        for ($i = 0; $i <= 3; $i++) {
-            $expected[] = 'custom_default_value';
-        }
-        $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
-
-        $resolverItems->resolve([
-            'getAllObjects/#any' => [
-                '~myId:myId',
-                '?default-value' => 'custom_default_value',
-                '?transform' => function($value, $id){
-                    return 'transformed ' . $id . '-' . $value;
-                },
-            ]
-        ]);
-
-        $this->assertEquals($expected, $resolverItems->getValue());
-
-    }
-
-    public function testGrabberGrabUniqueValues()
-    {
-
-        $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
-
-        $expected = ['ID#0', 'ID#6', 'ID#12'];
-
-        $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId',
-            '?unique'=>TRUE,
-        ]);
-
-        $this->assertEquals($expected, $resolverItems->getValue());
-
-    }
-
-    public function testGrabberGrabWithIndex()
-    {
-
         // One level structure test.
-        $testObject = sourceDataHelper::getDataIndexedL1();
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems($testObject);
+            $resolverItems = new ResolverItems([
+                new ResolverItem($testObject),
+                new ResolverItem($testObject)
+            ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
-                'test 3', $resolverItems->getValue()
+                ['test 3','test 3'] , $resolverItems->getValue()
             );
         }
 
     }
 
-    public function testGrabberGrabWithIndexOn2Levels()
+    /**
+     * Test resolving with numerical index (2 levels) values in path.
+     * Similar test to ResolverTest::testResolveWithIndexOn2Levels but on a set of ResolverItem.
+     */
+    public function testResolveWithIndexOn2Levels()
     {
 
         // Two level structure test.
-        $testObject = sourceDataHelper::getDataIndexedL2();
-        $pathVariants = [['getAllObjects/3/getAllObjects/2/getName', '?unique'=>TRUE], 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
+        $testObject = SourceDataHelper::getDataIndexedL2();
+        $pathVariants = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems($testObject);
+            $resolverItems = new ResolverItems([
+                new ResolverItem($testObject),
+                new ResolverItem($testObject),
+            ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
-                'test 3.2', $resolverItems->getValue()
+                ['test 3.2', 'test 3.2'], $resolverItems->getValue()
             );
         }
     }
 
-    public function testGrabberGrabWithKey()
+    /**
+     * Test resolving with key index values in path.
+     * Similar test to ResolverTest::testResolveWithKey but on a set of ResolverItem.
+     */
+    public function testResolveWithKey()
     {
-        $testObject = sourceDataHelper::getDataNamedL1();
+        $testObject = SourceDataHelper::getDataNamedL1();
 
         $pathVariants = ['getAllObjects/my_value_2/getName', 'allObjects/my_value_2/name', 'objects/my_value_2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems($testObject);
+            $resolverItems = new ResolverItems([
+                new ResolverItem($testObject),
+                new ResolverItem($testObject)
+            ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
-                'test my_value_2', $resolverItems->getValue()
+                ['test my_value_2','test my_value_2'], $resolverItems->getValue()
             );
         }
     }
 
-    public function testGrabberGrabWithGetMethodWithStringParameter()
+    /**
+     * Test resolving with method + string parameter in path.
+     * Similar test to ResolverTest::testResolveWithGetMethodWithStringParameter but on a set of ResolverItem.
+     */
+    public function testResolveWithGetMethodWithStringParameter()
     {
-        $testObject = sourceDataHelper::getDataNamedL1();
-        $resolverItems = new ResolverItems($testObject);
+        $testObject = SourceDataHelper::getDataNamedL1();
+        $resolverItems = new ResolverItems([
+            new ResolverItem($testObject),
+            new ResolverItem($testObject)
+        ], FALSE);
 
         // With string parameter
         $pathVariants = [
             ['path' => 'getOneObject("my_value_2")/myName', 'expected_value' => 'test my_value_2'],
-            ['path' => 'getOneObject("unknown")/myName', 'expected_value' => NULL]
         ];
         foreach ($pathVariants as $pathVariant) {
             $resolverItems->resolve($pathVariant['path']);
             $this->assertEquals(
-                $pathVariant['expected_value'], $resolverItems->getValue()
+                [$pathVariant['expected_value'], $pathVariant['expected_value']], $resolverItems->getValue()
             );
         }
-
     }
 
     public function testGrabberGrabWithGetMethodWithIntParameter()
     {
 
         // With Numeric parameter
-        $testObject = sourceDataHelper::getDataIndexedL1();
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $resolverItems = new ResolverItems($testObject);
 
         $pathVariants = [
@@ -214,7 +185,7 @@ final class ResolverItemsTest extends TestCase
 
     public function testGrabberGrabWithUnknownKeyword()
     {
-        $testObject = sourceDataHelper::getDataIndexedL1();
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $resolverItems = new ResolverItems($testObject);
         $this->expectException(UnknownPathKeywordException::class);
         $resolverItems->resolve('getAllObjects/#unknownkeyword');
@@ -222,7 +193,7 @@ final class ResolverItemsTest extends TestCase
 
     public function testGrabberGrabWithMalformedPath()
     {
-        $testObject = sourceDataHelper::getDataIndexedL1();
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $resolverItems = new ResolverItems($testObject);
         $this->expectException(PathParsingException::class);
         $resolverItems->resolve('getAllObjects/ something');
@@ -230,7 +201,7 @@ final class ResolverItemsTest extends TestCase
 
     public function testGrabberGrabWithEach()
     {
-        $testObject = sourceDataHelper::getDataIndexedL1();
+        $testObject = SourceDataHelper::getDataIndexedL1();
 
 
         // Access using method
@@ -257,7 +228,7 @@ final class ResolverItemsTest extends TestCase
 
     public function testPathArrayWithAny2Level()
     {
-        $testObject = sourceDataHelper::getDataNamedL2();
+        $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
 
         $resolverItems->resolve([
@@ -276,9 +247,53 @@ final class ResolverItemsTest extends TestCase
         );
     }
 
+    /**
+     * Test transform modifier.
+     */
+    public function testResolveWithBadPath()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
+
+        $resolverItems->resolve([
+            'getAllObjects/#any' => [
+                '~myId:myId',
+                '?transform' => function($value, $id){
+                    return 'transformed ' . $id . '-' . $value;
+                },
+            ]
+        ]);
+
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
+    /**
+     * Test unique modifier.
+     */
+    public function testResolveUniqueModifier()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = ['ID#0', 'ID#6', 'ID#12'];
+
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId',
+            '?unique'=>TRUE,
+        ]);
+
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
     public function testDebugModifier()
     {
-        $testObject = sourceDataHelper::getDataNamedL2();
+        $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
         $myDebugInfo = NULL;
         $resolverItems->resolve([
@@ -293,7 +308,7 @@ final class ResolverItemsTest extends TestCase
         ]);
 
         $this->assertEquals([
-            'class-name' => 'List1',
+            'class-name' => 'Grabbag\tests\sourceData\List1',
             'method' => [
                 '__construct',
                 'appendObject',
@@ -314,7 +329,7 @@ final class ResolverItemsTest extends TestCase
 
     public function testPathArrayWithAny3Level()
     {
-        $testObject = sourceDataHelper::getDataNamedL3();
+        $testObject = SourceDataHelper::getDataNamedL3();
         $resolverItems = new ResolverItems($testObject);
 
         $resolverItems->resolve([
@@ -339,7 +354,7 @@ final class ResolverItemsTest extends TestCase
     public function testSymbol()
     {
 
-        $testObject = sourceDataHelper::getDataNamedL2();
+        $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
 
 

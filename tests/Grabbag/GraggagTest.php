@@ -21,6 +21,8 @@ use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\ResolverItems;
 
+use Grabbag\tests\sourceData\SourceDataHelper;
+use Grabbag\tests\testData\TestDataHelper;
 
 /**
  * @covers Resolver
@@ -41,4 +43,5 @@ final class GrabbagTest extends TestCase
             ResolverItems::class, $result
         );
     }
+
 }

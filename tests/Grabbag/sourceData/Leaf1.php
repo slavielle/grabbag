@@ -1,5 +1,7 @@
 <?php
 
+namespace Grabbag\tests\sourceData;
+
 class Leaf1 {
 
     public $myName;
