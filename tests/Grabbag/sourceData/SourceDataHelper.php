@@ -1,5 +1,10 @@
 <?php
 
+namespace Grabbag\tests\sourceData;
+
+use Grabbag\tests\sourceData\Leaf1;
+use Grabbag\tests\sourceData\List1;
+
 class SourceDataHelper
 {
 

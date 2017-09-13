@@ -1,5 +1,7 @@
 <?php
 
+namespace Grabbag\tests\sourceData;
+
 class List1 extends Leaf1 {
 
     public $objects;

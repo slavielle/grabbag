@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: slavielle
- * Date: 29/08/17
- * Time: 23:08
- */
+
+namespace Grabbag\tests\testData;
 
 class TestDataHelper
 {
