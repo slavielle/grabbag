@@ -20,7 +20,6 @@ use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\ResolverItems;
-use Grabbag\Helpers;
 
 
 /**
@@ -37,7 +36,7 @@ final class ResolverItemsTest extends TestCase
 
         $testObject = sourceDataHelper::getDataIndexedL2();
 
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         // Must return NULL when no default value is provided.
         $resolverItems->resolve('badpath');
@@ -82,7 +81,7 @@ final class ResolverItemsTest extends TestCase
         // Must raise an exception when exception activated and path not found.
         $this->expectException(PropertyNotFoundException::class);
 
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $resolverItems->resolve(['badpath','?exception-enabled']);
     }
@@ -91,7 +90,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $expected = [];
         for ($i = 0; $i <= 3; $i++) {
@@ -117,7 +116,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $expected = ['ID#0', 'ID#6', 'ID#12'];
 
@@ -137,7 +136,7 @@ final class ResolverItemsTest extends TestCase
         $testObject = sourceDataHelper::getDataIndexedL1();
         $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+            $resolverItems = new ResolverItems($testObject);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
                 'test 3', $resolverItems->getValue()
@@ -153,7 +152,7 @@ final class ResolverItemsTest extends TestCase
         $testObject = sourceDataHelper::getDataIndexedL2();
         $pathVariants = [['getAllObjects/3/getAllObjects/2/getName', '?unique'=>TRUE], 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+            $resolverItems = new ResolverItems($testObject);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
                 'test 3.2', $resolverItems->getValue()
@@ -167,7 +166,7 @@ final class ResolverItemsTest extends TestCase
 
         $pathVariants = ['getAllObjects/my_value_2/getName', 'allObjects/my_value_2/name', 'objects/my_value_2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+            $resolverItems = new ResolverItems($testObject);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals(
                 'test my_value_2', $resolverItems->getValue()
@@ -178,7 +177,7 @@ final class ResolverItemsTest extends TestCase
     public function testGrabberGrabWithGetMethodWithStringParameter()
     {
         $testObject = sourceDataHelper::getDataNamedL1();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         // With string parameter
         $pathVariants = [
@@ -199,7 +198,7 @@ final class ResolverItemsTest extends TestCase
 
         // With Numeric parameter
         $testObject = sourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $pathVariants = [
             ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
@@ -216,7 +215,7 @@ final class ResolverItemsTest extends TestCase
     public function testGrabberGrabWithUnknownKeyword()
     {
         $testObject = sourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $this->expectException(UnknownPathKeywordException::class);
         $resolverItems->resolve('getAllObjects/#unknownkeyword');
     }
@@ -224,7 +223,7 @@ final class ResolverItemsTest extends TestCase
     public function testGrabberGrabWithMalformedPath()
     {
         $testObject = sourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $this->expectException(PathParsingException::class);
         $resolverItems->resolve('getAllObjects/ something');
     }
@@ -235,21 +234,21 @@ final class ResolverItemsTest extends TestCase
 
 
         // Access using method
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $resolverItems->resolve('getAllObjects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
         );
 
         // Access using implied method
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $resolverItems->resolve('allObjects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
         );
 
         // Access using object property
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $resolverItems->resolve('objects/#any/getName');
         $this->assertEquals(
             ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
@@ -259,7 +258,7 @@ final class ResolverItemsTest extends TestCase
     public function testPathArrayWithAny2Level()
     {
         $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -280,7 +279,7 @@ final class ResolverItemsTest extends TestCase
     public function testDebugModifier()
     {
         $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $myDebugInfo = NULL;
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -316,7 +315,7 @@ final class ResolverItemsTest extends TestCase
     public function testPathArrayWithAny3Level()
     {
         $testObject = sourceDataHelper::getDataNamedL3();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -341,7 +340,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = sourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
 
 
         $resolverItems->resolve([
@@ -353,7 +352,7 @@ final class ResolverItemsTest extends TestCase
             TestDataHelper::getTestData2(), $resolverItems->getValue()
         );
 
-        $resolverItems = new ResolverItems(Helpers::prepareResolverItem($testObject));
+        $resolverItems = new ResolverItems($testObject);
         $resolverItems->resolve([
             'getAllObjects/#any' => [
                 'id:myId',

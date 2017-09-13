@@ -28,7 +28,7 @@ class Resolver
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        $this->items = Helpers::prepareResolverItem($item);
+        $this->items = ResolverItem::prepareResolverItem($item);
         $this->pathArray = [];
         $this->defaultValue = $defaultValue;
         $this->exceptionEnabled = $exceptionEnabled;
@@ -48,13 +48,13 @@ class Resolver
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
             } catch (PropertyNotFoundException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
             }
         }
 
-        return new ResolverItems($items);
+        return new ResolverItems($items, FALSE);
     }
 
 

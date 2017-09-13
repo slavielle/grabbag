@@ -60,7 +60,19 @@ class ResolverItem {
     public function update($item){
         $this->item = $item;
     }
-    
+
+    /**
+     * Prepare $item to normalize it to be an array of ResolverItem.
+     * @param ResolverItem | mixed $item
+     * @return array|ResolverItem
+     */
+    public static function prepareResolverItem($item){
+        if (is_array($item)) {
+            return $item instanceof ResolverItem ? $item : new ResolverItem($item);
+        } else {
+            return $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
+        }
+    }
     
     
 }

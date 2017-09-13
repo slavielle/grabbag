@@ -20,7 +20,6 @@ use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\ResolverItems;
-use Grabbag\Helpers;
 
 
 /**

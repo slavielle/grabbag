@@ -20,9 +20,9 @@ class ResolverItems
      * ResolverItems constructor.
      * @param ResolverItem[] $items Array of ResolverItem composing the result from resolver.
      */
-    public function __construct($items)
+    public function __construct($items, $prepare = TRUE)
     {
-        $this->items = $items;
+        $this->items = $prepare ? ResolverItem::prepareResolverItem($items) : $items;
     }
 
     /**
