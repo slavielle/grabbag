@@ -7,9 +7,7 @@ use Grabbag\ResolverItem;
 use Grabbag\Cnst;
 
 /**
- * Result implements resolver items.
- *
- * Resolver items contains values handled by resolver
+ * Resolver items contains values handled by resolver.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  */
@@ -19,7 +17,7 @@ class ResolverItems
     private $items;
 
     /**
-     * Result constructor.
+     * ResolverItems constructor.
      * @param ResolverItem[] $items Array of ResolverItem composing the result from resolver.
      */
     public function __construct($items)
@@ -45,7 +43,7 @@ class ResolverItems
     }
 
     /**
-     * Same as getValue, except it returns ResolverItem instance or instance array.
+     * Same as getValue, except it returns ResolverItem instance or ResolverItem instance array.
      * @param bool $forceArray Force the method result to be an array even if there is only one result item.
      * @return ResolverItem | ResolverItem[]
      */
@@ -89,7 +87,7 @@ class ResolverItems
 
         // Grab each items
         foreach ($this->items as &$item) {
-            $values = $this->grabEach($item, $preparedPaths, $modifiers, $defaultValue);
+            $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue);
             $item = $values;
         }
     }
@@ -100,7 +98,7 @@ class ResolverItems
      * @param mixed[] $preparedPaths Path or path array.
      * @return ResolverItem[] Resolved items.
      */
-    private function grabEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
+    private function resolveEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
     {
         // Init Resolver.
         $resolver = new Resolver($item,
@@ -206,7 +204,7 @@ class ResolverItems
     }
 
     /**
-     * Return an array containing only unique value in array.
+     * Implements ?unique modifier behavior : Return an array containing only unique value in array.
      * @param ResolverItem[] $values Array to be filtered.
      * @return ResolverItem[] Result array.
      */
@@ -233,7 +231,7 @@ class ResolverItems
     }
 
     /**
-     * Build debug info array and pass it as agument to a callable.
+     * Implement ?debug modifier behavior : Build debug info array and pass it as agument to a callable.
      * @param $callable
      * @param $value
      * @param $key

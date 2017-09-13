@@ -16,8 +16,12 @@ class Grabbag
 {
     private $items;
 
-    
-    function __construct($item){
+    /**
+     * Grabbag constructor.
+     * @param ResolverItem | mixed $item Target Grabbag item.
+     */
+    function __construct($item)
+    {
         $this->items = Helpers::prepareResolverItem($item);
     }
 
