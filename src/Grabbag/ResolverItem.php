@@ -11,8 +11,9 @@ namespace Grabbag;
  * @package Grabbag
  */
 
-class ResolverItem {
-    
+class ResolverItem
+{
+
     private $item;
     private $previous;
 
@@ -20,7 +21,8 @@ class ResolverItem {
      * ResolverItem constructor.
      * @param mixed $item Item value.
      */
-    public function __construct($item){
+    public function __construct($item)
+    {
         $this->update($item);
         $this->previous = [];
     }
@@ -29,7 +31,8 @@ class ResolverItem {
      * Getter for item property.
      * @return mixed
      */
-    public function get(){
+    public function get()
+    {
         return $this->item;
     }
 
@@ -37,7 +40,8 @@ class ResolverItem {
      * Push new item value on stack.
      * @return mixed
      */
-    public function push($item){
+    public function push($item)
+    {
         $this->previous[] = $this->item;
         $this->item = $item;
     }
@@ -46,9 +50,10 @@ class ResolverItem {
      * Pop value from stack.
      * @throws \Exception
      */
-    public function pop(){
+    public function pop()
+    {
         $this->item = array_pop($this->previous);
-        if($this->item === NULL){
+        if ($this->item === NULL) {
             throw new \Exception('Can\'t pop an empty stack');
         }
     }
@@ -57,7 +62,8 @@ class ResolverItem {
      * Update top stack item without pushing.
      * @param mixed $item
      */
-    public function update($item){
+    public function update($item)
+    {
         $this->item = $item;
     }
 
@@ -66,13 +72,14 @@ class ResolverItem {
      * @param ResolverItem | mixed $item
      * @return array|ResolverItem
      */
-    public static function prepareResolverItem($item){
+    public static function prepareResolverItem($item)
+    {
         if (is_array($item)) {
             return $item instanceof ResolverItem ? $item : new ResolverItem($item);
         } else {
             return $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
         }
     }
-    
-    
+
+
 }
