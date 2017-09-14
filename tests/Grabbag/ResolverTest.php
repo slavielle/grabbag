@@ -6,7 +6,7 @@
  * Time: 23:02
  */
 
-namespace Grabbag;
+namespace Grabbag\tests;
 
 use PHPUnit\Framework\TestCase;
 use Grabbag\exceptions\NotAdressableException;

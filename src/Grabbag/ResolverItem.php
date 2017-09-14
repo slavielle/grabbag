@@ -56,6 +56,7 @@ class ResolverItem
         if ($this->item === NULL) {
             throw new \Exception('Can\'t pop an empty stack');
         }
+        return $this->item;
     }
 
     /**
