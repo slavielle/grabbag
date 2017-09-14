@@ -28,11 +28,7 @@ class Resolver
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        if (is_array($item)) {
-            $this->items = $item instanceof ResolverItem ? $item : new ResolverItem($item);
-        } else {
-            $this->items = $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
-        }
+        $this->items = ResolverItem::prepareResolverItem($item);
         $this->pathArray = [];
         $this->defaultValue = $defaultValue;
         $this->exceptionEnabled = $exceptionEnabled;
@@ -45,19 +41,20 @@ class Resolver
      */
     public function resolve(Path $path)
     {
+        $path->rewind();
         if ($this->exceptionEnabled) {
             $items = $this->resolveRecurse($path, $this->items);
         } else {
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
             } catch (PropertyNotFoundException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)]);
+                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
             }
         }
 
-        return new ResolverItems($items);
+        return new ResolverItems($items, FALSE);
     }
 
 
@@ -202,7 +199,7 @@ class Resolver
         }
 
         try {
-            $value = call_user_method_array($prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey(), $item->get(), $params);
+            $value = call_user_func_array([$item->get(), $prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey()], $params);
         } catch (\Exception $e) {
             throw new NotAdressableException('Parameters passed to method throw an exception');
         }

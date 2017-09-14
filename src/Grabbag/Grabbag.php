@@ -6,22 +6,32 @@ use Grabbag\Resolver;
 use Grabbag\ResolverItems;
 
 /**
- * Grabber Allows to grab value(s) on object chain.
+ * Grabber Allows to resolve value(s) on object chain.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package Grabbag
  */
-class Grabbag extends Resolver
+class Grabbag
 {
+    private $items;
+
+    /**
+     * Grabbag constructor.
+     * @param ResolverItem | mixed $item Target Grabbag item.
+     */
+    function __construct($item)
+    {
+        $this->items = new ResolverItems($item);
+    }
+
     /**
      * @param string $paths Path to resolve.
      * @return ResolverItems Items grabbed using path.
      */
-    public function grab($paths, $defaultValue = NULL)
+    public function resolve($paths, $defaultValue = NULL)
     {
-        $items = new ResolverItems($this->items);
-        $items->grab($paths, $defaultValue);
-        return $items;
+        $this->items->resolve($paths, $defaultValue);
+        return $this->items;
     }
 
 }

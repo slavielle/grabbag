@@ -2,5 +2,6 @@
 
 namespace Grabbag\exceptions;
 
-class PathParsingException extends \Exception{
+class PathParsingException extends \Exception
+{
 }

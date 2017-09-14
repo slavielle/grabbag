@@ -1,14 +1,12 @@
 <?php
-/*
-// Testable classes
-require_once __DIR__ . '/../vendor/autoload.php';
+/**
+ * Created by PhpStorm.
+ * User: slavielle
+ * Date: 13/09/17
+ * Time: 23:02
+ */
 
-// Test useful classes
-require_once 'sourceData/Leaf1.php';
-require_once 'sourceData/List1.php';
-require_once 'sourceData/SourceDataHelper.php';
-require_once 'testData/TestDataHelper.php';
-*/
+namespace Grabbag\tests;
 
 use PHPUnit\Framework\TestCase;
 use Grabbag\exceptions\NotAdressableException;
@@ -21,44 +19,40 @@ use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\ResolverItems;
 
+use Grabbag\tests\sourceData\SourceDataHelper;
+use Grabbag\tests\testData\TestDataHelper;
 
-/**
- * @covers Resolver
- */
-final class ResolverTest extends TestCase
+class ResolverTest extends TestCase
 {
 
     /**
-     *  Test result class object
+     * Test resolving path with malformed path.
      */
-    public function testGrabberGrabReturnResult()
+    public function testGrabberGrabWithMalformedPath()
     {
-        $testObject = sourceDataHelper::getDataIndexedL2();
-        $g = new Grabbag($testObject);
-        $result = $g->grab('objects');
-
-        $this->assertInstanceOf(
-            ResolverItems::class, $result
-        );
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
+        $this->expectException(PathParsingException::class);
+        $resolver->resolve(new Path('getAllObjects/ something'));
     }
 
     /**
      *  Test result when requesting with a valid but non-matching path
      */
-    public function testGrabberGrabWithBadPathReturnNullByDefault()
+    public function testResolveWithValidButNonMatchingPath()
     {
 
-        $testObject = sourceDataHelper::getDataIndexedL2();
-        $g = new Grabbag($testObject);
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $resolver = new Resolver($testObject);
 
         // Must return NULL when no default value is provided.
-        $result = $g->grab('badpath');
-        $result->getValue();
+        $result = $resolver->resolve(new Path('badpath'));
         $this->assertEquals(
             NULL, $result->getValue()
         );
 
-        // Must return provided default value if any.
+        // Must return provided default value when passing it using method argument.
         $defaultValueSet = [
             NULL,
             'Default String',
@@ -66,263 +60,156 @@ final class ResolverTest extends TestCase
             ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
         ];
         foreach ($defaultValueSet as $defaultValue) {
-            $result = $g->grab(new Path('badpath'), $defaultValue);
-            $this->assertEquals(
-                $defaultValue, $result->getValue()
-            );
+            $resolver = new Resolver($testObject, $defaultValue);
+            $result = $resolver->resolve(new Path('badpath'));
+            $this->assertEquals($defaultValue, $result->getValue());
         }
     }
 
-    public function testGrabberGrabWithBadPathReturnException(){
-        $testObject = sourceDataHelper::getDataIndexedL2();
+    /**
+     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     */
+    public function testResolveWithBadPathReturnException(){
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
         // Must raise an exception when exception activated and path not found.
-        $exceptionActivated = TRUE;
         $this->expectException(PropertyNotFoundException::class);
 
-        $g = new Grabbag($testObject);
-
-        $g->grab(['badpath','?exception-enabled']);
+        $resolver = new Resolver($testObject, NULL, TRUE);
+        $resolver->resolve(new Path('badpath'));
     }
 
-    public function testGrabberGrabWithBadPath()
+    /**
+     * Test resolving with numerical index values in path.
+     */
+    public function testResolveWithIndex()
     {
-
-        $testObject = sourceDataHelper::getDataNamedL2();
-        $g = new Grabbag($testObject);
-
-        $expected = [];
-        for ($i = 0; $i <= 3; $i++) {
-            $expected[] = 'custom_default_value';
-        }
-        $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
-
-        $result = $g->grab([
-            'getAllObjects/#any' => [
-                '~myId:myId',
-                '?default-value' => 'custom_default_value',
-                '?transform' => function($value, $id){
-                    return 'transformed ' . $id . '-' . $value;
-                },
-            ]
-        ]);
-
-        $this->assertEquals($expected, $result->getValue());
-
-    }
-
-    public function testGrabberGrabUniqueValues()
-    {
-
-        $testObject = sourceDataHelper::getDataNamedL2();
-        $g = new Grabbag($testObject);
-
-        $expected = ['ID#0', 'ID#6', 'ID#12'];
-
-        $result = $g->grab([
-            'getAllObjects/#any/getAllObjects/#any/../../myId',
-            '?unique'=>TRUE,
-        ]);
-
-        $this->assertEquals($expected, $result->getValue());
-
-    }
-
-    public function testGrabberGrabWithIndex()
-    {
-
         // One level structure test.
-        $testObject = sourceDataHelper::getDataIndexedL1();
-        $g = new Grabbag($testObject);
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $result1 = $g->grab($pathVariant);
-            $this->assertEquals(
-                'test 3', $result1->getValue()
-            );
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($pathVariant));
+            var_export($result->getValue());
+            $this->assertEquals('test 3' , $result->getValue());
         }
-
-        // Two level structure test.
-        $testObjectL2 = sourceDataHelper::getDataIndexedL2();
-        $gL2 = new Grabbag($testObjectL2);
-        $pathVariantsL2 = [['getAllObjects/3/getAllObjects/2/getName', '?unique'=>TRUE], 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
-        foreach ($pathVariantsL2 as $pathVariantL2) {
-            $resultL2 = $gL2->grab($pathVariantL2);
-            $this->assertEquals(
-                'test 3.2', $resultL2->getValue()
-            );
-        }
-
     }
 
-    public function testGrabberGrabWithKey()
+    /**
+     * Test resolving with invalid numerical index values in path.
+     */
+    public function testResolveWithInvalidIndex()
     {
-        $testObject = sourceDataHelper::getDataNamedL1();
-        $g = new Grabbag($testObject);
+        // One level structure test.
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $pathVariants = ['getAllObjects/100000/getName', 'allObjects/100000/name', 'objects/100000/myName'];
+        foreach ($pathVariants as $pathVariant) {
+            $resolver = new Resolver($testObject, 'my-default-value');
+            $result = $resolver->resolve(new Path($pathVariant));
+            var_export($result->getValue());
+            $this->assertEquals('my-default-value' , $result->getValue());
+        }
+    }
 
+    /**
+     * Test resolving with numerical index (2 levels) values in path.
+     */
+    public function testResolveWithIndexOn2Levels()
+    {
+        // Two level structure test.
+        $testObject = SourceDataHelper::getDataIndexedL2();
+        $pathVariants = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
+        foreach ($pathVariants as $pathVariant) {
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($pathVariant));
+            $this->assertEquals('test 3.2', $result->getValue());
+        }
+    }
+
+    /**
+     * Test resolving with key index values in path.
+     */
+    public function testResolveWithKey()
+    {
+        $testObject = SourceDataHelper::getDataNamedL1();
         $pathVariants = ['getAllObjects/my_value_2/getName', 'allObjects/my_value_2/name', 'objects/my_value_2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $result1 = $g->grab($pathVariant);
-            $this->assertEquals(
-                'test my_value_2', $result1->getValue()
-            );
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($pathVariant));
+            $this->assertEquals('test my_value_2', $result->getValue());
         }
     }
 
-    public function testGrabberGrabWithGetMethod()
+    /**
+     * Test resolving with method + string parameter in path.
+     */
+    public function testResolveWithGetMethodWithStringParameter()
     {
-        $testObject = sourceDataHelper::getDataNamedL1();
-        $g = new Grabbag($testObject);
+        $testObject = SourceDataHelper::getDataNamedL1();
+        $resolver = new Resolver($testObject);
 
         // With string parameter
         $pathVariants = [
             ['path' => 'getOneObject("my_value_2")/myName', 'expected_value' => 'test my_value_2'],
-            ['path' => 'getOneObject("unknown")/myName', 'expected_value' => NULL]
+            ['path' => 'getOneObject("non-exist-value")/myName', 'expected_value' => NULL]
         ];
         foreach ($pathVariants as $pathVariant) {
-            $result1 = $g->grab($pathVariant['path']);
-            $this->assertEquals(
-                $pathVariant['expected_value'], $result1->getValue()
-            );
+            $result = $resolver->resolve(new Path($pathVariant['path']));
+            $this->assertEquals($pathVariant['expected_value'], $result->getValue());
         }
-
-        // With Numeric parameter 
-        $testObject2 = sourceDataHelper::getDataIndexedL1();
-        $g2 = new Grabbag($testObject2);
-        $pathVariants2 = [
-            ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
-            ['path' => 'getOneObject(10)/getName', 'expected_value' => NULL]
-        ];
-        foreach ($pathVariants2 as $pathVariant2) {
-            $result2 = $g2->grab($pathVariant2['path']);
-            $this->assertEquals(
-                $pathVariant2['expected_value'], $result2->getValue()
-            );
-        }
-    }
-
-    public function testGrabberGrabWithUnknownKeyword()
-    {
-        $testObject = sourceDataHelper::getDataIndexedL1();
-        $g = new Grabbag($testObject);
-        $this->expectException(UnknownPathKeywordException::class);
-        $g->grab('getAllObjects/#unknownkeyword');
-    }
-
-    public function testGrabberGrabWithMalformedPath()
-    {
-        $testObject = sourceDataHelper::getDataIndexedL1();
-        $g = new Grabbag($testObject);
-        $this->expectException(PathParsingException::class);
-        $g->grab('getAllObjects/ something');
-    }
-
-    public function testGrabberGrabWithEach()
-    {
-        $testObject = sourceDataHelper::getDataIndexedL1();
-        $g = new Grabbag($testObject);
-
-        // Access using method
-        $result1 = $g->grab('getAllObjects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result1->getValue()
-        );
-
-        // Access using implied method
-        $result2 = $g->grab('allObjects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result2->getValue()
-        );
-
-        // Access using object property
-        $result3 = $g->grab('objects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $result3->getValue()
-        );
-    }
-
-    public function testPathArrayWithAny2Level()
-    {
-        $testObject = sourceDataHelper::getDataNamedL2();
-
-        $g = new Grabbag($testObject);
-        $result1 = $g->grab([
-            'getAllObjects/#any' => [
-                'id:myId',
-                'name:getName',
-                'content:getAllObjects/#any' => [
-                    'id:getId',
-                    'name:getName'
-                ]
-            ]
-        ]);
-
-        $this->assertEquals(
-            TestDataHelper::getTestData1(), $result1->getValue()
-        );
-
     }
 
     /**
-     * Test
+     * Test resolving with method + int parameter in path.
      */
-    public function testPathArrayWithAny3Level()
-    {
-        $testObject = sourceDataHelper::getDataNamedL3();
-
-        $g = new Grabbag($testObject);
-        $result1 = $g->grab([
-            'getAllObjects/#any' => [
-                'id:myId',
-                'name:getName',
-                'content-L2:getAllObjects/#any' => [
-                    'id:getId',
-                    'name:getName',
-                    'content-L3:getAllObjects/#any' => [
-                        'id:getId',
-                        'name:getName'
-                    ]
-                ]
-            ]
-        ]);
-        var_export ($result1->getValue());
-        /*
-        $this->assertEquals(
-            TestDataHelper::getTestData1(), $result1->getValue()
-        );
-        */
-    }
-
-    public function testSymbol()
+    public function testResolveWithGetMethodWithIntParameter()
     {
 
-        $testObject = sourceDataHelper::getDataNamedL2();
-        $g = new Grabbag($testObject);
+        // With Numeric parameter
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
 
-        $result1 = $g->grab([
-            'getAllObjects/#any/objects/#any/myId' => [
-                'myId:.'
-            ]
-        ]);
-
-        $this->assertEquals(
-            TestDataHelper::getTestData2(), $result1->getValue()
-        );
-
-        $result2 = $g->grab([
-            'getAllObjects/#any' => [
-                'id:myId',
-                'name:getName',
-                'content:getAllObjects/#any' => [
-                    'id:getId',
-                    'name:getName',
-                    'parent-id:../../myId'
-                ]
-            ]
-        ]);
-
-        $this->assertEquals(
-            TestDataHelper::getTestData1(TRUE), $result2->getValue()
-        );
+        $pathVariants = [
+            ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
+            ['path' => 'getOneObject(10)/getName', 'expected_value' => NULL]
+        ];
+        foreach ($pathVariants as $pathVariant) {
+            $result = $resolver->resolve(new Path($pathVariant['path']));
+            $this->assertEquals($pathVariant['expected_value'], $result->getValue());
+        }
     }
 
+    /**
+     * Test resolving path with unknown keyword.
+     */
+    public function testResolveWithUnknownKeyword()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
+        $this->expectException(UnknownPathKeywordException::class);
+        $resolver->resolve(new Path('getAllObjects/#unknownkeyword'));
+    }
+
+    /**
+     * Test resolving path with #any keyword
+     */
+    public function testResolverWithAny()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL1();
+
+        $pathList = [
+            'getAllObjects/#any/getName',
+            'allObjects/#any/getName',
+            'objects/#any/getName',
+        ];
+
+        foreach($pathList as $path){
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($path));
+            $this->assertEquals(
+                ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'],
+                $result->getValue()
+            );
+        }
+    }
 }

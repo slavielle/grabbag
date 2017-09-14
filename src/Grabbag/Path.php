@@ -12,18 +12,20 @@ use Grabbag\Cnst;
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package Grabbag
  */
-class Path {
+class Path
+{
 
     private $pathArray;
     private $index;
     private $key;
-    
-   /**
-    * Constructor.
-    * @param string $path The path itself.
-    * @throws PathParsingException 
-    */
-    public function __construct($path) {
+
+    /**
+     * Constructor.
+     * @param string $path The path itself.
+     * @throws PathParsingException
+     */
+    public function __construct($path)
+    {
 
         $path = $this->parseKey($path);
 
@@ -47,19 +49,20 @@ class Path {
         }
         $this->rewind();
     }
-    
-   /**
-    * Parse the key part of a path.
-    * 
-    * In some case, path can have key part. The key part is located on start
-    * of the path : 
-    * 
-    * "theKey:the/rest/of/my/path"
-    * 
-    * @param string $path Path string.
-    * @return string Unconsumed path part.
-    */
-    public function parseKey($path) {
+
+    /**
+     * Parse the key part of a path.
+     *
+     * In some case, path can have key part. The key part is located on start
+     * of the path :
+     *
+     * "theKey:the/rest/of/my/path"
+     *
+     * @param string $path Path string.
+     * @return string Unconsumed path part.
+     */
+    public function parseKey($path)
+    {
         $matches = [];
         $regex = '/^' .
             '(' .
@@ -74,11 +77,12 @@ class Path {
         }
         return $path;
     }
-    
-  /**
-   * Rewind the path item pointer position.
-   */
-    public function rewind() {
+
+    /**
+     * Rewind the path item pointer position.
+     */
+    public function rewind()
+    {
         if (count($this->pathArray) > 0) {
             $this->index = 0;
         } else {
@@ -86,11 +90,12 @@ class Path {
         }
     }
 
-  /**
-   * Move the path item pointer to next position.
-   * @return PathItem | NULL The next path item if any or NULL.
-   */
-    public function next() {
+    /**
+     * Move the path item pointer to next position.
+     * @return PathItem | NULL The next path item if any or NULL.
+     */
+    public function next()
+    {
         if ($this->index !== NULL) {
             $val = $this->pathArray[$this->index];
             $this->index = $this->index + 1 < count($this->pathArray) ? $this->index + 1 : NULL;
@@ -98,12 +103,13 @@ class Path {
         }
         return NULL;
     }
-   
-   /**
-    * Get the path key.
-    * @return string
-    */
-    public function getKey() {
+
+    /**
+     * Get the path key.
+     * @return string
+     */
+    public function getKey()
+    {
         return $this->key;
     }
 

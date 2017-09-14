@@ -7,9 +7,7 @@ use Grabbag\ResolverItem;
 use Grabbag\Cnst;
 
 /**
- * Result implements resolver items.
- *
- * Resolver items contains values handled by resolver
+ * Resolver items contains values handled by resolver.
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  */
@@ -19,12 +17,12 @@ class ResolverItems
     private $items;
 
     /**
-     * Result constructor.
+     * ResolverItems constructor.
      * @param ResolverItem[] $items Array of ResolverItem composing the result from resolver.
      */
-    public function __construct($items)
+    public function __construct($items, $prepare = TRUE)
     {
-        $this->items = $items;
+        $this->items = $prepare ? ResolverItem::prepareResolverItem($items) : $items;
     }
 
     /**
@@ -45,7 +43,7 @@ class ResolverItems
     }
 
     /**
-     * Same as getValue, except it returns ResolverItem instance or instance array.
+     * Same as getValue, except it returns ResolverItem instance or ResolverItem instance array.
      * @param bool $forceArray Force the method result to be an array even if there is only one result item.
      * @return ResolverItem | ResolverItem[]
      */
@@ -79,7 +77,7 @@ class ResolverItems
      * Resolve every result items regarding the path or path array provided.
      * @param string | string[] $path Path or path array.
      */
-    public function grab($path, $defaultValue = NULL)
+    public function resolve($path, $defaultValue = NULL)
     {
 
         // Prepare
@@ -89,7 +87,7 @@ class ResolverItems
 
         // Grab each items
         foreach ($this->items as &$item) {
-            $values = $this->grabEach($item, $preparedPaths, $modifiers, $defaultValue);
+            $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue);
             $item = $values;
         }
     }
@@ -100,7 +98,7 @@ class ResolverItems
      * @param mixed[] $preparedPaths Path or path array.
      * @return ResolverItem[] Resolved items.
      */
-    private function grabEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
+    private function resolveEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
     {
         // Init Resolver.
         $resolver = new Resolver($item,
@@ -110,7 +108,6 @@ class ResolverItems
 
         $resultValues = [];
         foreach ($preparedPaths as $preparedPath) {
-            $preparedPath['pathObject']->rewind();
             $key = $preparedPath['pathObject']->getKey();
 
             // Resolve the path
@@ -118,7 +115,7 @@ class ResolverItems
 
             // Recurse if need.
             if ($preparedPath['pathArray'] !== NULL) {
-                $resolvedItems->grab($preparedPath['pathArray']);
+                $resolvedItems->resolve($preparedPath['pathArray']);
             }
 
             // Keep only unique if requiered.
@@ -126,10 +123,15 @@ class ResolverItems
             if ((isset($modifiers['unique']) && $modifiers['unique'])) {
                 $value = self::keepUniqueValuesOnly($value);
             }
-            
+
             // Transform value
             if (isset($modifiers['transform'])) {
-                $value->update($modifiers['transform']($value->get(), $key));
+                $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+            }
+
+            // Transform value
+            if (isset($modifiers['debug'])) {
+                self::debugVariable($modifiers['debug'], $value->get(), $key);
             }
 
             // Append value
@@ -201,7 +203,7 @@ class ResolverItems
     }
 
     /**
-     * Return an array containing only unique value in array.
+     * Implements ?unique modifier behavior : Return an array containing only unique value in array.
      * @param ResolverItem[] $values Array to be filtered.
      * @return ResolverItem[] Result array.
      */
@@ -225,5 +227,24 @@ class ResolverItems
             return $newValues;
         }
         return $values;
+    }
+
+    /**
+     * Implement ?debug modifier behavior : Build debug info array and pass it as agument to a callable.
+     * @param $callable
+     * @param $value
+     * @param $key
+     */
+    static private function debugVariable($callable, $value, $key)
+    {
+        $debug = [];
+        if (is_object($value)) {
+            $reflection = new \ReflectionClass($value);
+            $debug['class-name'] = $reflection->getName();
+            $debug['method'] = get_class_methods($value);
+            $debug['object-var'] = array_keys(get_object_vars($value));
+        }
+
+        call_user_func_array($callable, [$key, $debug]);
     }
 }

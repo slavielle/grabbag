@@ -2,5 +2,6 @@
 
 namespace Grabbag\exceptions;
 
-class PropertyNotFoundException extends \Exception{
+class PropertyNotFoundException extends \Exception
+{
 }

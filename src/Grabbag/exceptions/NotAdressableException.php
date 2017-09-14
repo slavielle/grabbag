@@ -2,5 +2,6 @@
 
 namespace Grabbag\exceptions;
 
-class NotAdressableException extends \Exception{
+class NotAdressableException extends \Exception
+{
 }

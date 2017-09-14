@@ -1,156 +1,205 @@
 # Path
 
+Grabbag Path looks like (on purpose) Linux path syntax to be easy use.
 Path allows to match PHP chain in order to get values.
-It looks like (on purpose) Linux path syntax to be easy use.
+
 
 ## Path items
 
-Path items are separated by slashes
+Path items are separated by slashes.
+Let's see one simple example in raw PHP and its equivalent Grabbag path.
+
+PHP
+```php
+myObject->myMethod()['myArrayKey']
+```
+Grabbag path : 
 ```
 /myObject/myMethod/myArrayKey
 ```
-## Path aliasing
+
+## Path syntax
 
 In a path, array keys or object properties can be accessed the same way : 
 ```
 /myObject/myProperty
 /myArray/myKey
 ```
-'get' can be omitted for getter methods so can be the parenthesis if no parameter is required : 
+'get' can be omitted for getter methods so can be the parenthesis if no parameter is required.
+Following paths are equivalent. 
 
-Equivalent pathes:
 ```
 /myObject/getSometing()
 /myObject/something()
 /myObject/something
 ```
 ```
-/myObject/getSometing("param")
-/myObject/something("param")
+/myObject/#each>getSometing("param")
+/myObject/param>something("param")
 ```
+
+Method items can only have one parameter provided : Method items aims to access getter method. one parameter is all we need in that case.  
+
 ## Keywords
 
-Keywords are prefixed by "#" and implement special behaviors.
+Keywords are path items prefixed by "#" and implement special behaviors. there is only one keyword available for now Available keyword.
 
-Available keyword (there is only one for now):
-
-* __\#any__: Get all values form an array or an object usable with foreach (such as class implemented from Iterator Interface)
+### #any
+Get any values form an array or an object usable with foreach (such as array or instance of class implemented from Iterator Interface)
 
 __Example :__
 ```
 my/path/with/#any
 ```
 Result example : 
-```
+```php
 ["value 1", "value 2", "value 3"]
 ```
-# Path arrays
+## Path arrays
 
 A path array is a PHP array gathering paths in order to produce structured arrays.
 
 __Example :__
-```
+```php
 [
-    'my/first/path',
-    'my/second/path'
+    "my/first/path",
+    "my/second/path"
 ]
 ```
 Result example : 
-```
+```php
 ['my value #1', 'my value #2',]
 ```
+In path array, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result scope.
 
-## Nested path arrays
+## Path ids
 
-Path array can be nested in order to produce structured result. 
-Every array level contains pathes that will be resolved to produce a results in the __result scope__ defined by the array level.
-
-```
-[
-    'my/first/path',
-    'my/second/path' => [
-        'continue/here',
-        'continue/there'
-    ]
-    'my/first/path',
-]
-```
-Result example :
-```
-[
-    'Result 1',
-    [
-        'Result 2.1',
-        'Result 2.2'
-    ],
-    'Result 3'
-]
-```
-## Mecanisms
-
-### Path ids
-
-Id are used to identify path in a path array.
-It is located on start of the path and ends with a ':'
+Id are used to identify a path in a path array and are located on start of the path and ends with a ':'
 
 It can have 2 usage : 
 
 * Usage 1 : It can be used to specify key in the result scope
-* Usage 2 : It can be used in a __modifier__ to refer to a path element
+* Usage 2 : It can be used in a __modifier__ to refer to a path value. 
+If you want to avoid the key to be used in result scope you must prefix it with "~".
 
 Usage 1 example : 
 
-```
+```php
 [
-    'lv-1:my/first/path',
-    'lv-2:my/second/path' => [
-        'lv-2-1:continue/here',
-        'lv-2-2:continue/there'
-    ]
-    'lv-3:my/first/path',
+    "lv-1:my/first/path",
+    "~lv-2:my/second/path",
+    "lv-3:my/first/path"
 ]
 ```
 Result example :
-```
+```php
 [
-    'lv-1' => 'Result 1',
-    'lv-2' => [
-        'lv-2-1' => 'Result 2.1',
-        'lv-2-2' => 'Result 2.2'
-    ],
-    'lv-3' => 'Result 3'
+    "lv-1" => "Result 1",
+    "Result 2",
+    "lv-3" => "Result 3"
 ]
 ```
 
-### Symbols
+## Embedded path arrays and result scope
+
+Path arrays can be embedded in order to produce structured results. 
+Each path array contains paths that will be resolved to produce results in the 
+related result scope.
+
+Usage 1 example : 
+
+```php
+[
+    "my-key-A:my/first/path",
+    "my-key-B:my/second/path" => [
+        "my-key-AA:continue/here",
+        "my-key-AB:continue/there"
+    ]
+    "my-key-C:my/first/path",
+]
+```
+Result scope is an important Grabbag concepts.
+
+Let consider the following path : 
+```
+my/path/#any/continues/#any
+```
+with the two #any correponding to iterable objects, and lets imagine last #any gets a string value.
+
+The result would be something like this : 
+```php
+[
+    "My string 1-1",
+    "My string 1-2",
+    "My string 2-1",
+    "My string 2-2"
+]
+```
+If we now split this path in 2 embedded path array like this :
+ 
+```php
+[
+    "my/path/#any" => 
+    [
+        "continues/#any"
+    ]
+]
+```
+
+We request same objects pretty the same way, but we added a embedded path array having its own result scope. The whole result will now be someting like this :
+
+
+```php
+[
+    [
+        "My string 1-1",
+        "My string 1-2"
+    ],
+    [
+        "My string 2-1",
+        "My string 2-2"
+    ]
+]
+```
+
+
+## Symbols
 
 * . : The element corresponding to the current path item
 * .. : The element corresponding to the previout path item
 
 
-### Modifiers
+## Modifiers
 
 A path array can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter the path array behavior.
 
-#### unique modifier
+#### the "unique" modifier
 
 Preserve only unique value in the result scope.
 
-#### transform modifier
+#### the "transform" modifier
 
-Transform an element.
+Allows to transform a result value using a callback function.
 
-#### consider modifier
+#### the "consider" modifier
 
 Allows to test if an element must be kept or not in the result scope.
 
-#### keep-array
+#### the "keep-array" modifier
 
-When the result scope contains only one (non keyed) value the result is the value an not an array.
+When the result scope contains only one (non keyed) value the result is the value itself an not an array.
 In some case you may want to preserve the array anyway. ``keep-array`` allows it.
 
-#### default-value
+#### the "default-value" modifier
 
 Allows to define default value when a path fail to resolve.
+
+#### the "exception-enabled" modifier
+
+Allows all exception to be thrown. Useful for debug purpose.
+
+#### the "debug" modifier
+
+provide debug information on element
 
