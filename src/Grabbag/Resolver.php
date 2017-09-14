@@ -199,7 +199,7 @@ class Resolver
         }
 
         try {
-            $value = call_user_method_array($prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey(), $item->get(), $params);
+            $value = call_user_func_array([$item->get(), $prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey()], $params);
         } catch (\Exception $e) {
             throw new NotAdressableException('Parameters passed to method throw an exception');
         }
