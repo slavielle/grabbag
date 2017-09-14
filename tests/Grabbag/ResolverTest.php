@@ -26,6 +26,17 @@ class ResolverTest extends TestCase
 {
 
     /**
+     * Test resolving path with malformed path.
+     */
+    public function testGrabberGrabWithMalformedPath()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
+        $this->expectException(PathParsingException::class);
+        $resolver->resolve(new Path('getAllObjects/ something'));
+    }
+
+    /**
      *  Test result when requesting with a valid but non-matching path
      */
     public function testResolveWithValidButNonMatchingPath()
@@ -51,9 +62,7 @@ class ResolverTest extends TestCase
         foreach ($defaultValueSet as $defaultValue) {
             $resolver = new Resolver($testObject, $defaultValue);
             $result = $resolver->resolve(new Path('badpath'));
-            $this->assertEquals(
-                $defaultValue, $result->getValue()
-            );
+            $this->assertEquals($defaultValue, $result->getValue());
         }
     }
 
@@ -67,7 +76,6 @@ class ResolverTest extends TestCase
         $this->expectException(PropertyNotFoundException::class);
 
         $resolver = new Resolver($testObject, NULL, TRUE);
-
         $resolver->resolve(new Path('badpath'));
     }
 
@@ -83,9 +91,7 @@ class ResolverTest extends TestCase
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
             var_export($result->getValue());
-            $this->assertEquals(
-                'test 3' , $result->getValue()
-            );
+            $this->assertEquals('test 3' , $result->getValue());
         }
     }
 
@@ -101,9 +107,7 @@ class ResolverTest extends TestCase
             $resolver = new Resolver($testObject, 'my-default-value');
             $result = $resolver->resolve(new Path($pathVariant));
             var_export($result->getValue());
-            $this->assertEquals(
-                'my-default-value' , $result->getValue()
-            );
+            $this->assertEquals('my-default-value' , $result->getValue());
         }
     }
 
@@ -118,9 +122,7 @@ class ResolverTest extends TestCase
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
-            $this->assertEquals(
-                'test 3.2', $result->getValue()
-            );
+            $this->assertEquals('test 3.2', $result->getValue());
         }
     }
 
@@ -134,9 +136,7 @@ class ResolverTest extends TestCase
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
-            $this->assertEquals(
-                'test my_value_2', $result->getValue()
-            );
+            $this->assertEquals('test my_value_2', $result->getValue());
         }
     }
 
@@ -151,13 +151,65 @@ class ResolverTest extends TestCase
         // With string parameter
         $pathVariants = [
             ['path' => 'getOneObject("my_value_2")/myName', 'expected_value' => 'test my_value_2'],
+            ['path' => 'getOneObject("non-exist-value")/myName', 'expected_value' => NULL]
         ];
         foreach ($pathVariants as $pathVariant) {
             $result = $resolver->resolve(new Path($pathVariant['path']));
-            $this->assertEquals(
-                $pathVariant['expected_value'], $result->getValue()
-            );
+            $this->assertEquals($pathVariant['expected_value'], $result->getValue());
         }
     }
 
+    /**
+     * Test resolving with method + int parameter in path.
+     */
+    public function testResolveWithGetMethodWithIntParameter()
+    {
+
+        // With Numeric parameter
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
+
+        $pathVariants = [
+            ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
+            ['path' => 'getOneObject(10)/getName', 'expected_value' => NULL]
+        ];
+        foreach ($pathVariants as $pathVariant) {
+            $result = $resolver->resolve(new Path($pathVariant['path']));
+            $this->assertEquals($pathVariant['expected_value'], $result->getValue());
+        }
+    }
+
+    /**
+     * Test resolving path with unknown keyword.
+     */
+    public function testResolveWithUnknownKeyword()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL1();
+        $resolver = new Resolver($testObject);
+        $this->expectException(UnknownPathKeywordException::class);
+        $resolver->resolve(new Path('getAllObjects/#unknownkeyword'));
+    }
+
+    /**
+     * Test resolving path with #any keyword
+     */
+    public function testResolverWithAny()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL1();
+
+        $pathList = [
+            'getAllObjects/#any/getName',
+            'allObjects/#any/getName',
+            'objects/#any/getName',
+        ];
+
+        foreach($pathList as $path){
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($path));
+            $this->assertEquals(
+                ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'],
+                $result->getValue()
+            );
+        }
+    }
 }

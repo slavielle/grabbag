@@ -51,8 +51,8 @@ final class ResolverItemsTest extends TestCase
         ];
         foreach ($defaultValueSet as $defaultValue) {
             $resolverItems->resolve([
-                'badpath',
-                '?default-value'=>$defaultValue]
+                    'badpath',
+                    '?default-value' => $defaultValue]
             );
             $this->assertEquals(
                 $defaultValue, $resolverItems->getValue()
@@ -64,7 +64,8 @@ final class ResolverItemsTest extends TestCase
      * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
      * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
      */
-    public function testResolveWithBadPathReturnException(){
+    public function testResolveWithBadPathReturnException()
+    {
         $testObject = SourceDataHelper::getDataIndexedL2();
 
         // Must raise an exception when exception activated and path not found.
@@ -72,7 +73,7 @@ final class ResolverItemsTest extends TestCase
 
         $resolverItems = new ResolverItems($testObject);
 
-        $resolverItems->resolve(['badpath','?exception-enabled']);
+        $resolverItems->resolve(['badpath', '?exception-enabled']);
     }
 
     /**
@@ -90,9 +91,10 @@ final class ResolverItemsTest extends TestCase
                 new ResolverItem($testObject)
             ], FALSE);
             $resolverItems->resolve($pathVariant);
-            $this->assertEquals(
-                ['test 3','test 3'] , $resolverItems->getValue()
-            );
+            $this->assertEquals([
+                'test 3',
+                'test 3'
+            ], $resolverItems->getValue());
         }
 
     }
@@ -113,9 +115,10 @@ final class ResolverItemsTest extends TestCase
                 new ResolverItem($testObject),
             ], FALSE);
             $resolverItems->resolve($pathVariant);
-            $this->assertEquals(
-                ['test 3.2', 'test 3.2'], $resolverItems->getValue()
-            );
+            $this->assertEquals([
+                'test 3.2',
+                'test 3.2'
+            ], $resolverItems->getValue());
         }
     }
 
@@ -134,9 +137,10 @@ final class ResolverItemsTest extends TestCase
                 new ResolverItem($testObject)
             ], FALSE);
             $resolverItems->resolve($pathVariant);
-            $this->assertEquals(
-                ['test my_value_2','test my_value_2'], $resolverItems->getValue()
-            );
+            $this->assertEquals([
+                'test my_value_2',
+                'test my_value_2'
+            ], $resolverItems->getValue());
         }
     }
 
@@ -158,18 +162,26 @@ final class ResolverItemsTest extends TestCase
         ];
         foreach ($pathVariants as $pathVariant) {
             $resolverItems->resolve($pathVariant['path']);
-            $this->assertEquals(
-                [$pathVariant['expected_value'], $pathVariant['expected_value']], $resolverItems->getValue()
-            );
+            $this->assertEquals([
+                $pathVariant['expected_value'],
+                $pathVariant['expected_value']
+            ], $resolverItems->getValue());
         }
     }
 
-    public function testGrabberGrabWithGetMethodWithIntParameter()
+    /**
+     * Test resolving with method + int parameter in path.
+     * Similar test to ResolverTest::testResolveWithGetMethodWithIntParameter but on a set of ResolverItem.
+     */
+    public function testResolveWithGetMethodWithIntParameter()
     {
 
         // With Numeric parameter
         $testObject = SourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ResolverItems([
+            new ResolverItem($testObject),
+            new ResolverItem($testObject)
+        ], FALSE);
 
         $pathVariants = [
             ['path' => 'getOneObject(1)/getName', 'expected_value' => 'test 1'],
@@ -177,59 +189,46 @@ final class ResolverItemsTest extends TestCase
         ];
         foreach ($pathVariants as $pathVariant) {
             $resolverItems->resolve($pathVariant['path']);
-            $this->assertEquals(
-                $pathVariant['expected_value'], $resolverItems->getValue()
-            );
+            $this->assertEquals([
+                $pathVariant['expected_value'],
+                $pathVariant['expected_value']
+            ], $resolverItems->getValue());
         }
     }
 
-    public function testGrabberGrabWithUnknownKeyword()
-    {
-        $testObject = SourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems($testObject);
-        $this->expectException(UnknownPathKeywordException::class);
-        $resolverItems->resolve('getAllObjects/#unknownkeyword');
-    }
-
-    public function testGrabberGrabWithMalformedPath()
-    {
-        $testObject = SourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems($testObject);
-        $this->expectException(PathParsingException::class);
-        $resolverItems->resolve('getAllObjects/ something');
-    }
-
-    public function testGrabberGrabWithEach()
+    /**
+     * Test resolving path with #any keyword
+     * Similar test to ResolverTest::testResolverWithAny but on a set of ResolverItem.
+     */
+    public function testResolverWithAny()
     {
         $testObject = SourceDataHelper::getDataIndexedL1();
 
+        $pathList = [
+            'getAllObjects/#any/getName',
+            'allObjects/#any/getName',
+            'objects/#any/getName',
+        ];
 
-        // Access using method
-        $resolverItems = new ResolverItems($testObject);
-        $resolverItems->resolve('getAllObjects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
-        );
-
-        // Access using implied method
-        $resolverItems = new ResolverItems($testObject);
-        $resolverItems->resolve('allObjects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
-        );
-
-        // Access using object property
-        $resolverItems = new ResolverItems($testObject);
-        $resolverItems->resolve('objects/#any/getName');
-        $this->assertEquals(
-            ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'], $resolverItems->getValue()
-        );
+        foreach ($pathList as $path) {
+            $resolverItems = new ResolverItems([
+                new ResolverItem($testObject),
+                new ResolverItem($testObject),
+            ], FALSE);
+            $resolverItems->resolve($path);
+            $this->assertEquals([
+                ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'],
+                ['test 0', 'test 1', 'test 2', 'test 3', 'test 4']
+            ], $resolverItems->getValue());
+        }
     }
 
-    public function testPathArrayWithAny2Level()
+    /**
+     * Test resolving path array using #any
+     */
+    public function testResolverPathArrayWithAny2level()
     {
-        $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
 
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -247,10 +246,35 @@ final class ResolverItemsTest extends TestCase
         );
     }
 
+    /*
+    public function testResolverPathArrayWithAny3Level()
+    {
+        $testObject = SourceDataHelper::getDataNamedL3();
+        $resolverItems = new ResolverItems($testObject);
+
+        $resolverItems->resolve([
+            'getAllObjects/#any' => [
+                'id:myId',
+                'name:getName',
+                'content-L2:getAllObjects/#any' => [
+                    'id:getId',
+                    'name:getName',
+                    'content-L3:getAllObjects/#any' => [
+                        'id:getId',
+                        'name:getName'
+                    ]
+                ]
+            ]
+        ]);
+
+        //var_export ($resolverItems->getValue());
+    }
+    */
+
     /**
-     * Test transform modifier.
+     * Test resolving path array using ?transform modifier.
      */
-    public function testResolveWithBadPath()
+    public function testResolverPathArrayWithTransformModifier()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
@@ -261,7 +285,7 @@ final class ResolverItemsTest extends TestCase
         $resolverItems->resolve([
             'getAllObjects/#any' => [
                 '~myId:myId',
-                '?transform' => function($value, $id){
+                '?transform' => function ($value, $id) {
                     return 'transformed ' . $id . '-' . $value;
                 },
             ]
@@ -272,9 +296,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test unique modifier.
+     *  Test resolving path array using ?unique modifier.
      */
-    public function testResolveUniqueModifier()
+    public function testResolverPathArrayUniqueModifier()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
@@ -284,14 +308,17 @@ final class ResolverItemsTest extends TestCase
 
         $resolverItems->resolve([
             'getAllObjects/#any/getAllObjects/#any/../../myId',
-            '?unique'=>TRUE,
+            '?unique' => TRUE,
         ]);
 
         $this->assertEquals($expected, $resolverItems->getValue());
 
     }
 
-    public function testDebugModifier()
+    /**
+     *  Test resolving path array using ?debug modifier.
+     */
+    public function testResolverPathArrayWithDebugModifier()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
@@ -299,9 +326,9 @@ final class ResolverItemsTest extends TestCase
         $resolverItems->resolve([
             'getAllObjects/#any' => [
                 '~debug:.',
-                '?debug' => function($key,$debug) use (&$myDebugInfo) {
-                    if($key === '~debug'){
-                        $myDebugInfo=$debug;
+                '?debug' => function ($key, $debug) use (&$myDebugInfo) {
+                    if ($key === '~debug') {
+                        $myDebugInfo = $debug;
                     }
                 }
             ]
@@ -323,40 +350,18 @@ final class ResolverItemsTest extends TestCase
                 'myName',
                 'myId',
             ]
-        ],$myDebugInfo);
+        ], $myDebugInfo);
 
     }
 
-    public function testPathArrayWithAny3Level()
-    {
-        $testObject = SourceDataHelper::getDataNamedL3();
-        $resolverItems = new ResolverItems($testObject);
-
-        $resolverItems->resolve([
-            'getAllObjects/#any' => [
-                'id:myId',
-                'name:getName',
-                'content-L2:getAllObjects/#any' => [
-                    'id:getId',
-                    'name:getName',
-                    'content-L3:getAllObjects/#any' => [
-                        'id:getId',
-                        'name:getName'
-                    ]
-                ]
-            ]
-        ]);
-
-        //var_export ($resolverItems->getValue());
-
-    }
-
-    public function testSymbol()
+    /**
+     *  Test resolving path array using . symbols.
+     */
+    public function testResolverPathArrayWithDotSymbol()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
-
 
         $resolverItems->resolve([
             'getAllObjects/#any/objects/#any/myId' => [
@@ -366,7 +371,14 @@ final class ResolverItemsTest extends TestCase
         $this->assertEquals(
             TestDataHelper::getTestData2(), $resolverItems->getValue()
         );
+    }
 
+    /**
+     *  Test resolving path array using .. symbols.
+     */
+    public function testResolverPathArrayWithBoubleDotSymbol()
+    {
+        $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
         $resolverItems->resolve([
             'getAllObjects/#any' => [
