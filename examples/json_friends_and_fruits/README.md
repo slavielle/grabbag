@@ -27,4 +27,16 @@ We would like to generate another json containing the full list of those friends
 }
 ```
 ### Solution 
+
+
+This can be done using a simple query :
+```php
+[
+    'my-friends:#any/name',
+    'fruits-they-like:#any/food/liked/fruits/#any' => [
+        '.',
+        '?unique'
+    ]
+]
+```
 [See example code](index.php)
