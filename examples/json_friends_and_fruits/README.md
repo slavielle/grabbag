@@ -1,7 +1,8 @@
 # JSON, friends and fruits !
 
 This example shows **how to use Grabbag to transform JSON** to another JSON structured a different way.
-Is demonstrate how to use the **?unique** modifier too.
+
+It demonstrates how to use the **?unique** modifier too.
 
 ### Example Case : 
 
