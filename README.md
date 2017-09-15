@@ -1,4 +1,5 @@
 # Grabbag - Grab objects with ease for PHP
+!https://travis-ci.org/slavielle/grabbag.svg?branch=master!:https://travis-ci.org/slavielle/grabbag
 
 ## Installation
 ```
