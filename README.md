@@ -31,7 +31,7 @@ echo $result;
 ```
 
 ### Comparition : 
-* Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would have to test some of the values before accessing them. That's a really boring point developer often have to deal with : it's repetitive and makes code uselessly less readable. 
+* Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would have to test some of the values before accessing them. That's a really boring point developer often have to deal with : it's repetitive, unappealing, can induce bugs and makes code less readable. 
 * Grabbag expression is implicitly secure. If it's not possible to walk along the object chain, result will be NULL by default, or set to a default-value to be specified or you can also let the exception pops.
 
 ## Multiple values result using #any
