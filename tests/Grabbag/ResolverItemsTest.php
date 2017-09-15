@@ -260,6 +260,39 @@ final class ResolverItemsTest extends TestCase
         );
     }
 
+    /**
+     * Test resolving path array using #any
+     */
+    public function testResolverPathArrayWithAny2levelB()
+    {
+        $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
+
+        $expectedValue = [
+            'my_value_1_1',
+            'my_value_1_2',
+            'my_value_1_3',
+            'my_value_1_4',
+            'my_value_1_5',
+            'my_value_2_1',
+            'my_value_2_2',
+            'my_value_2_3',
+            'my_value_2_4',
+            'my_value_2_5',
+            'my_value_3_1',
+            'my_value_3_2',
+            'my_value_3_3',
+            'my_value_3_4',
+            'my_value_3_5',
+        ];
+
+        $resolverItems->resolve('getAllObjects/#any/getAllObjects/#any/#key');
+
+
+        $this->assertEquals(
+            $expectedValue, $resolverItems->getValue()
+        );
+
+    }
     /*
     public function testResolverPathArrayWithAny3Level()
     {

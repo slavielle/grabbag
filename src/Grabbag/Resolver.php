@@ -44,7 +44,8 @@ class Resolver
         $path->rewind();
         if ($this->exceptionEnabled) {
             $items = $this->resolveRecurse($path, $this->items);
-        } else {
+        }
+        else {
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
@@ -86,13 +87,17 @@ class Resolver
         foreach ($items as $item) {
             if ($pathItem->isKeyword()) {
                 $resultObjects = array_merge($resultObjects, $this->resolveKeyword($pathItem, $item));
-            } else if ($pathItem->isSymbol()) {
+            }
+            else if ($pathItem->isSymbol()) {
                 $resultObjects[] = $this->resolveSymbol($pathItem, $item);
-            } else if (is_object($item->get())) {
+            }
+            else if (is_object($item->get())) {
                 $resultObjects[] = $this->resolveObject($pathItem, $item);
-            } else if (is_array($item->get())) {
+            }
+            else if (is_array($item->get())) {
                 $resultObjects[] = $this->resolveArray($pathItem, $item);
-            } else {
+            }
+            else {
                 throw new NotAdressableException('Can\'t resolve');
             }
         }
@@ -135,9 +140,12 @@ class Resolver
         $resultObjects = [];
         switch ($pathItem->getKey()) {
             case 'any':
-                foreach ($item->get() as $entry) {
-                    $resultObjects[] = self::makeResolverItem($item, $entry);
+                foreach ($item->get() as $key=>$entry) {
+                    $resultObjects[] = self::makeResolverItem($item, $entry, $key);
                 }
+                break;
+            case 'key':
+                $resultObjects[] = self::makeResolverItem($item, $item->getKey());
                 break;
 
             // To be continued on future needs.
@@ -161,13 +169,20 @@ class Resolver
         // Test item property
         if (isset($item->get()->{$pathItem->getKey()})) {
             return $this->resolveObjectProperty($pathItem, $item);
-        } // Test if method exists with its key name.
+        }
+
+        // Test if method exists with its key name.
         else if (method_exists($item->get(), $pathItem->getKey())) {
             return $this->resolveObjectMethod($pathItem, $item);
-        } // Test if method exists with "get" + its capitalized key name.
+        }
+
+        // Test if method exists with "get" + its capitalized key name.
         else if (method_exists($item->get(), 'get' . ucfirst($pathItem->getKey()))) {
             return $this->resolveObjectMethod($pathItem, $item, TRUE);
-        } else {
+        }
+
+        // Throw exception : None of the previous solutions worked.
+        else {
             throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on item', $pathItem->getKey()));
         }
     }
@@ -180,7 +195,7 @@ class Resolver
      */
     private function resolveObjectProperty(PathItem $pathItem, ResolverItem $item)
     {
-        return self::makeResolverItem($item, $item->get()->{$pathItem->getKey()});
+        return self::makeResolverItem($item, $item->get()->{$pathItem->getKey()}, $pathItem->getKey());
     }
 
     /**
@@ -219,7 +234,7 @@ class Resolver
 
         if (isset($item->get()[$pathItem->getKey()])) {
             $value = $item->get()[$pathItem->getKey()];
-            return self::makeResolverItem($item, $value);
+            return self::makeResolverItem($item, $value, $pathItem->getKey());
         }
         throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on array', $pathItem->getKey()));
     }
@@ -227,13 +242,14 @@ class Resolver
     /**
      * Make new resolver item.
      * @param ResolverItem $item Previous level item.
-     * @param type $value New item value.
+     * @param mixed $value New item value.
+     * @param string|integer $key Key value is the value provide from a array or an object property.
      * @return ResolverItem
      */
-    private static function makeResolverItem(ResolverItem $item, $value)
+    private static function makeResolverItem(ResolverItem $item, $value, $key = NULL)
     {
         $newItem = clone $item;
-        $newItem->push($value);
+        $newItem->push($value, $key);
         return $newItem;
     }
 
