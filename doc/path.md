@@ -42,19 +42,11 @@ Method items can only have one parameter provided : Method items aims to access 
 
 ## Keywords
 
-Keywords are path items prefixed by "#" and implement special behaviors. there is only one keyword available for now Available keyword.
+Keywords are path items prefixed by "#" that implements special behaviors.
 
-### #any
-Get any values form an array or an object usable with foreach (such as array or instance of class implemented from Iterator Interface)
+* [\#any](path-keywords/any-keyword.md)
+* [\#key](path-keywords/key-keyword.md)
 
-__Example :__
-```
-my/path/with/#any
-```
-Result example : 
-```php
-["value 1", "value 2", "value 3"]
-```
 ## Path arrays
 
 A path array is a PHP array gathering paths in order to produce structured arrays.
@@ -174,32 +166,14 @@ We request same objects pretty the same way, but we added a embedded path array 
 A path array can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter the path array behavior.
 
-#### the "unique" modifier
+* [?unique](query-modifiers/unique-modifier.md)
+* [?transform](query-modifiers/transform-modifier.md)
+* [?consider](query-modifiers/consider-modifier.md)
+* [?keep-array](query-modifiers/keep-array-modifier.md)
+* [?default-value](query-modifiers/default-value-modifier.md)
+* [?exception-enabled](query-modifiers/exception-enabled-modifier.md)
+* [?debug](query-modifiers/debug-modifier.md)
 
-Preserve only unique value in the result scope.
 
-#### the "transform" modifier
 
-Allows to transform a result value using a callback function.
-
-#### the "consider" modifier
-
-Allows to test if an element must be kept or not in the result scope.
-
-#### the "keep-array" modifier
-
-When the result scope contains only one (non keyed) value the result is the value itself an not an array.
-In some case you may want to preserve the array anyway. ``keep-array`` allows it.
-
-#### the "default-value" modifier
-
-Allows to define default value when a path fail to resolve.
-
-#### the "exception-enabled" modifier
-
-Allows all exception to be thrown. Useful for debug purpose.
-
-#### the "debug" modifier
-
-provide debug information on element
 
