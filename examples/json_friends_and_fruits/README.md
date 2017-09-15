@@ -4,7 +4,7 @@ This example shows **how to use Grabbag to transform JSON** to another JSON stru
 
 It demonstrates how to use the **?unique** modifier too.
 
-### Example Case : 
+### Example case : 
 
 We have a [JSON file](data.json) containing a list of friends containing for each one the list of fruits they like.
 
