@@ -19,11 +19,11 @@ $json = json_encode(
             // Get all my friends list.
             'my-friends:#any/name',
 
-            // Get all fruit they love.
-            'fruits-they-like:#any/food/liked/#any' => [
+            // Get all fruits they love.
+            'fruits-they-like:#any/food/liked/fruits/#any' => [
                 '.',
 
-                // If some of them love same fruit, no need to list it twice !
+                // If some of them love same fruits, no need to list one fruit twice !
                 '?unique'
             ]
         ]

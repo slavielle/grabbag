@@ -2,31 +2,39 @@
   {
     "name": "john",
     "food": {
-      "liked": [
-        "apple",
-        "banana",
-        "orange"
-      ],
-      "hated": [
-        "mango",
-        "strawberry",
-        "peer"
-      ]
+      "liked": {
+        "fruits": [
+          "apple",
+          "banana",
+          "orange"
+        ]
+      },
+      "hated": {
+        "fruits": [
+          "mango",
+          "strawberry",
+          "peer"
+        ]
+      }
     }
   },
   {
     "name": "mary",
     "food": {
-      "liked": [
-        "strawberry",
-        "cherry",
-        "orange"
-      ],
-      "hated": [
-        "banana",
-        "mango",
-        "peer"
-      ]
+      "liked": {
+        "fruits": [
+          "strawberry",
+          "cherry",
+          "orange"
+        ]
+      },
+      "hated": {
+        "fruits": [
+          "banana",
+          "mango",
+          "peer"
+        ]
+      }
     }
   }
 ]
