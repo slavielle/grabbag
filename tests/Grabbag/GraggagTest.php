@@ -33,7 +33,7 @@ final class GrabbagTest extends TestCase
     /**
      *  Test result class object
      */
-    public function testGrabberGrabReturnResult()
+    public function testResolveReturnResult()
     {
         $testObject = sourceDataHelper::getDataIndexedL2();
         $g = new Grabbag($testObject);
@@ -42,6 +42,12 @@ final class GrabbagTest extends TestCase
         $this->assertInstanceOf(
             ResolverItems::class, $result
         );
+    }
+
+
+    public function testGrab(){
+        $testObject = sourceDataHelper::getDataIndexedL1();
+        $this->assertEquals('test 3' , Grabbag::grab($testObject, 'getAllObjects/3/getName'));
     }
 
 }
