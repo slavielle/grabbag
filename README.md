@@ -100,6 +100,7 @@ A quick list for possible usage I have in mind are :
 * Data export
 * JSON transformation
 
+## Want more ?
 
-
-
+Let's take a tour on the [example section](examples)
+(I pledge to produce more of them soon :) )
