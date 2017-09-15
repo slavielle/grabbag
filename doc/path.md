@@ -25,7 +25,13 @@ In a path, array keys or object properties can be accessed the same way :
 /myObject/myProperty
 /myArray/myKey
 ```
-'get' can be omitted for getter methods so can be the parenthesis if no parameter is required.
+No need to use distinct syntax as in raw PHP :
+```php
+$myObject->myProperty
+$myArray['myKey']
+```
+'get' can be omitted from getter methods name so can be the parenthesis if no parameter is required.
+
 Following paths are equivalent. 
 
 ```
@@ -33,40 +39,34 @@ Following paths are equivalent.
 /myObject/something()
 /myObject/something
 ```
+Method items can only have one parameter provided for now : Method items aims to access getter method. one parameter is all we need in that case.  
+
+Following paths are equivalent. 
 ```
-/myObject/#each>getSometing("param")
-/myObject/param>something("param")
+/myObject/getSometing("param")
+/myObject/something("param")
 ```
 
-Method items can only have one parameter provided : Method items aims to access getter method. one parameter is all we need in that case.  
-
-## Keywords
-
-Keywords are path items prefixed by "#" that implements special behaviors.
-
-* [\#any](path-keywords/any-keyword.md)
-* [\#key](path-keywords/key-keyword.md)
-
-## Path arrays
+## Simple query
 
 A query is a PHP array gathering paths in order to produce structured arrays.
 
-__Example :__
+**Example :**
 ```php
 [
     "my/first/path",
     "my/second/path"
 ]
 ```
-Result example : 
+**Example result  :** 
 ```php
 ['my value #1', 'my value #2',]
 ```
-In query, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result scope.
+In query, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result.
 
 ## Path ids
 
-Id are used to identify a path in a query and are located on start of the path and ends with a ':'
+Path ids are used to identify a path in a query and are located on start of the path and ends with a ':'
 
 It can have 2 usage : 
 
@@ -92,7 +92,9 @@ Result example :
 ]
 ```
 
-## Query Embedded path arrays and result scope
+## Query with 
+
+### embedded path arrays
 
 In a query, Path arrays can be embedded in order to produce structured results. 
 Each path array contains paths that will be resolved to produce results in the 
@@ -110,6 +112,7 @@ Usage 1 example :
     "my-key-C:my/first/path",
 ]
 ```
+### Result scope
 Result scope is an important Grabbag concepts.
 
 Let consider the following path : 
@@ -160,6 +163,12 @@ We request same objects pretty the same way, but we added a embedded path array 
 * . : The element corresponding to the current path item
 * .. : The element corresponding to the previout path item
 
+## Keywords
+
+Keywords are path items prefixed by "#" that implements special behaviors.
+
+* [\#any](path-keywords/any-keyword.md)
+* [\#key](path-keywords/key-keyword.md)
 
 ## Modifiers
 
