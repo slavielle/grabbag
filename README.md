@@ -50,7 +50,12 @@ $node->get('field_media_image')
 ```
 contains 4 items, then the result value will be an array looking like this : 
 ```php
-["my/image/1.jpg", "my/image/2.jpg", "my/image/3.jpg", "my/image/4.jpg"]
+[
+    "my/image/1.jpg", 
+    "my/image/2.jpg", 
+    "my/image/3.jpg", 
+    "my/image/4.jpg"
+]
 ```
 ## Structured result using query
 Queries allow to go a step further by gathering paths in order to produce structured arrays.
@@ -94,10 +99,11 @@ Grabbag can be used in all PHP project using object intensively. This inclure pr
 It can be used everywhere you would have to get values from PHP objects/arrays in order to extract simple values, array or structured array.
 
 A quick list for possible usage I have in mind are : 
-* Producing data for json Rest web-services.  
+* Producing data for json Rest web-services.
+* [JSON transformation](examples/json_friends_and_fruits)
 * Producing variables for twig templates.
 * Data export
-* JSON transformation
+
 
 ## Want more ?
 
