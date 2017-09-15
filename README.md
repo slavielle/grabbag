@@ -53,8 +53,7 @@ contains 4 items, then the result value will be an array looking like this :
 ["my/image/1.jpg", "my/image/2.jpg", "my/image/3.jpg", "my/image/4.jpg"]
 ```
 ## Structured result using query
-Path arrays allow to go a step further.
-A query gathers paths in order to produce structured arrays.
+Queries allow to go a step further by gathering paths in order to produce structured arrays.
 Lets take an example : 
 
 ```php
