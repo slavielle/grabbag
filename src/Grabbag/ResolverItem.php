@@ -2,6 +2,7 @@
 
 namespace Grabbag;
 
+use \Grabbag\exceptions\ResolveItemStackEmptyException;
 /**
  * Class ResolverItem
  *
@@ -48,13 +49,13 @@ class ResolverItem
 
     /**
      * Pop value from stack.
-     * @throws \Exception
+     * @throws \ResolveItemStackEmptyException
      */
     public function pop()
     {
         $this->item = array_pop($this->previous);
         if ($this->item === NULL) {
-            throw new \Exception('Can\'t pop an empty stack');
+            throw new ResolveItemStackEmptyException(ResolveItemStackEmptyException::CODE_1);
         }
         return $this->item;
     }
@@ -76,7 +77,7 @@ class ResolverItem
     public static function prepareResolverItem($item)
     {
         if (is_array($item)) {
-            return $item instanceof ResolverItem ? $item : new ResolverItem($item);
+            return $item instanceof ResolverItem ? $item : [new ResolverItem($item)];
         } else {
             return $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
         }

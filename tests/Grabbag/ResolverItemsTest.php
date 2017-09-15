@@ -15,6 +15,7 @@ use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\PathParsingException;
 use Grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\exceptions\ResolveItemStackEmptyException;
 use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
@@ -30,6 +31,19 @@ use Grabbag\tests\testData\TestDataHelper;
  */
 final class ResolverItemsTest extends TestCase
 {
+
+    /**
+     * Test the getValue result when a $resolverItems had not been resolved.
+     * The result value must be the input value.
+     */
+    public function testGetValueWithoutResolving(){
+        $myInputValue = ['test 1', 'test 2'];
+        $myOutputValue = ['test 1', 'test 2'];
+        $resolverItems = new ResolverItems($myInputValue);
+        $this->assertEquals(
+            $myOutputValue, $resolverItems->getValue()
+        );
+    }
 
     /**
      * Test default result when requesting with a valid but non-matching path
@@ -374,7 +388,7 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using .. symbols.
+     *  Test resolving path array using valid .. symbols.
      */
     public function testResolverPathArrayWithBoubleDotSymbol()
     {
@@ -395,6 +409,29 @@ final class ResolverItemsTest extends TestCase
         $this->assertEquals(
             TestDataHelper::getTestData1(TRUE), $resolverItems->getValue()
         );
+    }
+
+    /**
+     *  Test resolving path array using to much .. symbols (Trying to access object down over the root object)
+     */
+    public function testResolverPathArrayWithToMuchBoubleDotSymbol()
+    {
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $this->expectException(ResolveItemStackEmptyException::class);
+
+        $resolverItems->resolve([
+            'getAllObjects/#any' => [
+                'id:myId',
+                'name:getName',
+                'content:getAllObjects/#any' => [
+                    'id:getId',
+                    'name:getName',
+                    'parent-id:../../../../../../../myId'
+                ]
+            ]
+        ]);
     }
 
 }
