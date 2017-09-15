@@ -15,7 +15,7 @@ use Grabbag\Cnst;
 class Path
 {
 
-    private $pathArray;
+    private $pathItemList;
     private $index;
     private $key;
 
@@ -38,7 +38,7 @@ class Path
                 Cnst::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
             $match_result = preg_match($regex, $path, $matches);
             if ($match_result) {
-                $this->pathArray[] = new PathItem($matches[1], $matches[2], $matches[3]);
+                $this->pathItemList[] = new PathItem($matches[1], $matches[2], $matches[3]);
                 $path = $matches[4];
                 if (strlen($path) === 0) {
                     break;
@@ -83,7 +83,7 @@ class Path
      */
     public function rewind()
     {
-        if (count($this->pathArray) > 0) {
+        if (count($this->pathItemList) > 0) {
             $this->index = 0;
         } else {
             $this->index = NULL;
@@ -97,8 +97,8 @@ class Path
     public function next()
     {
         if ($this->index !== NULL) {
-            $val = $this->pathArray[$this->index];
-            $this->index = $this->index + 1 < count($this->pathArray) ? $this->index + 1 : NULL;
+            $val = $this->pathItemList[$this->index];
+            $this->index = $this->index + 1 < count($this->pathItemList) ? $this->index + 1 : NULL;
             return $val;
         }
         return NULL;

@@ -49,7 +49,7 @@ Keywords are path items prefixed by "#" that implements special behaviors.
 
 ## Path arrays
 
-A path array is a PHP array gathering paths in order to produce structured arrays.
+A query is a PHP array gathering paths in order to produce structured arrays.
 
 __Example :__
 ```php
@@ -62,11 +62,11 @@ Result example :
 ```php
 ['my value #1', 'my value #2',]
 ```
-In path array, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result scope.
+In query, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result scope.
 
 ## Path ids
 
-Id are used to identify a path in a path array and are located on start of the path and ends with a ':'
+Id are used to identify a path in a query and are located on start of the path and ends with a ':'
 
 It can have 2 usage : 
 
@@ -92,9 +92,9 @@ Result example :
 ]
 ```
 
-## Embedded path arrays and result scope
+## Query Embedded path arrays and result scope
 
-Path arrays can be embedded in order to produce structured results. 
+In a query, Path arrays can be embedded in order to produce structured results. 
 Each path array contains paths that will be resolved to produce results in the 
 related result scope.
 
@@ -127,7 +127,7 @@ The result would be something like this :
     "My string 2-2"
 ]
 ```
-If we now split this path in 2 embedded path array like this :
+If we now split this path in a query containing 2 embedded path array like this :
  
 ```php
 [
@@ -163,7 +163,7 @@ We request same objects pretty the same way, but we added a embedded path array 
 
 ## Modifiers
 
-A path array can contain modifiers.
+In a query, path arrays can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter the path array behavior.
 
 * [?unique](query-modifiers/unique-modifier.md)

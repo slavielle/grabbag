@@ -238,9 +238,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test resolving path array using #any
+     * Test resolving query using #any
      */
-    public function testResolverPathArrayWithAny2level()
+    public function testResolverQueryWithAny2level()
     {
         $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
 
@@ -261,9 +261,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test resolving path array using #any
+     * Test resolving query using #any
      */
-    public function testResolverPathArrayWithAny2levelB()
+    public function testResolverQueryWithAny2levelB()
     {
         $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
 
@@ -294,7 +294,7 @@ final class ResolverItemsTest extends TestCase
 
     }
     /*
-    public function testResolverPathArrayWithAny3Level()
+    public function testResolverQueryWithAny3Level()
     {
         $testObject = SourceDataHelper::getDataNamedL3();
         $resolverItems = new ResolverItems($testObject);
@@ -319,9 +319,9 @@ final class ResolverItemsTest extends TestCase
     */
 
     /**
-     * Test resolving path array using ?transform modifier.
+     * Test resolving query using ?transform modifier.
      */
-    public function testResolverPathArrayWithTransformModifier()
+    public function testResolverQueryWithTransformModifier()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
@@ -343,9 +343,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using ?unique modifier.
+     *  Test resolving query using ?unique modifier.
      */
-    public function testResolverPathArrayUniqueModifier()
+    public function testResolverQueryUniqueModifier()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
@@ -363,9 +363,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using ?debug modifier.
+     *  Test resolving query using ?debug modifier.
      */
-    public function testResolverPathArrayWithDebugModifier()
+    public function testResolverQueryWithDebugModifier()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
@@ -402,9 +402,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using . symbols.
+     *  Test resolving query using . symbols.
      */
-    public function testResolverPathArrayWithDotSymbol()
+    public function testResolverQueryWithDotSymbol()
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
@@ -421,9 +421,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using valid .. symbols.
+     *  Test resolving query using valid .. symbols.
      */
-    public function testResolverPathArrayWithBoubleDotSymbol()
+    public function testResolverQueryWithBoubleDotSymbol()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);
@@ -445,9 +445,9 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     *  Test resolving path array using to much .. symbols (Trying to access object down over the root object)
+     *  Test resolving query using to much .. symbols (Trying to access object down over the root object)
      */
-    public function testResolverPathArrayWithToMuchBoubleDotSymbol()
+    public function testResolverQueryWithToMuchBoubleDotSymbol()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ResolverItems($testObject);

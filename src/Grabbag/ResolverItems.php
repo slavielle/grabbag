@@ -74,8 +74,8 @@ class ResolverItems
     }
 
     /**
-     * Resolve every result items regarding the path or path array provided.
-     * @param string | string[] $path Path or path array.
+     * Resolve every result items regarding the path or query provided.
+     * @param string | string[] $path Path or Query.
      */
     public function resolve($path, $defaultValue = NULL)
     {
@@ -93,9 +93,9 @@ class ResolverItems
     }
 
     /**
-     * Resolve one result item regarding the path or path array provided.
+     * Resolve one result item regarding the path or Query provided.
      * @param ResolverItem $item Item to be resolved.
-     * @param mixed[] $preparedPaths Path or path array.
+     * @param mixed[] $preparedPaths Path or Query.
      * @return ResolverItem[] Resolved items.
      */
     private function resolveEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
@@ -167,8 +167,8 @@ class ResolverItems
     }
 
     /**
-     * Turns path array as defined by user to an internal path array ready to be resolved.
-     * @param array $pathArray User defined path array.
+     * Turns query as defined by user to an internal query ready to be resolved.
+     * @param array $pathArray User defined Query.
      * @return array
      */
     static private function preparePathArray($pathArray)

@@ -29,7 +29,6 @@ class Resolver
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
         $this->items = ResolverItem::prepareResolverItem($item);
-        $this->pathArray = [];
         $this->defaultValue = $defaultValue;
         $this->exceptionEnabled = $exceptionEnabled;
     }
