@@ -1,6 +1,6 @@
 [
   {
-    "name": "john",
+    "name": "John",
     "food": {
       "liked": {
         "fruits": [
@@ -19,7 +19,7 @@
     }
   },
   {
-    "name": "mary",
+    "name": "Mary",
     "food": {
       "liked": {
         "fruits": [

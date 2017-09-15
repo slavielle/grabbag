@@ -8,7 +8,7 @@ It demonstrates how to use the **?unique** modifier too.
 
 We have a [JSON file](data.json) containing a list of friends containing for each one the list of fruits they like.
 
-We would like to generate another json containing the full list of those friends, and the full list of all the fruits they like :
+We would like to generate another JSON containing the full list of those friends, and the full list of all the fruits they like :
 
 ```json
 {
@@ -29,7 +29,8 @@ We would like to generate another json containing the full list of those friends
 ### Solution 
 
 
-This can be done using a simple query :
+The data transformation part can be done using a simple query (above) wrapped with PHP Json encode/decode functions.
+
 ```php
 [
     'my-friends:#any/name',
@@ -39,4 +40,5 @@ This can be done using a simple query :
     ]
 ]
 ```
-[See example code](index.php)
+
+[See the full example code](index.php)
