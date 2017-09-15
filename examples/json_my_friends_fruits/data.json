@@ -1,0 +1,32 @@
+[
+  {
+    "name": "john",
+    "food": {
+      "liked": [
+        "apple",
+        "banana",
+        "orange"
+      ],
+      "hated": [
+        "mango",
+        "strawberry",
+        "peer"
+      ]
+    }
+  },
+  {
+    "name": "mary",
+    "food": {
+      "liked": [
+        "strawberry",
+        "cherry",
+        "orange"
+      ],
+      "hated": [
+        "banana",
+        "mango",
+        "peer"
+      ]
+    }
+  }
+]
