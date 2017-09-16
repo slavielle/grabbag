@@ -23,9 +23,29 @@
     "food": {
       "liked": {
         "fruits": [
+          "apple",
           "strawberry",
           "cherry",
           "orange"
+        ]
+      },
+      "hated": {
+        "fruits": [
+          "banana",
+          "mango",
+          "pear"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Tom",
+    "food": {
+      "liked": {
+        "fruits": [
+          "apple",
+          "kiwi",
+          "peach"
         ]
       },
       "hated": {

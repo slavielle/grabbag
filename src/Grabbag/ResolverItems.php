@@ -5,6 +5,7 @@ namespace Grabbag;
 use Grabbag\Resolver;
 use Grabbag\ResolverItem;
 use Grabbag\Cnst;
+use Grabbag\exceptions\CantApplyUniqueModifierException;
 
 /**
  * Resolver items contains values handled by resolver.
@@ -64,9 +65,11 @@ class ResolverItems
         foreach ($array as $key => $arrayItem) {
             if (is_array($arrayItem)) {
                 $resultArray[$key] = $this->getValueRecurse($arrayItem);
-            } else if ($arrayItem instanceof ResolverItem) {
+            }
+            else if ($arrayItem instanceof ResolverItem) {
                 $resultArray[$key] = $arrayItem->get();
-            } else {
+            }
+            else {
                 throw new \Exception('Unexpected type');
             }
         }
@@ -86,10 +89,30 @@ class ResolverItems
         $preparedPaths = self::preparePathArray($pathArray);
 
         // Grab each items
-        foreach ($this->items as &$item) {
+        $newItems = [];
+        foreach ($this->items as $item) {
             $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue);
-            $item = $values;
+            if (!is_array($values) || count($values) > 0) {
+                $newItems[] = $values;
+            }
         }
+        $this->items = $newItems;
+
+
+        // Keep only unique if requiered.
+        if ((isset($modifiers['unique']) && $modifiers['unique'])) {
+            try {
+                $this->items = self::keepUniqueValuesOnly($this->items);
+            } catch (CantApplyUniqueModifierException $e) {
+
+                // When CantApplyUniqueModifierException are generate in keepUniqueValuesOnly, it's converted in
+                // a PHP warning.
+                trigger_error($e->getMessage(), E_USER_WARNING);
+            }
+        }
+
+        // Chaining
+        return $this;
     }
 
     /**
@@ -118,18 +141,14 @@ class ResolverItems
                 $resolvedItems->resolve($preparedPath['pathArray']);
             }
 
-            // Keep only unique if requiered.
             $value = $resolvedItems->getItems();
-            if ((isset($modifiers['unique']) && $modifiers['unique'])) {
-                $value = self::keepUniqueValuesOnly($value);
-            }
 
-            // Transform value
+            // Transform modifier
             if (isset($modifiers['transform'])) {
                 $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
             }
 
-            // Transform value
+            // Debug modifier
             if (isset($modifiers['debug'])) {
                 self::debugVariable($modifiers['debug'], $value->get(), $key);
             }
@@ -137,7 +156,8 @@ class ResolverItems
             // Append value
             if ($key !== NULL && substr($key, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
                 $resultValues[$key] = $value;
-            } else {
+            }
+            else {
                 $resultValues[] = $value;
             }
         }
@@ -193,7 +213,8 @@ class ResolverItems
                 // Exclude modifiers
                 if (substr($path, 0, 1) !== Cnst::MODIFIER_CHAR) {
                     $preparedPath['pathObject'] = new Path($path);
-                } else {
+                }
+                else {
                     break;
                 }
             }
@@ -204,29 +225,54 @@ class ResolverItems
 
     /**
      * Implements ?unique modifier behavior : Return an array containing only unique value in array.
-     * @param ResolverItem[] $values Array to be filtered.
+     * @param ResolverItem[] $items Array to be filtered.
+     * @maram integer $recurseLevel. Level of recursion.
      * @return ResolverItem[] Result array.
      */
-    static private function keepUniqueValuesOnly($values)
+    static private function keepUniqueValuesOnly($items, $recurseLevel = 0)
     {
         $uniqueValues = [];
-        // Unique modifier works only on value returning an array because single value is by definition unique.
-        if (is_array($values)) {
-            $newValues = [];
-            foreach ($values as $key => $valueItem) {
 
-                if (!in_array($valueItem->get(), $uniqueValues)) {
-                    $uniqueValues[] = $valueItem->get();
+        // Unique modifier works only on value returning an array because single value is by definition unique.
+        if (is_array($items)) {
+            $newValues = [];
+            foreach ($items as $key => $item) {
+
+                // $items should contains a list of ResolverItem instance. if one item
+                if (!$item instanceof ResolverItem) {
+
+                    // Items is normally a list of ResolverItem instances, but, in some cases, $items is an array
+                    // containing one element containing a list of ResolverItem instances. In this case we just recurse
+                    // only one level up.
+                    if (count($items) === 1 && is_integer($key) && $recurseLevel === 0) {
+                        $newValues[] = self::keepUniqueValuesOnly($item, $recurseLevel + 1);
+                        break;
+                    }
+
+                    // If process reach this point it means the $items array cannot apply unique modifier. In this case
+                    // we throw an exception that will be converted in PHP warning.
+                    else {
+
+                        //@todo identify each case in order to give the end user more information about what's going on.
+                        throw new CantApplyUniqueModifierException('Unable to apply ?unique modifier on this result scope.');
+                    }
+                }
+
+                //Preserve unique values only.
+                $itemValue = $item->get();
+                if (!in_array($itemValue, $uniqueValues)) {
+                    $uniqueValues[] = $itemValue;
                     if (is_integer($key)) {
-                        $newValues[] = $valueItem;
-                    } else {
-                        $newValues[$key] = $valueItem;
+                        $newValues[] = $item;
+                    }
+                    else {
+                        $newValues[$key] = $item;
                     }
                 }
             }
             return $newValues;
         }
-        return $values;
+        return $items;
     }
 
     /**
