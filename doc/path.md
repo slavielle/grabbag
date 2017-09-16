@@ -92,9 +92,9 @@ Result example :
 ]
 ```
 
-## Query with 
+## Multiple level Query
 
-### embedded path arrays
+### Embedded path arrays
 
 In a query, Path arrays can be embedded in order to produce structured results. 
 Each path array contains paths that will be resolved to produce results in the 
@@ -112,6 +112,7 @@ Usage 1 example :
     "my-key-C:my/first/path",
 ]
 ```
+
 ### Result scope
 Result scope is an important Grabbag concepts.
 
