@@ -24,7 +24,7 @@ $json = json_encode(
                 '.',
 
                 // If some of them love same fruits, no need to list one fruit twice !
-                '?unique'
+                '?unique' => TRUE
             ]
         ]
     ),

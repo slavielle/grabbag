@@ -32,11 +32,42 @@ use Grabbag\tests\testData\TestDataHelper;
 final class ResolverItemsTest extends TestCase
 {
 
+    public function setUp()
+    {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+
+            self::error_storage('push', $errno . '-' . $errstr);
+            //throw new RuntimeException($errstr . " on line " . $errline . " in file " . $errfile);
+        });
+    }
+
+    public function tearDown()
+    {
+        restore_error_handler();
+    }
+
+    public static function error_storage($op = 'get', $value = NULL)
+    {
+        static $errors = [];
+        switch ($op) {
+            case 'get':
+                return $errors;
+            case 'push':
+                $errors[] = $value;
+                break;
+            case 'flush':
+                $errors = [];
+                break;
+        }
+
+    }
+
     /**
      * Test the getValue result when a $resolverItems had not been resolved.
      * The result value must be the input value.
      */
-    public function testGetValueWithoutResolving(){
+    public function testGetValueWithoutResolving()
+    {
         $myInputValue = ['test 1', 'test 2'];
         $myOutputValue = ['test 1', 'test 2'];
         $resolverItems = new ResolverItems($myInputValue);
@@ -355,10 +386,97 @@ final class ResolverItemsTest extends TestCase
 
         $resolverItems->resolve([
             'getAllObjects/#any/getAllObjects/#any/../../myId',
-            '?unique' => TRUE,
+            '?unique',
         ]);
 
         $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
+    /**
+     *  Test resolving query using ?unique modifier.
+     *  This test produce a different internal case than testResolverQueryUniqueModifier but must produce a equivalent result.
+     */
+    public function testResolverQueryUniqueModifier2()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = ['ID#0', 'ID#6', 'ID#12'];
+
+
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                '.',
+                '?unique'
+            ],
+        ]);
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
+    /**
+     *  Test resolving query using ?unique modifier.
+     *  This test shall raise a warning thrown as an error by
+     */
+    public function testResolverQueryUniqueModifier3()
+    {
+        self::error_storage('flush');
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = [
+            ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'],
+            ['ID#6', 'ID#6'], ['ID#6', 'ID#6'], ['ID#6', 'ID#6'], ['ID#6', 'ID#6'], ['ID#6', 'ID#6'],
+            ['ID#12', 'ID#12'], ['ID#12', 'ID#12'], ['ID#12', 'ID#12'], ['ID#12', 'ID#12'], ['ID#12', 'ID#12']
+        ];
+
+
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                '.',
+                '.',
+                '?unique'
+            ],
+        ]);
+
+        $errors = self::error_storage('get');
+        $this->assertEquals(['512-Unable to apply ?unique modifier on this result scope.'], $errors);
+
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
+    /**
+     *  Test resolving query using ?unique modifier.
+     */
+    public function testResolverQueryUniqueModifier4()
+    {
+
+        self::error_storage('flush');
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = [
+            ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'],
+            ['my-id' => 'ID#6'], ['my-id' => 'ID#6'], ['my-id' => 'ID#6'], ['my-id' => 'ID#6'], ['my-id' => 'ID#6'],
+            ['my-id' => 'ID#12'], ['my-id' => 'ID#12'], ['my-id' => 'ID#12'], ['my-id' => 'ID#12'], ['my-id' => 'ID#12']
+        ];
+
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                'my-id:.',
+                '?unique'
+            ],
+        ]);
+
+        $errors = self::error_storage('get');
+        $this->assertEquals(['512-Unable to apply ?unique modifier on this result scope.'], $errors);
+
+        //var_export($resolverItems->getValue());
+        $this->assertEquals($expected, $resolverItems->getValue());
+
 
     }
 
