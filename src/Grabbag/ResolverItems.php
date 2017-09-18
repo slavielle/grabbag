@@ -143,22 +143,32 @@ class ResolverItems
 
             $value = $resolvedItems->getItems();
 
-            // Transform modifier
-            if (isset($modifiers['transform'])) {
-                $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+            // Consider modifier
+            $keep = TRUE;
+            if (isset($modifiers['consider'])) {
+                $valueClone = clone $value;
+                $items = new ResolverItems($valueClone);
+                $keep = call_user_func_array($modifiers['consider'], [$items, $key]);
             }
+            if ($keep) {
 
-            // Debug modifier
-            if (isset($modifiers['debug'])) {
-                self::debugVariable($modifiers['debug'], $value->get(), $key);
-            }
+                // Transform modifier
+                if (isset($modifiers['transform'])) {
+                    $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+                }
 
-            // Append value
-            if ($key !== NULL && substr($key, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
-                $resultValues[$key] = $value;
-            }
-            else {
-                $resultValues[] = $value;
+                // Debug modifier
+                if (isset($modifiers['debug'])) {
+                    self::debugVariable($modifiers['debug'], $value->get(), $key);
+                }
+
+                // Append value
+                if ($key !== NULL && substr($key, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
+                    $resultValues[$key] = $value;
+                }
+                else {
+                    $resultValues[] = $value;
+                }
             }
         }
 
