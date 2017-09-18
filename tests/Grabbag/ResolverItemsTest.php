@@ -11,11 +11,6 @@ require_once 'testData/TestDataHelper.php';
 */
 
 use PHPUnit\Framework\TestCase;
-use Grabbag\exceptions\NotAdressableException;
-use Grabbag\exceptions\PropertyNotFoundException;
-use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\UnknownPathKeywordException;
-use Grabbag\exceptions\ResolveItemStackEmptyException;
 use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
@@ -24,6 +19,12 @@ use Grabbag\ResolverItem;
 use Grabbag\ResolverItems;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
+use Grabbag\exceptions\NotAdressableException;
+use Grabbag\exceptions\PropertyNotFoundException;
+use Grabbag\exceptions\PathParsingException;
+use Grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\exceptions\ResolveItemStackEmptyException;
+use Grabbag\exceptions\CantApplyConsiderModifierException;
 
 
 /**
@@ -474,8 +475,60 @@ final class ResolverItemsTest extends TestCase
         $errors = self::error_storage('get');
         $this->assertEquals(['512-Unable to apply ?unique modifier on this result scope.'], $errors);
 
-        //var_export($resolverItems->getValue());
         $this->assertEquals($expected, $resolverItems->getValue());
+
+
+    }
+
+    /**
+     * Test resolving with a consider modifier.
+     */
+    public function testResolverQueryConsiderModifier()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $expected = ['ID#0', 'ID#12'];
+
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                '~myId:.',
+                '?unique',
+                '?consider' => function ($item, $id){
+                    if($id === "~myId"){
+                        return $item->get() !== 'ID#6';
+                    }
+                }
+            ],
+
+        ]);
+
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+    }
+
+    /**
+     * Test resolving with a consider modifier on a path's multi-valued result.
+     * This case must throw an CantApplyConsiderModifierException exception.
+     * Consider can't be applied on a multi-valued path result.
+     */
+    public function testResolverQueryConsiderModifier2()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ResolverItems($testObject);
+
+        $this->expectException(CantApplyConsiderModifierException::class);
+        $resolverItems->resolve([
+            '~myId:getAllObjects/#any/getAllObjects/#any/../../myId',
+            '?unique',
+            '?consider' => function ($item, $id){
+                if($id === "~myId"){
+                    return $item->get() !== 'ID#6';
+                }
+            }
+        ]);
 
 
     }

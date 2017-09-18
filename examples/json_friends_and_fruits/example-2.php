@@ -10,28 +10,36 @@ echo json_encode(json_decode(file_get_contents($basePath . '/data.json')), JSON_
 echo "\n\n";
 echo "json output: \n";
 
+
+$filterFriends = ['Mary', 'Tom', 'Lara'];
 $json = json_encode(
     Grabbag::grab(
         json_decode(file_get_contents($basePath . '/data.json')),
 
         // Here comes the Grabbag query
         [
-            // Get all my friends list.
-            'my-friends:#any/name',
+            // Get my friends selection.
+            'my-friends:#any' => [
+                '~name:name',
+                '?consider' => function($item, $id) use ($filterFriends){
+                    if($id === '~name'){
+                        return in_array($item->get(), $filterFriends);
+                    }
+                },
+            ],
 
-            // Get all fruits they love.
+            // Get my friends selection prefered fruits.
             'fruits-they-like:#any/food/liked/fruits/#any' => [
 
                 '~fruit:.',
 
-                '?consider' => function($item, $id){
-                    return TRUE;
+                '?consider' => function($item, $id) use ($filterFriends){
                     if($id === '~fruit'){
-                        return in_array($item->resolve('../../../../name')->getValue(), ['Mary', 'Tom']);
+                        return in_array($item->grab('../../../../name')->getValue(), ['Mary', 'Tom']);
                     }
                 },
 
-                // If some of them love same fruits, no need to list one fruit twice !
+                // If some of them love same fruits, no need to list a fruit twice !
                 '?unique'
 
 

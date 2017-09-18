@@ -2,9 +2,11 @@
 
 This example shows **how to use Grabbag to transform JSON** to another JSON structured a different way.
 
-It demonstrates how to use the **?unique** modifier too.
+It demonstrates how to use the **?unique** modifier ([example-1.php](example-1.php).)
 
-### Example case : 
+It demonstrate how to use the **?consider** modifier
+
+### Example 1 : 
 
 We have a [JSON file](data.json) containing a list of friends containing for each one the list of fruits they like.
 
@@ -26,7 +28,7 @@ We would like to generate another JSON containing the full list of those friends
     ]
 }
 ```
-### Solution 
+#### Solution 
 
 
 The data transformation part can be done using a simple query (above) wrapped with PHP Json encode/decode functions.
@@ -41,4 +43,6 @@ The data transformation part can be done using a simple query (above) wrapped wi
 ]
 ```
 
-[See the full example code](index.php)
+[See the full example code](example-1.php)
+
+### Example 2 :

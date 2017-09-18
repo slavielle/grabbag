@@ -5,7 +5,9 @@ namespace Grabbag;
 use Grabbag\Resolver;
 use Grabbag\ResolverItem;
 use Grabbag\Cnst;
+use Grabbag\SerialResolver;
 use Grabbag\exceptions\CantApplyUniqueModifierException;
+use Grabbag\exceptions\CantApplyConsiderModifierException;
 
 /**
  * Resolver items contains values handled by resolver.
@@ -145,10 +147,12 @@ class ResolverItems
 
             // Consider modifier
             $keep = TRUE;
-            if (isset($modifiers['consider'])) {
-                $valueClone = clone $value;
-                $items = new ResolverItems($valueClone);
-                $keep = call_user_func_array($modifiers['consider'], [$items, $key]);
+            if (isset($modifiers['consider']) && $key !== NULL) {
+                if(is_array($value)){
+                    throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
+                }
+                $keep = call_user_func_array($modifiers['consider'], [new SerialResolver($value), $key]);
+                $keep = $keep === NULL ? TRUE : $keep;
             }
             if ($keep) {
 

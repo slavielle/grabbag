@@ -90,7 +90,6 @@ class ResolverTest extends TestCase
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
-            var_export($result->getValue());
             $this->assertEquals('test 3' , $result->getValue());
         }
     }
@@ -106,7 +105,6 @@ class ResolverTest extends TestCase
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject, 'my-default-value');
             $result = $resolver->resolve(new Path($pathVariant));
-            var_export($result->getValue());
             $this->assertEquals('my-default-value' , $result->getValue());
         }
     }

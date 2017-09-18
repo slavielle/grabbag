@@ -43,14 +43,14 @@
     "food": {
       "liked": {
         "fruits": [
-          "apple",
+          "banana",
           "kiwi",
           "peach"
         ]
       },
       "hated": {
         "fruits": [
-          "banana",
+          "apple",
           "mango",
           "pear"
         ]
