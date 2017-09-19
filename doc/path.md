@@ -78,7 +78,7 @@ All will be explained as soon as i tell you the simplest form of a query is a pa
 
 So now the question is : what a query could be if it's non (only) a path !
 
-#### Path arrays
+### Path arrays
 
 Path arrays gathers paths in order to produce structured arrays.
 
@@ -97,7 +97,7 @@ In query, paths are often prefixed with id (See Path ids) allowing to produce a 
 
 ## Path ids
 
-#### Usage
+### Usage
 
 Path ids are used to identify a path in a query and are located on start of the path and ends with a ':'
 
@@ -106,7 +106,7 @@ It can have 2 usages :
 * Usage 1 : It can be used to specify the value key in the result scope
 * Usage 2 : It can be used in a __modifier__ to refer to a path value.
 
-#### Explicit or internal id.
+### Explicit or internal id.
 
 By default, a path id is explicit. It means id is used in the result scope as a key for the value(s) the path collect.
 
@@ -129,7 +129,7 @@ Result example :
      "lv-3" => "Result 3"
  ]
 ```
-#### Ids and modifiers
+### Ids and modifiers
 
 Internal or explicit ids can be used with modifiers to alter the path result.
 
@@ -161,7 +161,7 @@ We've seen to that a Query can be a path array, using or not ids.
 
 Fine. Let's make a step ahead.
 
-#### Embedded path arrays
+### Embedded path arrays
 
 In a query, Path arrays can be embedded in order to produce leveled structured results. 
 Each path array can contain paths or embedded path arrays that will be resolved to produce results in the 
@@ -179,7 +179,7 @@ Embedded path arrays example :
     "my-key-C:my/first/path",
 ]
 ```
-#### Result scope
+### Result scope
 
 Result scope is an important Grabbag concepts.
 
