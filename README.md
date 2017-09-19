@@ -100,7 +100,7 @@ It can be used everywhere you would have to get values from PHP objects/arrays i
 
 A quick list for possible usage I have in mind are : 
 * Producing data for json Rest web-services.
-* [JSON transformation](examples/json_friends_and_fruits)
+* [JSON transformation](examples/3-json-friends-and-fruits)
 * Producing variables for twig templates.
 * Data export
 

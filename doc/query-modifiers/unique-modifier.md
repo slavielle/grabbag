@@ -2,4 +2,4 @@
 
 Preserve only unique values in the result scope.
 
-see [example](../../examples/json_friends_and_fruits/example-1.php)
+see [example](../../examples/3-json-friends-and-fruits/example-1.php)

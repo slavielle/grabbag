@@ -56,4 +56,4 @@ Get the key value of an element if it has a key.
 ];
 ```
 
-see [example](../../examples/use_key_keyword)
+see [example](../../examples/2-use-key-keyword)

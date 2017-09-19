@@ -100,7 +100,6 @@ class ResolverItems
         }
         $this->items = $newItems;
 
-
         // Keep only unique if requiered.
         if ((isset($modifiers['unique']) && $modifiers['unique'])) {
             try {
@@ -148,22 +147,28 @@ class ResolverItems
             // Consider modifier
             $keep = TRUE;
             if (isset($modifiers['consider']) && $key !== NULL) {
-                if(is_array($value)){
+                if (is_array($value)) {
                     throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
                 }
                 $keep = call_user_func_array($modifiers['consider'], [new SerialResolver($value), $key]);
                 $keep = $keep === NULL ? TRUE : $keep;
             }
+
+            // Value is to be kept.
             if ($keep) {
 
-                // Transform modifier
-                if (isset($modifiers['transform'])) {
-                    $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
-                }
+                // Modifiers are invoqued only on path with id.
+                if ($key !== NULL) {
 
-                // Debug modifier
-                if (isset($modifiers['debug'])) {
-                    self::debugVariable($modifiers['debug'], $value->get(), $key);
+                    // Transform modifier
+                    if (isset($modifiers['transform'])) {
+                        $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+                    }
+
+                    // Debug modifier
+                    if (isset($modifiers['debug'])) {
+                        self::debugVariable($modifiers['debug'], $value->get(), $key);
+                    }
                 }
 
                 // Append value

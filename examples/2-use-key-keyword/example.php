@@ -21,7 +21,14 @@ $input_data = [
 $result = Grabbag::grab($input_data, [
     '#any/#any' => [
         'food:.',
-        'food-group:../#key'
+        'food-type:../#key',
+        '?transform' => function ($value, $key) {
+
+            // Remove the trailing 's' from value
+            if ($key === 'food-group') {
+                return substr($value, 0, -1);
+            }
+        }
     ]
 ]);
 
