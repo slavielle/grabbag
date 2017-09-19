@@ -132,7 +132,7 @@ class ResolverItems
 
         $resultValues = [];
         foreach ($preparedPaths as $preparedPath) {
-            $key = $preparedPath['pathObject']->getKey();
+            $pathId = $preparedPath['pathObject']->getPathId();
 
             // Resolve the path
             $resolvedItems = $resolver->resolve($preparedPath['pathObject']);
@@ -146,11 +146,11 @@ class ResolverItems
 
             // Consider modifier
             $keep = TRUE;
-            if (isset($modifiers['consider']) && $key !== NULL) {
+            if (isset($modifiers['consider']) && $pathId !== NULL) {
                 if (is_array($value)) {
                     throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
                 }
-                $keep = call_user_func_array($modifiers['consider'], [new SerialResolver($value), $key]);
+                $keep = call_user_func_array($modifiers['consider'], [new SerialResolver($value), $pathId]);
                 $keep = $keep === NULL ? TRUE : $keep;
             }
 
@@ -158,22 +158,22 @@ class ResolverItems
             if ($keep) {
 
                 // Modifiers are invoqued only on path with id.
-                if ($key !== NULL) {
+                if ($pathId !== NULL) {
 
                     // Transform modifier
                     if (isset($modifiers['transform'])) {
-                        $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $key]));
+                        $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $pathId]));
                     }
 
                     // Debug modifier
                     if (isset($modifiers['debug'])) {
-                        self::debugVariable($modifiers['debug'], $value->get(), $key);
+                        self::debugVariable($modifiers['debug'], $value->get(), $pathId);
                     }
                 }
 
                 // Append value
-                if ($key !== NULL && substr($key, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
-                    $resultValues[$key] = $value;
+                if ($pathId !== NULL && substr($pathId, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
+                    $resultValues[$pathId] = $value;
                 }
                 else {
                     $resultValues[] = $value;

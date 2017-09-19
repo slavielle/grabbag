@@ -17,7 +17,7 @@ class Path
 
     private $pathItemList;
     private $index;
-    private $key;
+    private $pathId;
 
     /**
      * Constructor.
@@ -27,7 +27,7 @@ class Path
     public function __construct($path)
     {
 
-        $path = $this->parseKey($path);
+        $path = $this->parsePathId($path);
 
         while (1) {
             $matches = [];
@@ -51,17 +51,17 @@ class Path
     }
 
     /**
-     * Parse the key part of a path.
+     * Parse the path id part of a path.
      *
-     * In some case, path can have key part. The key part is located on start
+     * In some case, path can have path id part. The path id part is located on start
      * of the path :
      *
-     * "theKey:the/rest/of/my/path"
+     * "thePathId:the/rest/of/my/path"
      *
      * @param string $path Path string.
      * @return string Unconsumed path part.
      */
-    public function parseKey($path)
+    private function parsePathId($path)
     {
         $matches = [];
         $regex = '/^' .
@@ -72,7 +72,7 @@ class Path
             ')(.*)$/';
         $match_result = preg_match($regex, $path, $matches);
         if ($match_result) {
-            $this->key = substr($matches[1], 0, -1);
+            $this->pathId = substr($matches[1], 0, -1);
             $path = $matches[2];
         }
         return $path;
@@ -105,12 +105,12 @@ class Path
     }
 
     /**
-     * Get the path key.
+     * Get the path id.
      * @return string
      */
-    public function getKey()
+    public function getPathId()
     {
-        return $this->key;
+        return $this->pathId;
     }
 
 }
