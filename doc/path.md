@@ -1,12 +1,20 @@
 # Path
 
-Grabbag Path looks like (on purpose) Linux path syntax to be easy use.
-Path allows to match PHP chain in order to get values.
+Grabbag use path to pick value from PHP elements
+```php
+$result = Grabbag::grab($node, 'that/is/a/path');
+```
+For example could be similar to php expression :
+```php
+$node->getThat()->is['a']['path']
+```
+Grabbag Path looks like (on purpose) Linux path syntax to be familiar and easy use.
+.
 
 
 ## Path items
 
-Path items are separated by slashes.
+Path items are separated by slashes (so are the directories in linux path).
 Let's see one simple example in raw PHP and its equivalent Grabbag path.
 
 PHP
@@ -47,9 +55,18 @@ Following paths are equivalent.
 /myObject/something("param")
 ```
 
-## Simple query
+## Query, a quick overview
 
-A query is a PHP array gathering paths in order to produce structured arrays.
+We talked about path till now ? flub! we would have talk about query !
+
+in fact, the second parameter Grabbag::grab method accepts is not a path but a query.
+All will be explained as soon as i tell you the simplest form of a query is a path.
+
+So now the question is : what a query could be if it's non (only) a path !
+
+#### Path arrays
+
+Path arrays gathers paths in order to produce structured arrays.
 
 **Example :**
 ```php
@@ -66,41 +83,77 @@ In query, paths are often prefixed with id (See Path ids) allowing to produce a 
 
 ## Path ids
 
+#### Usage
+
 Path ids are used to identify a path in a query and are located on start of the path and ends with a ':'
 
-It can have 2 usage : 
+It can have 2 usages : 
 
-* Usage 1 : It can be used to specify key in the result scope
-* Usage 2 : It can be used in a __modifier__ to refer to a path value. 
-If you want to avoid the key to be used in result scope you must prefix it with "~".
+* Usage 1 : It can be used to specify the value key in the result scope
+* Usage 2 : It can be used in a __modifier__ to refer to a path value.
+
+#### Explicit or internal id.
+
+By default, a path id is explicit. It means id is used in the result scope as a key for the value(s) the path collect.
+
+If you want to avoid the key to be used in result scope you must prefix it with "~". Such ids are called internal ids.
 
 Usage 1 example : 
 
 ```php
 [
-    "lv-1:my/first/path",
-    "~lv-2:my/second/path",
+    "lv-1:my/first/path", //this is an explicit id
+    "~lv-2:my/second/path", //this is an internal id
     "lv-3:my/first/path"
 ]
 ```
 Result example :
 ```php
 [
-    "lv-1" => "Result 1",
-    "Result 2",
-    "lv-3" => "Result 3"
+     "lv-1" => "Result 1",
+     "Result 2",
+     "lv-3" => "Result 3"
+ ]
+```
+#### Ids and modifiers
+
+Internal or explicit ids can be used with modifiers to alter the path result.
+
+An example using transform modifier :
+
+```php
+[
+    "lv-1:my/first/path", //this is an explicit id
+    "~lv-2:my/second/path", //this is an internal id
+    "lv-3:my/first/path",
+    "?transform" => function($value, $id){
+        if($id === "~lv-2"){
+            return '>>>' . $value . '<<<';
+        }
+    }
 ]
 ```
+```php
+[
+     "lv-1" => "Result 1",
+     ">>>Result 2<<<",
+     "lv-3" => "Result 3"
+ ]
+```
+## Query, let's go further
 
-## Multiple level Query
+We've seen that the simplest form of a query is a Path, 
+We've seen to that a Query can be a path array, using or not ids.
+
+Fine. Let's make a step ahead.
 
 ### Embedded path arrays
 
-In a query, Path arrays can be embedded in order to produce structured results. 
-Each path array contains paths that will be resolved to produce results in the 
+In a query, Path arrays can be embedded in order to produce leveled structured results. 
+Each path array can contain paths or embedded path arrays that will be resolved to produce results in the 
 related result scope.
 
-Usage 1 example : 
+Embedded path arrays example : 
 
 ```php
 [
@@ -114,13 +167,13 @@ Usage 1 example :
 ```
 
 ### Result scope
+
 Result scope is an important Grabbag concepts.
 
 Let consider the following path : 
 ```
-my/path/#any/continues/#any
+my/object/#any/continues/#any
 ```
-with the two #any correponding to iterable objects, and lets imagine last #any gets a string value.
 
 The result would be something like this : 
 ```php
@@ -135,14 +188,14 @@ If we now split this path in a query containing 2 embedded path array like this 
  
 ```php
 [
-    "my/path/#any" => 
+    "my/object/#any" => 
     [
         "continues/#any"
     ]
 ]
 ```
 
-We request same objects pretty the same way, but we added a embedded path array having its own result scope. The whole result will now be someting like this :
+We request same objects pretty the same way, but we added an embedded path array having its own result scope. The whole result will now be someting like this :
 
 
 ```php
@@ -158,6 +211,7 @@ We request same objects pretty the same way, but we added a embedded path array 
 ]
 ```
 
+see the [source code here](../examples/my-first-embedded-path-array/example.php);
 
 ## Symbols
 
