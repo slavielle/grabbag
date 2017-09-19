@@ -1,5 +1,19 @@
 # Path
 
+* [Principle](#principle)
+* [Path items](#path-items)
+* [Path syntax](#path-syntax)
+* [Query, a quick overview](#query-a-quick-overview)
+    * [Path arrays](#path-array)
+* [Path ids](#path-ids)
+* [Query, let's go further](#query-let-s-go-further)
+* [Symbols](#symbols)
+* [Keywords](#keywords)
+* [Modifiers](#modifiers)
+
+
+## Principle
+
 Grabbag use path to pick value from PHP elements
 ```php
 $result = Grabbag::grab($node, 'that/is/a/path');
@@ -147,7 +161,7 @@ We've seen to that a Query can be a path array, using or not ids.
 
 Fine. Let's make a step ahead.
 
-### Embedded path arrays
+#### Embedded path arrays
 
 In a query, Path arrays can be embedded in order to produce leveled structured results. 
 Each path array can contain paths or embedded path arrays that will be resolved to produce results in the 
@@ -165,8 +179,7 @@ Embedded path arrays example :
     "my-key-C:my/first/path",
 ]
 ```
-
-### Result scope
+#### Result scope
 
 Result scope is an important Grabbag concepts.
 
@@ -187,9 +200,9 @@ The result would be something like this :
 If we now split this path in a query containing 2 embedded path array like this :
  
 ```php
-[
+[ // Path array #1
     "my/object/#any" => 
-    [
+    [ // Path array #2
         "continues/#any"
     ]
 ]
@@ -199,12 +212,12 @@ We request same objects pretty the same way, but we added an embedded path array
 
 
 ```php
-[
-    [
+[ // Result scope #1
+    [ // Result scope #2
         "My string 1-1",
         "My string 1-2"
     ],
-    [
+    [ // Result scope #2
         "My string 2-1",
         "My string 2-2"
     ]
