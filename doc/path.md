@@ -6,7 +6,12 @@
 * [Query, a quick overview](#query-a-quick-overview)
     * [Path arrays](#path-arrays)
 * [Path ids](#path-ids)
+    * [Usage](#usage)
+    * [Explicit or internal id](#explicit-or-internal-id)
+    * [Ids and modifiers](#ids-and-modifiers)     
 * [Query, let's go further](#query-lets-go-further)
+    * [Embedded path arrays](#embedded-path-arrays)
+    * [Result scope](result-scope)
 * [Symbols](#symbols)
 * [Keywords](#keywords)
 * [Modifiers](#modifiers)
@@ -106,7 +111,7 @@ It can have 2 usages :
 * Usage 1 : It can be used to specify the value key in the result scope
 * Usage 2 : It can be used in a __modifier__ to refer to a path value.
 
-### Explicit or internal id.
+### Explicit or internal id
 
 By default, a path id is explicit. It means id is used in the result scope as a key for the value(s) the path collect.
 
@@ -179,7 +184,7 @@ Embedded path arrays example :
     "my-key-C:my/first/path",
 ]
 ```
-### Result scope
+### Result scope
 
 Result scope is an important Grabbag concepts.
 
