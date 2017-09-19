@@ -8,7 +8,7 @@ For example could be similar to php expression :
 ```php
 $node->getThat()->is['a']['path']
 ```
-Grabbag Path looks like (on purpose) Linux path syntax to be easy to use and look familiar.
+Grabbag Path looks like (on purpose) Linux path syntax to be familiar and easy use.
 .
 
 
