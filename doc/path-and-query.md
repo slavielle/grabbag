@@ -1,8 +1,8 @@
-# Path
+# Path & query principles
 
-* [Principle](#principle)
-* [Path items](#path-items)
-* [Path syntax](#path-syntax)
+* [Path principle](#path-principle)
+    * [Path items](#path-items)
+    * [Path items syntax](#path-items-syntax)
 * [Query, a quick overview](#query-a-quick-overview)
     * [Path arrays](#path-arrays)
 * [Path ids](#path-ids)
@@ -17,47 +17,38 @@
 * [Modifiers](#modifiers)
 
 
-## Principle
+## Path principle
 
-Grabbag use path to pick value from PHP elements
+Grabbag offer an alternative to PHP chain to get value from PHP elements (objects or arrays).
+It principle is to use a path that act similar to PHP chain but with some benefits.
+
+for example, a PHP chain such as : 
 ```php
-$result = Grabbag::grab($node, 'that/is/a/path');
+$element->getThat()->is['a']['path'];
 ```
-For example could be similar to php expression :
+
 ```php
-$node->getThat()->is['a']['path']
-```
-Grabbag Path looks like (on purpose) Linux path syntax to be familiar and easy use.
-.
-
-
-## Path items
-
-Path items are separated by slashes (so are the directories in linux path).
-Let's see one simple example in raw PHP and its equivalent Grabbag path.
-
-PHP
-```php
-myObject->myMethod()['myArrayKey']
-```
-Grabbag path : 
-```
-/myObject/myMethod/myArrayKey
+$result = Grabbag::grab($element, 'that/is/a/path');
 ```
 
-## Path syntax
+Grabbag Path are directly [inspired from Linux path syntax](faq.md#why-choosing-linux-path-like-syntax). That was made on purpose to look familiar for developers and make Grabbag basic usage as easiest as possible.
 
-In a path, array keys or object properties can be accessed the same way : 
+
+### Path items
+
+Path items are separated by slashes (so are the directories in linux path) an refer to a PHP element (objet, array, method or variable).
+
+Array keys or object properties can be accessed the same way : 
 ```
 /myObject/myProperty
 /myArray/myKey
 ```
 No need to use distinct syntax as in raw PHP :
 ```php
-$myObject->myProperty
-$myArray['myKey']
+$myObject->myProperty; // Accessing an object's public property.
+$myArray['myKey'];     // Accessing an array keyed item.
 ```
-'get' can be omitted from getter methods name so can be the parenthesis if no parameter is required.
+When path item refers an object getter method, 'get' can be omitted so can be the parenthesis if no parameter is required.
 
 Following paths are equivalent. 
 
@@ -66,14 +57,14 @@ Following paths are equivalent.
 /myObject/something()
 /myObject/something
 ```
-Method items can only have one parameter provided for now : Method items aims to access getter method. one parameter is all we need in that case.  
+Method items can have one but [only one parameter provided](faq.md#why-only-one-parameter-for-method-path-items) (for now) : Method items aims to access getter method. one parameter is all we need in that case.  
 
 Following paths are equivalent. 
 ```
 /myObject/getSometing("param")
 /myObject/something("param")
 ```
-
+Path item allowing to access directly to a PHP element is called an accessor. There is some other types of path items (keywords and symbols) we'll see later.
 ## Query, a quick overview
 
 We talked about path till now ? flub! we would have talk about query !
