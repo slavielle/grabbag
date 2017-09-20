@@ -3,8 +3,8 @@
 namespace Grabbag;
 
 use Grabbag\Path;
-use Grabbag\ResolverItem;
-use Grabbag\ResolverItems;
+use Grabbag\Item;
+use Grabbag\ItemCollection;
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
@@ -24,11 +24,11 @@ class Resolver
 
     /**
      * Constructor.
-     * @param ResolverItem | mixed $item
+     * @param Item | mixed $item
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        $this->items = ResolverItem::prepareResolverItem($item);
+        $this->items = Item::prepareResolverItem($item);
         $this->defaultValue = $defaultValue;
         $this->exceptionEnabled = $exceptionEnabled;
     }
@@ -36,7 +36,7 @@ class Resolver
     /**
      * Resolve path.
      * @param Path $path Path to resolve.
-     * @return ResolverItems Resolved items as a result.
+     * @return ItemCollection Resolved items as a result.
      */
     public function resolve(Path $path)
     {
@@ -48,21 +48,21 @@ class Resolver
             try {
                 $items = $this->resolveRecurse($path, $this->items);
             } catch (NotAdressableException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
+                return new ItemCollection([new Item($this->defaultValue)], FALSE);
             } catch (PropertyNotFoundException $e) {
-                return new ResolverItems([new ResolverItem($this->defaultValue)], FALSE);
+                return new ItemCollection([new Item($this->defaultValue)], FALSE);
             }
         }
 
-        return new ResolverItems($items, FALSE);
+        return new ItemCollection($items, FALSE);
     }
 
 
     /**
      * Resolve recursively for each PathItem instance in the $path.
      * @param Path $path Path to resolve.
-     * @param ResolverItem[] $items Items to be resolved.
-     * @return ResolverItem[] A set of resolved items.
+     * @param Item[] $items Items to be resolved.
+     * @return Item[] A set of resolved items.
      */
     private function resolveRecurse(Path $path, $items)
     {
@@ -76,8 +76,8 @@ class Resolver
     /**
      * Resolve for each item in $items regarding provided path item.
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem[] $items Item to be resolved.
-     * @return ResolverItem[] A set of resolved items.
+     * @param Item[] $items Item to be resolved.
+     * @return Item[] A set of resolved items.
      * @throws NotAdressableException
      */
     private function resolveEach(PathItem $pathItem, $items)
@@ -109,10 +109,10 @@ class Resolver
      * Symbol are special path item such as '.' or '..'
      *
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
-     * @return ResolverItem Resolved Item.
+     * @param Item $item Item to be resolved.
+     * @return Item Resolved Item.
      */
-    private function resolveSymbol(PathItem $pathItem, ResolverItem $item)
+    private function resolveSymbol(PathItem $pathItem, Item $item)
     {
         switch ($pathItem->getKey()) {
             case '.':
@@ -130,11 +130,11 @@ class Resolver
      * Get value from item depending on the keyword specified in $pathItem.
      *
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
+     * @param Item $item Item to be resolved.
      * @throws UnknownPathKeywordException if a keyword is unknown.
      * @return $resultObjects[] A set of Resolved Item.
      */
-    private function resolveKeyword(PathItem $pathItem, ResolverItem $item)
+    private function resolveKeyword(PathItem $pathItem, Item $item)
     {
         $resultObjects = [];
         switch ($pathItem->getKey()) {
@@ -158,11 +158,11 @@ class Resolver
     /**
      * Resolve item regarding $pathItem.
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
-     * @return ResolverItem Resolved Item.
+     * @param Item $item Item to be resolved.
+     * @return Item Resolved Item.
      * @throws PropertyNotFoundException
      */
-    private function resolveObject(PathItem $pathItem, ResolverItem $item)
+    private function resolveObject(PathItem $pathItem, Item $item)
     {
 
         // Test item property
@@ -189,10 +189,10 @@ class Resolver
     /**
      * Resolve item property : Get the value form the item method defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
-     * @return ResolverItem Resolved Item.
+     * @param Item $item Item to be resolved.
+     * @return Item Resolved Item.
      */
-    private function resolveObjectProperty(PathItem $pathItem, ResolverItem $item)
+    private function resolveObjectProperty(PathItem $pathItem, Item $item)
     {
         return self::makeResolverItem($item, $item->get()->{$pathItem->getKey()}, $pathItem->getKey());
     }
@@ -200,12 +200,12 @@ class Resolver
     /**
      * Resolve item property : Get the value form the item property defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
+     * @param Item $item Item to be resolved.
      * @param bool $prefixWithGet Try to find a method name using path item key prefixed with 'get'.
      * @throws NotAdressableException if method call throw an exception.
-     * @return ResolverItem Resolved Item.
+     * @return Item Resolved Item.
      */
-    private function resolveObjectMethod(PathItem $pathItem, ResolverItem $item, $prefixWithGet = FALSE)
+    private function resolveObjectMethod(PathItem $pathItem, Item $item, $prefixWithGet = FALSE)
     {
         $params = [];
         if ($pathItem->hasParam()) {
@@ -224,11 +224,11 @@ class Resolver
     /**
      * Resolve array : Get the value form the array key defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
-     * @param ResolverItem $item Item to be resolved.
+     * @param Item $item Item to be resolved.
      * @throws PropertyNotFoundException if property cant be found in $item.
-     * @return ResolverItem Resolved Item.
+     * @return Item Resolved Item.
      */
-    private function resolveArray(PathItem $pathItem, ResolverItem $item)
+    private function resolveArray(PathItem $pathItem, Item $item)
     {
 
         if (isset($item->get()[$pathItem->getKey()])) {
@@ -240,12 +240,12 @@ class Resolver
 
     /**
      * Make new resolver item.
-     * @param ResolverItem $item Previous level item.
+     * @param Item $item Previous level item.
      * @param mixed $value New item value.
      * @param string|integer $key Key value is the value provide from a array or an object property.
-     * @return ResolverItem
+     * @return Item
      */
-    private static function makeResolverItem(ResolverItem $item, $value, $key = NULL)
+    private static function makeResolverItem(Item $item, $value, $key = NULL)
     {
         $newItem = clone $item;
         $newItem->push($value, $key);

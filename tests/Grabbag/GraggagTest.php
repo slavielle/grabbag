@@ -19,7 +19,7 @@ use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
-use Grabbag\ResolverItems;
+use Grabbag\ItemCollection;
 
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
@@ -40,7 +40,7 @@ final class GrabbagTest extends TestCase
         $result = $g->resolve('objects');
 
         $this->assertInstanceOf(
-            ResolverItems::class, $result
+            ItemCollection::class, $result
         );
     }
 

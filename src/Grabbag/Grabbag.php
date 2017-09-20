@@ -3,7 +3,7 @@
 namespace Grabbag;
 
 use Grabbag\Resolver;
-use Grabbag\ResolverItems;
+use Grabbag\ItemCollection;
 
 /**
  * Grabber Allows to resolve value(s) on object chain.
@@ -17,17 +17,17 @@ class Grabbag
 
     /**
      * Grabbag constructor.
-     * @param ResolverItem | mixed $item Target Grabbag item.
+     * @param Item | mixed $item Target Grabbag item.
      */
     function __construct($item)
     {
-        $this->items = new ResolverItems($item);
+        $this->items = new ItemCollection($item);
     }
 
     /**
      * @param string $paths Path to resolve.
      * @param mixed $defaultValue Value to return when path resolution fail.
-     * @return ResolverItems Items grabbed using path.
+     * @return ItemCollection Items grabbed using path.
      */
     public function resolve($paths, $defaultValue = NULL)
     {
@@ -37,14 +37,15 @@ class Grabbag
 
     /**
      * Allow to resolve and get value in one line.
-     * @param ResolverItem | mixed $item Target Grabbag item.
+     * @param Item | mixed $item Target Grabbag item.
      * @param string $paths Path to resolve.
      * @param mixed $defaultValue Value to return when path resolution fail.
      * @return array|mixed The result value.
      */
     public static function grab($item, $paths, $defaultValue = NULL){
-        $resolverItems = new ResolverItems($item);
+        $resolverItems = new ItemCollection($item);
         $resolverItems->resolve($paths, $defaultValue);
+
         return $resolverItems->getValue();
     }
 

@@ -17,7 +17,7 @@ use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
-use Grabbag\ResolverItems;
+use Grabbag\ItemCollection;
 
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;

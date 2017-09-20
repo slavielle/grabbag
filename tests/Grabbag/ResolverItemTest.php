@@ -9,7 +9,7 @@
 namespace Grabbag\tests;
 
 use PHPUnit\Framework\TestCase;
-use Grabbag\ResolverItem;
+use Grabbag\Item;
 
 
 class ResolverItemTest extends \PHPUnit_Framework_TestCase
@@ -19,7 +19,7 @@ class ResolverItemTest extends \PHPUnit_Framework_TestCase
 
         $testValue = 'test-value';
 
-        $resolverItem = new ResolverItem($testValue);
+        $resolverItem = new Item($testValue);
 
         $this->assertEquals(
             $testValue, $resolverItem->get()
@@ -29,7 +29,7 @@ class ResolverItemTest extends \PHPUnit_Framework_TestCase
     public function testPopWithEmptyStack()
     {
         $testValue = 'test-value';
-        $resolverItem = new ResolverItem($testValue);
+        $resolverItem = new Item($testValue);
         $this->expectException(\Exception::class);
         $resolverItem->pop();
     }
@@ -43,7 +43,7 @@ class ResolverItemTest extends \PHPUnit_Framework_TestCase
             'value-4',
         ];
 
-        $resolverItem = new ResolverItem($values[0]);
+        $resolverItem = new Item($values[0]);
 
         $resolverItem->push($values[1]);
         $this->assertEquals(
@@ -90,7 +90,7 @@ class ResolverItemTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdate(){
         $testValue = '';
-        $resolverItem = new ResolverItem($testValue);
+        $resolverItem = new Item($testValue);
         $resolverItem->update('updated-value-1');
         $this->assertEquals(
             'updated-value-1', $resolverItem->get()

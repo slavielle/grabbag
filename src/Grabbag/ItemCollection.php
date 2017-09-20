@@ -3,9 +3,9 @@
 namespace Grabbag;
 
 use Grabbag\Resolver;
-use Grabbag\ResolverItem;
+use Grabbag\Item;
 use Grabbag\Cnst;
-use Grabbag\SerialResolver;
+use Grabbag\ItemAccessor;
 use Grabbag\exceptions\CantApplyUniqueModifierException;
 use Grabbag\exceptions\CantApplyConsiderModifierException;
 
@@ -14,18 +14,18 @@ use Grabbag\exceptions\CantApplyConsiderModifierException;
  *
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  */
-class ResolverItems
+class ItemCollection
 {
 
     private $items;
 
     /**
-     * ResolverItems constructor.
-     * @param ResolverItem[] $items Array of ResolverItem composing the result from resolver.
+     * ItemCollection constructor.
+     * @param Item[] $items Array of Item composing the result from resolver.
      */
     public function __construct($items, $prepare = TRUE)
     {
-        $this->items = $prepare ? ResolverItem::prepareResolverItem($items) : $items;
+        $this->items = $prepare ? Item::prepareResolverItem($items) : $items;
     }
 
     /**
@@ -46,9 +46,9 @@ class ResolverItems
     }
 
     /**
-     * Same as getValue, except it returns ResolverItem instance or ResolverItem instance array.
+     * Same as getValue, except it returns Item instance or Item instance array.
      * @param bool $forceArray Force the method result to be an array even if there is only one result item.
-     * @return ResolverItem | ResolverItem[]
+     * @return Item | Item[]
      */
     private function getItems($forceArray = false)
     {
@@ -56,8 +56,8 @@ class ResolverItems
     }
 
     /**
-     * Recurse an array containing ResolverItem instance and reflect it with each ResolverItem converted in value.
-     * @param ResolverItem[] $array Input array containg ResolverItem.
+     * Recurse an array containing Item instance and reflect it with each Item converted in value.
+     * @param Item[] $array Input array containg Item.
      * @return mixed[]
      * @throws \Exception
      */
@@ -68,7 +68,7 @@ class ResolverItems
             if (is_array($arrayItem)) {
                 $resultArray[$key] = $this->getValueRecurse($arrayItem);
             }
-            else if ($arrayItem instanceof ResolverItem) {
+            else if ($arrayItem instanceof Item) {
                 $resultArray[$key] = $arrayItem->get();
             }
             else {
@@ -81,6 +81,7 @@ class ResolverItems
     /**
      * Resolve every result items regarding the path or query provided.
      * @param string | string[] $path Path or Query.
+     * @param mixed $defaultValue Default value to provide in case the path resolution fails.
      */
     public function resolve($path, $defaultValue = NULL)
     {
@@ -118,11 +119,11 @@ class ResolverItems
 
     /**
      * Resolve one result item regarding the path or Query provided.
-     * @param ResolverItem $item Item to be resolved.
+     * @param Item $item Item to be resolved.
      * @param mixed[] $preparedPaths Path or Query.
-     * @return ResolverItem[] Resolved items.
+     * @return Item[] Resolved items.
      */
-    private function resolveEach(ResolverItem $item, $preparedPaths, $modifiers, $defaultValue = NULL)
+    private function resolveEach(Item $item, $preparedPaths, $modifiers, $defaultValue = NULL)
     {
         // Init Resolver.
         $resolver = new Resolver($item,
@@ -150,7 +151,7 @@ class ResolverItems
                 if (is_array($value)) {
                     throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
                 }
-                $keep = call_user_func_array($modifiers['consider'], [new SerialResolver($value), $pathId]);
+                $keep = call_user_func_array($modifiers['consider'], [new ItemAccessor($value), $pathId]);
                 $keep = $keep === NULL ? TRUE : $keep;
             }
 
@@ -244,9 +245,9 @@ class ResolverItems
 
     /**
      * Implements ?unique modifier behavior : Return an array containing only unique value in array.
-     * @param ResolverItem[] $items Array to be filtered.
+     * @param Item[] $items Array to be filtered.
      * @maram integer $recurseLevel. Level of recursion.
-     * @return ResolverItem[] Result array.
+     * @return Item[] Result array.
      */
     static private function keepUniqueValuesOnly($items, $recurseLevel = 0)
     {
@@ -257,11 +258,11 @@ class ResolverItems
             $newValues = [];
             foreach ($items as $key => $item) {
 
-                // $items should contains a list of ResolverItem instance. if one item
-                if (!$item instanceof ResolverItem) {
+                // $items should contains a list of Item instance. if one item
+                if (!$item instanceof Item) {
 
-                    // Items is normally a list of ResolverItem instances, but, in some cases, $items is an array
-                    // containing one element containing a list of ResolverItem instances. In this case we just recurse
+                    // Items is normally a list of Item instances, but, in some cases, $items is an array
+                    // containing one element containing a list of Item instances. In this case we just recurse
                     // only one level up.
                     if (count($items) === 1 && is_integer($key) && $recurseLevel === 0) {
                         $newValues[] = self::keepUniqueValuesOnly($item, $recurseLevel + 1);

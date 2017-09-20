@@ -4,7 +4,7 @@ namespace Grabbag;
 
 use \Grabbag\exceptions\ResolveItemStackEmptyException;
 /**
- * Class ResolverItem
+ * Class Item
  *
  * Implement resolver items used by Resolver to store item (value get from objects regarding the path) values and info.
  *
@@ -12,7 +12,7 @@ use \Grabbag\exceptions\ResolveItemStackEmptyException;
  * @package Grabbag
  */
 
-class ResolverItem
+class Item
 {
 
     private $item;
@@ -20,7 +20,7 @@ class ResolverItem
     private $previous;
 
     /**
-     * ResolverItem constructor.
+     * Item constructor.
      * @param mixed $item Item value.
      * @param string|integer Item key.
      */
@@ -94,16 +94,16 @@ class ResolverItem
     }
 
     /**
-     * Prepare $item to normalize it to be an array of ResolverItem.
-     * @param ResolverItem | mixed $item
-     * @return array|ResolverItem
+     * Prepare $item to normalize it to be an array of Item.
+     * @param Item | mixed $item
+     * @return array|Item
      */
     public static function prepareResolverItem($item)
     {
         if (is_array($item)) {
-            return $item instanceof ResolverItem ? $item : [new ResolverItem($item)];
+            return $item instanceof Item ? $item : [new Item($item)];
         } else {
-            return $item instanceof ResolverItem ? [$item] : [new ResolverItem($item)];
+            return $item instanceof Item ? [$item] : [new Item($item)];
         }
     }
 

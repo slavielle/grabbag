@@ -15,8 +15,8 @@ use Grabbag\Grabbag;
 use Grabbag\Path;
 use Grabbag\PathItem;
 use Grabbag\Resolver;
-use Grabbag\ResolverItem;
-use Grabbag\ResolverItems;
+use Grabbag\Item;
+use Grabbag\ItemCollection;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\NotAdressableException;
@@ -71,7 +71,7 @@ final class ResolverItemsTest extends TestCase
     {
         $myInputValue = ['test 1', 'test 2'];
         $myOutputValue = ['test 1', 'test 2'];
-        $resolverItems = new ResolverItems($myInputValue);
+        $resolverItems = new ItemCollection($myInputValue);
         $this->assertEquals(
             $myOutputValue, $resolverItems->getValue()
         );
@@ -86,7 +86,7 @@ final class ResolverItemsTest extends TestCase
 
         $testObject = SourceDataHelper::getDataIndexedL2();
 
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         // Must return provided default value when passing it using a modifier.
         $defaultValueSet = [
@@ -117,14 +117,14 @@ final class ResolverItemsTest extends TestCase
         // Must raise an exception when exception activated and path not found.
         $this->expectException(PropertyNotFoundException::class);
 
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve(['badpath', '?exception-enabled']);
     }
 
     /**
      * Test resolving with numerical index values in path.
-     * Similar test to ResolverTest::testResolveWithIndex but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolveWithIndex but on a set of Item.
      */
     public function testResolveWithIndex()
     {
@@ -132,9 +132,9 @@ final class ResolverItemsTest extends TestCase
         $testObject = SourceDataHelper::getDataIndexedL1();
         $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems([
-                new ResolverItem($testObject),
-                new ResolverItem($testObject)
+            $resolverItems = new ItemCollection([
+                new Item($testObject),
+                new Item($testObject)
             ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals([
@@ -147,7 +147,7 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test resolving with numerical index (2 levels) values in path.
-     * Similar test to ResolverTest::testResolveWithIndexOn2Levels but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolveWithIndexOn2Levels but on a set of Item.
      */
     public function testResolveWithIndexOn2Levels()
     {
@@ -156,9 +156,9 @@ final class ResolverItemsTest extends TestCase
         $testObject = SourceDataHelper::getDataIndexedL2();
         $pathVariants = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems([
-                new ResolverItem($testObject),
-                new ResolverItem($testObject),
+            $resolverItems = new ItemCollection([
+                new Item($testObject),
+                new Item($testObject),
             ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals([
@@ -170,7 +170,7 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test resolving with key index values in path.
-     * Similar test to ResolverTest::testResolveWithKey but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolveWithKey but on a set of Item.
      */
     public function testResolveWithKey()
     {
@@ -178,9 +178,9 @@ final class ResolverItemsTest extends TestCase
 
         $pathVariants = ['getAllObjects/my_value_2/getName', 'allObjects/my_value_2/name', 'objects/my_value_2/myName'];
         foreach ($pathVariants as $pathVariant) {
-            $resolverItems = new ResolverItems([
-                new ResolverItem($testObject),
-                new ResolverItem($testObject)
+            $resolverItems = new ItemCollection([
+                new Item($testObject),
+                new Item($testObject)
             ], FALSE);
             $resolverItems->resolve($pathVariant);
             $this->assertEquals([
@@ -192,14 +192,14 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test resolving with method + string parameter in path.
-     * Similar test to ResolverTest::testResolveWithGetMethodWithStringParameter but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolveWithGetMethodWithStringParameter but on a set of Item.
      */
     public function testResolveWithGetMethodWithStringParameter()
     {
         $testObject = SourceDataHelper::getDataNamedL1();
-        $resolverItems = new ResolverItems([
-            new ResolverItem($testObject),
-            new ResolverItem($testObject)
+        $resolverItems = new ItemCollection([
+            new Item($testObject),
+            new Item($testObject)
         ], FALSE);
 
         // With string parameter
@@ -217,16 +217,16 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test resolving with method + int parameter in path.
-     * Similar test to ResolverTest::testResolveWithGetMethodWithIntParameter but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolveWithGetMethodWithIntParameter but on a set of Item.
      */
     public function testResolveWithGetMethodWithIntParameter()
     {
 
         // With Numeric parameter
         $testObject = SourceDataHelper::getDataIndexedL1();
-        $resolverItems = new ResolverItems([
-            new ResolverItem($testObject),
-            new ResolverItem($testObject)
+        $resolverItems = new ItemCollection([
+            new Item($testObject),
+            new Item($testObject)
         ], FALSE);
 
         $pathVariants = [
@@ -244,7 +244,7 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test resolving path with #any keyword
-     * Similar test to ResolverTest::testResolverWithAny but on a set of ResolverItem.
+     * Similar test to ResolverTest::testResolverWithAny but on a set of Item.
      */
     public function testResolverWithAny()
     {
@@ -257,9 +257,9 @@ final class ResolverItemsTest extends TestCase
         ];
 
         foreach ($pathList as $path) {
-            $resolverItems = new ResolverItems([
-                new ResolverItem($testObject),
-                new ResolverItem($testObject),
+            $resolverItems = new ItemCollection([
+                new Item($testObject),
+                new Item($testObject),
             ], FALSE);
             $resolverItems->resolve($path);
             $this->assertEquals([
@@ -274,7 +274,7 @@ final class ResolverItemsTest extends TestCase
      */
     public function testResolverQueryWithAny2level()
     {
-        $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
+        $resolverItems = new ItemCollection(SourceDataHelper::getDataNamedL2());
 
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -297,7 +297,7 @@ final class ResolverItemsTest extends TestCase
      */
     public function testResolverQueryWithAny2levelB()
     {
-        $resolverItems = new ResolverItems(SourceDataHelper::getDataNamedL2());
+        $resolverItems = new ItemCollection(SourceDataHelper::getDataNamedL2());
 
         $expectedValue = [
             'my_value_1_1',
@@ -329,7 +329,7 @@ final class ResolverItemsTest extends TestCase
     public function testResolverQueryWithAny3Level()
     {
         $testObject = SourceDataHelper::getDataNamedL3();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -357,7 +357,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
 
@@ -381,7 +381,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['ID#0', 'ID#6', 'ID#12'];
 
@@ -402,7 +402,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['ID#0', 'ID#6', 'ID#12'];
 
@@ -425,7 +425,7 @@ final class ResolverItemsTest extends TestCase
     {
         self::error_storage('flush');
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = [
             ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'], ['ID#0', 'ID#0'],
@@ -457,7 +457,7 @@ final class ResolverItemsTest extends TestCase
 
         self::error_storage('flush');
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = [
             ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'], ['my-id' => 'ID#0'],
@@ -487,7 +487,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['ID#0', 'ID#12'];
 
@@ -517,7 +517,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $this->expectException(CantApplyConsiderModifierException::class);
         $resolverItems->resolve([
@@ -539,7 +539,7 @@ final class ResolverItemsTest extends TestCase
     public function testResolverQueryWithDebugModifier()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
         $myDebugInfo = NULL;
         $resolverItems->resolve([
             'getAllObjects/#any' => [
@@ -579,7 +579,7 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
             'getAllObjects/#any/objects/#any/myId' => [
@@ -597,7 +597,7 @@ final class ResolverItemsTest extends TestCase
     public function testResolverQueryWithBoubleDotSymbol()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
             'getAllObjects/#any' => [
                 'id:myId',
@@ -621,7 +621,7 @@ final class ResolverItemsTest extends TestCase
     public function testResolverQueryWithToMuchBoubleDotSymbol()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ResolverItems($testObject);
+        $resolverItems = new ItemCollection($testObject);
 
         $this->expectException(ResolveItemStackEmptyException::class);
 
