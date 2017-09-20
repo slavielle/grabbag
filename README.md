@@ -105,7 +105,8 @@ A quick list for possible usage I have in mind are :
 * Data export
 
 
-## Want more ?
+## Want to know more about ?
 
-Let's take a tour on the [example section](examples)
-(I pledge to produce more of them soon :) )
+Take a tour on the 
+* [examples](examples)
+* [documentation](doc)
