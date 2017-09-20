@@ -35,7 +35,7 @@ $json = json_encode(
 
                 '?consider' => function($item, $id) use ($filterFriends){
                     if($id === '~fruit'){
-                        return in_array($item->grab('../../../../name')->getValue(), ['Mary', 'Tom']);
+                        return in_array($item->grab('../../../../name'), ['Mary', 'Tom']);
                     }
                 },
 

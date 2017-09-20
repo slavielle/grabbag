@@ -25,28 +25,33 @@ class Grabbag
     }
 
     /**
-     * @param string $paths Path to resolve.
+     * @param string $query Query to resolve.
      * @param mixed $defaultValue Value to return when path resolution fail.
      * @return ItemCollection Items grabbed using path.
      */
-    public function resolve($paths, $defaultValue = NULL)
+    public function resolve($query, $defaultValue = NULL)
     {
-        $this->items->resolve($paths, $defaultValue);
+        $this->items->resolve($query, $defaultValue);
         return $this->items;
     }
 
     /**
      * Allow to resolve and get value in one line.
      * @param Item | mixed $item Target Grabbag item.
-     * @param string $paths Path to resolve.
+     * @param string $query Query to resolve.
      * @param mixed $defaultValue Value to return when path resolution fail.
      * @return array|mixed The result value.
      */
-    public static function grab($item, $paths, $defaultValue = NULL){
+    public static function grab($item, $query, $defaultValue = NULL){
         $resolverItems = new ItemCollection($item);
-        $resolverItems->resolve($paths, $defaultValue);
+        $resolverItems->resolve($query, $defaultValue);
 
-        return $resolverItems->getValue();
+        $value = $resolverItems->getValue();
+
+        // Optimise memory
+        unset($resolverItems);
+
+        return $value;
     }
 
 }

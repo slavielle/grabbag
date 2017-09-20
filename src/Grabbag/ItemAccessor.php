@@ -13,7 +13,7 @@ use Grabbag\Item;
 /**
  * Class ItemAccessor
  *
- * ItemAccessor is meant to access a Item with
+ * ItemAccessor is meant to access a Item instance with :
  *
  * - a restricted set of methods (get, grab)
  * - a grab method allowing to resolve the Item several times without "burning" it.
@@ -44,13 +44,16 @@ class ItemAccessor
     }
 
     /**
-     * @param $path
+     * Grab apply query to $resolverItem property.
+     * @param $query
      * @return $this
      */
-    public function grab($path)
+    public function grab($query)
     {
         $resolverItems = new ItemCollection(clone $this->resolverItem);
-        return $resolverItems->resolve($path);
+        $value = $resolverItems->resolve($query)->getValue();
+        unset($resolverItems);
+        return $value;
     }
 
     public function get()
