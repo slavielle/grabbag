@@ -41,20 +41,7 @@ class Resolver
     public function resolve(Path $path)
     {
         $path->rewind();
-        if ($this->exceptionEnabled) {
-            $items = $this->resolveRecurse($path, $this->items);
-        }
-        else {
-            try {
-                $items = $this->resolveRecurse($path, $this->items);
-            } catch (NotAdressableException $e) {
-                return new ItemCollection([new Item($this->defaultValue)], FALSE);
-            } catch (PropertyNotFoundException $e) {
-                return new ItemCollection([new Item($this->defaultValue)], FALSE);
-            }
-        }
-
-        return new ItemCollection($items, FALSE);
+        return new ItemCollection($this->resolveRecurse($path, $this->items), FALSE);
     }
 
 
@@ -82,25 +69,37 @@ class Resolver
      */
     private function resolveEach(PathItem $pathItem, $items)
     {
-        $resultObjects = [];
+        $allResultObjects = [];
         foreach ($items as $item) {
-            if ($pathItem->isKeyword()) {
-                $resultObjects = array_merge($resultObjects, $this->resolveKeyword($pathItem, $item));
+
+            $resultObjects = $this->catchExceptionIfNeed(function() use ($item, $pathItem){
+                if ($pathItem->isKeyword()) {
+                    $resultObjects = $this->resolveKeyword($pathItem, $item);
+                }
+                else if ($pathItem->isSymbol()) {
+                    $resultObjects = $this->resolveSymbol($pathItem, $item);
+                }
+                else if (is_object($item->get())) {
+                    $resultObjects = $this->resolveObject($pathItem, $item);
+                }
+                else if (is_array($item->get())) {
+                    $resultObjects = $this->resolveArray($pathItem, $item);
+                }
+                else {
+                    throw new NotAdressableException('Can\'t resolve');
+                }
+
+                return $resultObjects;
+            });
+
+            if(is_array($resultObjects)){
+                $allResultObjects = array_merge($allResultObjects, $resultObjects);
             }
-            else if ($pathItem->isSymbol()) {
-                $resultObjects[] = $this->resolveSymbol($pathItem, $item);
-            }
-            else if (is_object($item->get())) {
-                $resultObjects[] = $this->resolveObject($pathItem, $item);
-            }
-            else if (is_array($item->get())) {
-                $resultObjects[] = $this->resolveArray($pathItem, $item);
-            }
-            else {
-                throw new NotAdressableException('Can\'t resolve');
+            else{
+                $allResultObjects[] = $resultObjects;
             }
         }
-        return $resultObjects;
+        return $allResultObjects;
     }
 
     /**
@@ -239,17 +238,39 @@ class Resolver
     }
 
     /**
-     * Make new resolver item.
-     * @param Item $item Previous level item.
+     * Make new Item instance by cloning a parent Item instance and pushing info into it.
+     * @param Item $item Previous level item instance.
      * @param mixed $value New item value.
-     * @param string|integer $key Key value is the value provide from a array or an object property.
-     * @return Item
+     * @param string|integer $key Key value from an array (key) or an object (property).
+     * @return Item New Item.
      */
     private static function makeResolverItem(Item $item, $value, $key = NULL)
     {
         $newItem = clone $item;
         $newItem->push($value, $key);
         return $newItem;
+    }
+
+    /**
+     * Run the items-producing callable and catch some exceptions that eligible to produce default value.
+     * @param $callable Items-producing callable.
+     * @return Item|Item[] the produced items or the the default value.
+     */
+    private function catchExceptionIfNeed($callable){
+        if ($this->exceptionEnabled) {
+            $items = $callable();
+        }
+        else {
+            try {
+                $items = $callable();
+            } catch (NotAdressableException $e) {
+                $items = new Item($this->defaultValue);
+            } catch (PropertyNotFoundException $e) {
+                $items = new Item($this->defaultValue);
+            }
+        }
+
+        return $items;
     }
 
 }
