@@ -18,6 +18,7 @@ class Path
     private $pathItemList;
     private $index;
     private $pathId;
+    private $mutipleMatching;
 
     /**
      * Constructor.
@@ -28,6 +29,7 @@ class Path
     {
 
         $path = $this->parsePathId($path);
+        $this->mutipleMatching = FALSE;
 
         while (1) {
             $matches = [];
@@ -38,7 +40,9 @@ class Path
                 Cnst::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
             $match_result = preg_match($regex, $path, $matches);
             if ($match_result) {
-                $this->pathItemList[] = new PathItem($matches[1], $matches[2], $matches[3]);
+                $pathItem = new PathItem($matches[1], $matches[2], $matches[3]);
+                $this->mutipleMatching = $this->mutipleMatching || $pathItem->isMutipleMatching();
+                $this->pathItemList[] = $pathItem;
                 $path = $matches[4];
                 if (strlen($path) === 0) {
                     break;
@@ -111,6 +115,14 @@ class Path
     public function getPathId()
     {
         return $this->pathId;
+    }
+
+    /**
+     *
+     * @return bool
+     */
+    public function isMutipleMatching(){
+        return $this->mutipleMatching;
     }
 
 }

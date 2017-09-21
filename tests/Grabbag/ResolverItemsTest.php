@@ -17,6 +17,7 @@ use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\Item;
 use Grabbag\ItemCollection;
+use Grabbag\VoidDefaultValue;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\NotAdressableException;
@@ -81,7 +82,7 @@ final class ResolverItemsTest extends TestCase
      * Test default result when requesting with a valid but non-matching path
      * Similar to ResolverTest::testResolveWithValidButNonMatchingPath but use default-value modifier.
      */
-    public function testResolveWithValidButNonMatchingPath()
+    public function testResolveWithValidButNonMatchingPath1()
     {
 
         $testObject = SourceDataHelper::getDataIndexedL2();
@@ -90,19 +91,106 @@ final class ResolverItemsTest extends TestCase
 
         // Must return provided default value when passing it using a modifier.
         $defaultValueSet = [
-            NULL,
-            'Default String',
-            192,
-            ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
+            ['in' => NULL, 'out' => NULL],
+            ['in' => 'Default String', 'out' => 'Default String'],
+            ['in' => 192, 'out' => 192],
+            ['in' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]], 'out' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]],
+            ['in' => new VoidDefaultValue(), 'out' => NULL],
+            ['in' => new VoidDefaultValue('Default String'), 'out' => 'Default String']
         ];
+
         foreach ($defaultValueSet as $defaultValue) {
             $resolverItems->resolve([
-                    'badpath',
-                    '?default-value' => $defaultValue]
-            );
+                'badpath',
+                '?default-value' => $defaultValue['in']
+            ]);
+
             $this->assertEquals(
-                $defaultValue, $resolverItems->getValue()
+                $defaultValue['out'], $resolverItems->getValue()
             );
+
+        }
+    }
+
+    /**
+     * Test default result when requesting with a valid but non-matching path
+     * Similar to ResolverTest::testResolveWithValidButNonMatchingPath but use default-value modifier.
+     */
+    public function testResolveWithValidButNonMatchingPathOnEmbeddedPathArray()
+    {
+
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+
+        // Must return provided default value (in) the result set (out) when passing it using a modifier.
+        $defaultValueSet = [
+            [
+                'in' => NULL,
+                'out' => [
+                    'I\'m a Leaf2 !',
+                    NULL,
+                    NULL,
+                    NULL,
+                    NULL
+                ]
+            ],
+            [
+                'in' => 'Default String',
+                'out' => [
+                    'I\'m a Leaf2 !',
+                    'Default String',
+                    'Default String',
+                    'Default String',
+                    'Default String'
+                ]
+            ],
+            [
+                'in' => 192,
+                'out' =>
+                    [
+                        'I\'m a Leaf2 !',
+                        192,
+                        192,
+                        192,
+                        192
+                    ]
+            ],
+            [
+                'in' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]],
+                'out' => [
+                    'I\'m a Leaf2 !',
+                    ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]],
+                    ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]],
+                    ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]],
+                    ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
+                ]
+            ],
+            [
+                'in' => new VoidDefaultValue(),
+                'out' => [
+                    'I\'m a Leaf2 !'
+                ]
+            ],
+            [
+                'in' => new VoidDefaultValue('Default String'),
+                'out' => [
+                    'I\'m a Leaf2 !'
+                ]
+            ]
+        ];
+        foreach ($defaultValueSet as $defaultValue) {
+            $resolverItems = new ItemCollection($testObject);
+            $resolverItems->resolve([
+                'getAllObjects/3' => [
+                    'getAllObjects/#any/myLeaf2Secret',
+                    '?default-value' => $defaultValue['in']
+                ],
+                '?default-value' => $defaultValue['in']
+            ]);
+            $this->assertEquals(
+                $defaultValue['out'], $resolverItems->getValue()
+            );
+
         }
     }
 
@@ -495,8 +583,8 @@ final class ResolverItemsTest extends TestCase
             'getAllObjects/#any/getAllObjects/#any/../../myId' => [
                 '~myId:.',
                 '?unique',
-                '?consider' => function ($item, $id){
-                    if($id === "~myId"){
+                '?consider' => function ($item, $id) {
+                    if ($id === "~myId") {
                         return $item->get() !== 'ID#6';
                     }
                 }
@@ -523,8 +611,8 @@ final class ResolverItemsTest extends TestCase
         $resolverItems->resolve([
             '~myId:getAllObjects/#any/getAllObjects/#any/../../myId',
             '?unique',
-            '?consider' => function ($item, $id){
-                if($id === "~myId"){
+            '?consider' => function ($item, $id) {
+                if ($id === "~myId") {
                     return $item->get() !== 'ID#6';
                 }
             }

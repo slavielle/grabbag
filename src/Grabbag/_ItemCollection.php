@@ -24,23 +24,14 @@ class ItemCollection
      * ItemCollection constructor.
      * @param Item[] $items Array of Item composing the result from resolver.
      */
-    public function __construct($items, $prepare = TRUE)
+    public function __construct($items, $forceArray = FALSE, $prepare = TRUE)
     {
-        $this->forceArray = FALSE;
+        $this->forceArray = $forceArray;
         $this->items = $prepare ? Item::prepareResolverItem($items) : $items;
     }
 
     /**
-     * Set $forceArray property.
-     * @param  bool $forceArray
-     */
-    public function setForceArray($forceArray)
-    {
-        $this->forceArray = $forceArray;
-    }
-
-    /**
-     * Get item(s) value(s) from $items property.
+     * Get item(s) value(s) from items property.
      *
      * If the result contains only one item, it returns value itself.
      * if it contains many it returns an array of values.
@@ -54,10 +45,9 @@ class ItemCollection
     }
 
     /**
-     * Get item(s) instance or item values from $items property.
+     * Same as getValue, except it returns Item instance or Item instance array.
      * @param bool $forceArray Force the method result to be an array even if there is only one result item.
-     * @param bool $extractValues Is TRUE, will use Item value(s) instead of Item instance(s) in result .
-     * @return Item | Item[] | mixed | mixed[] items array
+     * @return Item | Item[]
      */
     private function getItems($forceArray = FALSE, $extractValues = FALSE)
     {
@@ -97,7 +87,7 @@ class ItemCollection
     /**
      * Resolve every result items regarding the path or query provided.
      * @param string | string[] $path Path or Query.
-     * @param mixed $defaultValue Default value to provide in case the path resolution fails.
+     * @param mixed $de
      */
     public function resolve($path, $defaultValue = NULL)
     {

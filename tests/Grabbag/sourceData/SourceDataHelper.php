@@ -3,6 +3,7 @@
 namespace Grabbag\tests\sourceData;
 
 use Grabbag\tests\sourceData\Leaf1;
+use Grabbag\tests\sourceData\Leaf2;
 use Grabbag\tests\sourceData\List1;
 
 class SourceDataHelper
@@ -36,7 +37,13 @@ class SourceDataHelper
         for ($x = 0; $x < 5; $x++) {
             $o1 = new List1('test ' . $x);
             for ($y = 0; $y < 5; $y++) {
-                $o1->appendObject(new Leaf1('test ' . $x . '.' . $y));
+                if( in_array($y, [0])){
+                    $o1->appendObject(new Leaf2('test ' . $x . '.' . $y));
+                }
+                else {
+                    $o1->appendObject(new Leaf1('test ' . $x . '.' . $y));
+                }
+
             }
             $o0->appendObject($o1);
         }

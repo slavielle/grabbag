@@ -22,7 +22,6 @@ class Resolver
     protected $items;
     protected $defaultValue;
     protected $exceptionEnabled;
-    protected $appliedPath;
 
     /**
      * Constructor.
@@ -43,16 +42,9 @@ class Resolver
     public function resolve(Path $path)
     {
         $path->rewind();
-
-        $this->appliedPath = $path;
-
-        $itemCollection = new ItemCollection($this->resolveRecurse($path, $this->items),FALSE);
-
-        // If a path is meant to match multiple values, we must force array when output.
-        $itemCollection->setForceArray($path->isMutipleMatching());
-
-        return $itemCollection;
+        return new ItemCollection($this->resolveRecurse($path, $this->items), $path->isMutipleMatching(),FALSE);
     }
+
 
     /**
      * Resolve recursively for each PathItem instance in the $path.
@@ -101,24 +93,12 @@ class Resolver
                 return $resultObjects;
             });
 
-            // The path item returned a array (multi-matching path item).
             if(is_array($resultObjects)){
                 $allResultObjects = array_merge($allResultObjects, $resultObjects);
             }
-
-            // The path item returned non-void item.
             else if(! $resultObjects->get() instanceof VoidDefaultValue){
                 $allResultObjects[] = $resultObjects;
             }
-
-            // The path item returned void item on a single-matching path item.
-
-            else if (!$this->appliedPath->isMutipleMatching()) {
-                $allResultObjects[] = $this->makeResolverItem($item, $resultObjects->get()->getFallbackDefaultValue());
-            }
-
-            // In other case (void item on a multiple-matching path item $resultObjects is not meant to be recorded.
-
         }
         return $allResultObjects;
     }
@@ -152,7 +132,7 @@ class Resolver
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
      * @throws UnknownPathKeywordException if a keyword is unknown.
-     * @return Item[] A set of Resolved item.
+     * @return $resultObjects[] A set of Resolved Item.
      */
     private function resolveKeyword(PathItem $pathItem, Item $item)
     {
@@ -179,7 +159,7 @@ class Resolver
      * Resolve item regarding $pathItem.
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
-     * @return Item Resolved item.
+     * @return Item Resolved Item.
      * @throws PropertyNotFoundException
      */
     private function resolveObject(PathItem $pathItem, Item $item)

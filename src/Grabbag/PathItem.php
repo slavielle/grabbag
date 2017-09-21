@@ -92,4 +92,11 @@ class PathItem
     {
         return !$this->isKeyword() && in_array($this->key, ['.', '..']);
     }
+
+    public function isMutipleMatching(){
+        if ($this->isKeyword() && $this->getKey() === 'any'){
+            return TRUE;
+        }
+        return FALSE;
+    }
 }
