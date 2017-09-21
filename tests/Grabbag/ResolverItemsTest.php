@@ -18,6 +18,7 @@ use Grabbag\Resolver;
 use Grabbag\Item;
 use Grabbag\ItemCollection;
 use Grabbag\VoidDefaultValue;
+use Grabbag\NullDefaultValue;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\NotAdressableException;
@@ -34,20 +35,30 @@ use Grabbag\exceptions\CantApplyConsiderModifierException;
 final class ResolverItemsTest extends TestCase
 {
 
+    /**
+     * Implement PHPUnit Setup;
+     */
     public function setUp()
     {
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-
             self::error_storage('push', $errno . '-' . $errstr);
-            //throw new RuntimeException($errstr . " on line " . $errline . " in file " . $errfile);
         });
     }
 
+    /**
+     * Implement PHPUnit tearDown;
+     */
     public function tearDown()
     {
         restore_error_handler();
     }
 
+    /**
+     * Handle PHP errors, warnings, notices etc ...
+     * @param string $op
+     * @param null $value
+     * @return array
+     */
     public static function error_storage($op = 'get', $value = NULL)
     {
         static $errors = [];
@@ -92,6 +103,7 @@ final class ResolverItemsTest extends TestCase
         // Must return provided default value when passing it using a modifier.
         $defaultValueSet = [
             ['in' => NULL, 'out' => NULL],
+            ['in' => new NullDefaultValue(), 'out' => NULL],
             ['in' => 'Default String', 'out' => 'Default String'],
             ['in' => 192, 'out' => 192],
             ['in' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]], 'out' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]],
@@ -114,7 +126,7 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test default result when requesting with a valid but non-matching path
-     * Similar to ResolverTest::testResolveWithValidButNonMatchingPath but use default-value modifier.
+     * using embedded path array.
      */
     public function testResolveWithValidButNonMatchingPathOnEmbeddedPathArray()
     {
@@ -122,18 +134,10 @@ final class ResolverItemsTest extends TestCase
         $testObject = SourceDataHelper::getDataIndexedL2();
 
 
-        // Must return provided default value (in) the result set (out) when passing it using a modifier.
+        // The provided default value (in) must produce the result (out).
         $defaultValueSet = [
-            [
-                'in' => NULL,
-                'out' => [
-                    'I\'m a Leaf2 !',
-                    NULL,
-                    NULL,
-                    NULL,
-                    NULL
-                ]
-            ],
+
+            // All unmatching paths must produce a string (out) when new this string is provided using ?default-value modifier (in).
             [
                 'in' => 'Default String',
                 'out' => [
@@ -144,6 +148,8 @@ final class ResolverItemsTest extends TestCase
                     'Default String'
                 ]
             ],
+
+            // All unmatching paths must produce an integer (out) when new this integer is provided using ?default-value modifier (in).
             [
                 'in' => 192,
                 'out' =>
@@ -155,6 +161,8 @@ final class ResolverItemsTest extends TestCase
                         192
                     ]
             ],
+
+            // All unmatching paths must produce an array (out) when new this array is provided using ?default-value modifier (in).
             [
                 'in' => ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]],
                 'out' => [
@@ -165,14 +173,30 @@ final class ResolverItemsTest extends TestCase
                     ['test' => 'A', 'my' => 2, 'array' => [1, 2, 3]]
                 ]
             ],
+
+            // All unmatching paths must produce NULL (out) when new NullDefaultValue() is provided using ?default-value modifier (in).
+            [
+                'in' => new NullDefaultValue(),
+                'out' => [
+                    'I\'m a Leaf2 !',
+                    NULL,
+                    NULL,
+                    NULL,
+                    NULL
+                ]
+            ],
+
+            // All unmatching paths must produce nothing (out) when new VoidDefaultValue() is provided using ?default-value modifier (in).
             [
                 'in' => new VoidDefaultValue(),
                 'out' => [
                     'I\'m a Leaf2 !'
                 ]
             ],
+
+            // All unmatching paths must produce nothing (out) when new NULL is provided using ?default-value modifier (in).
             [
-                'in' => new VoidDefaultValue('Default String'),
+                'in' => NULL,
                 'out' => [
                     'I\'m a Leaf2 !'
                 ]
@@ -413,6 +437,7 @@ final class ResolverItemsTest extends TestCase
         );
 
     }
+    
     /*
     public function testResolverQueryWithAny3Level()
     {

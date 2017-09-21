@@ -6,6 +6,7 @@ use Grabbag\Path;
 use Grabbag\Item;
 use Grabbag\ItemCollection;
 use Grabbag\VoidDefaultValue;
+use Grabbag\NullDefaultValue;
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
@@ -30,8 +31,9 @@ class Resolver
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
+
         $this->items = Item::prepareResolverItem($item);
-        $this->defaultValue = $defaultValue;
+        $this->defaultValue = $defaultValue === NULL ? new VoidDefaultValue() : ($defaultValue instanceof NullDefaultValue ? NULL : $defaultValue);
         $this->exceptionEnabled = $exceptionEnabled;
     }
 

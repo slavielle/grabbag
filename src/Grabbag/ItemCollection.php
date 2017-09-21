@@ -101,7 +101,6 @@ class ItemCollection
      */
     public function resolve($path, $defaultValue = NULL)
     {
-
         // Prepare
         $pathArray = is_array($path) ? $path : [$path];
         $modifiers = self::prepareModifiers($pathArray);
