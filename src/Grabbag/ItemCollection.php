@@ -99,7 +99,7 @@ class ItemCollection
      * @param string | string[] $path Path or Query.
      * @param mixed $defaultValue Default value to provide in case the path resolution fails.
      */
-    public function resolve($path, $defaultValue = NULL)
+    public function resolve($path, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
         // Prepare
         $pathArray = is_array($path) ? $path : [$path];
@@ -109,7 +109,7 @@ class ItemCollection
         // Grab each items
         $newItems = [];
         foreach ($this->items as $item) {
-            $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue);
+            $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue, $exceptionEnabled);
             if (!is_array($values) || count($values) > 0) {
                 $newItems[] = $values;
             }
@@ -138,12 +138,13 @@ class ItemCollection
      * @param mixed[] $preparedPaths Path or Query.
      * @return Item[] Resolved items.
      */
-    private function resolveEach(Item $item, $preparedPaths, $modifiers, $defaultValue = NULL)
+    private function resolveEach(Item $item, $preparedPaths, $modifiers, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
+        $exceptionEnabled = isset($modifiers['exception-enabled']) ? $modifiers['exception-enabled'] : $exceptionEnabled;
         // Init Resolver.
         $resolver = new Resolver($item,
             isset($modifiers['default-value']) ? $modifiers['default-value'] : $defaultValue,
-            isset($modifiers['exception-enabled']) ? $modifiers['exception-enabled'] : FALSE
+            $exceptionEnabled
         );
 
         $resultValues = [];
@@ -155,7 +156,7 @@ class ItemCollection
 
             // Recurse if need.
             if ($preparedPath['pathArray'] !== NULL) {
-                $resolvedItems->resolve($preparedPath['pathArray']);
+                $resolvedItems->resolve($preparedPath['pathArray'], NULL, $exceptionEnabled);
             }
 
             $value = $resolvedItems->getItems();

@@ -235,6 +235,47 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
+     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     * Test ?exception-enabled propagating to upper level
+     */
+    public function testResolveWithBadPathReturnException2()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        // Must raise an exception when exception activated and path not found.
+        $this->expectException(PropertyNotFoundException::class);
+
+        $resolverItems = new ItemCollection($testObject);
+
+        $resolverItems->resolve([
+            'getAllObjects/3' => [
+                'getAllObjects/#any/myLeaf2Secret'
+            ],
+            '?exception-enabled'
+        ]);
+    }
+
+    /**
+     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     * Test ?exception-enabled propagating to upper level and can be overriden.
+     */
+    public function testResolveWithBadPathReturnException3()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $resolverItems = new ItemCollection($testObject);
+
+        $resolverItems->resolve([
+            'getAllObjects/3' => [
+                'getAllObjects/#any/myLeaf2Secret',
+                '?exception-enabled' => FALSE
+            ],
+            '?exception-enabled'
+        ]);
+        $this->assertEquals(["I'm a Leaf2 !"], $resolverItems->getValue());
+    }
+
+    /**
      * Test resolving with numerical index values in path.
      * Similar test to ResolverTest::testResolveWithIndex but on a set of Item.
      */
