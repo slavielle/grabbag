@@ -98,8 +98,6 @@ final class ResolverItemsTest extends TestCase
 
         $testObject = SourceDataHelper::getDataIndexedL2();
 
-        $resolverItems = new ItemCollection($testObject);
-
         // Must return provided default value when passing it using a modifier.
         $defaultValueSet = [
             ['in' => NULL, 'out' => NULL],
@@ -112,6 +110,7 @@ final class ResolverItemsTest extends TestCase
         ];
 
         foreach ($defaultValueSet as $defaultValue) {
+            $resolverItems = new ItemCollection($testObject);
             $resolverItems->resolve([
                 'badpath',
                 '?default-value' => $defaultValue['in']
@@ -120,7 +119,18 @@ final class ResolverItemsTest extends TestCase
             $this->assertEquals(
                 $defaultValue['out'], $resolverItems->getValue()
             );
+        }
 
+        foreach ($defaultValueSet as $defaultValue) {
+            $resolverItems = new ItemCollection($testObject);
+            $resolverItems->resolve([
+                '~myId:badpath',
+                '?default-value@~myId' => $defaultValue['in']
+            ]);
+
+            $this->assertEquals(
+                $defaultValue['out'], $resolverItems->getValue()
+            );
         }
     }
 
@@ -209,7 +219,6 @@ final class ResolverItemsTest extends TestCase
                     'getAllObjects/#any/myLeaf2Secret',
                     '?default-value' => $defaultValue['in']
                 ],
-                '?default-value' => $defaultValue['in']
             ]);
             $this->assertEquals(
                 $defaultValue['out'], $resolverItems->getValue()
@@ -478,7 +487,7 @@ final class ResolverItemsTest extends TestCase
         );
 
     }
-    
+
     /*
     public function testResolverQueryWithAny3Level()
     {
@@ -511,10 +520,11 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
 
+        // Assertion using non-targeted modifier
+        $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
             'getAllObjects/#any' => [
                 '~myId:myId',
@@ -523,8 +533,20 @@ final class ResolverItemsTest extends TestCase
                 },
             ]
         ]);
-
         $this->assertEquals($expected, $resolverItems->getValue());
+
+        // Assertion using targeted modifier
+        $resolverItems = new ItemCollection($testObject);
+        $resolverItems->resolve([
+            'getAllObjects/#any' => [
+                '~myId:myId',
+                '?transform@~myId' => function ($value, $id) {
+                    return 'transformed ' . $id . '-' . $value;
+                },
+            ]
+        ]);
+        $this->assertEquals($expected, $resolverItems->getValue());
+
 
     }
 
@@ -641,10 +663,11 @@ final class ResolverItemsTest extends TestCase
     {
 
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ItemCollection($testObject);
 
         $expected = ['ID#0', 'ID#12'];
 
+        // Assertion using non-targeted modifier
+        $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
             'getAllObjects/#any/getAllObjects/#any/../../myId' => [
                 '~myId:.',
@@ -653,13 +676,25 @@ final class ResolverItemsTest extends TestCase
                     if ($id === "~myId") {
                         return $item->get() !== 'ID#6';
                     }
+                },
+            ],
+
+        ]);
+        $this->assertEquals($expected, $resolverItems->getValue());
+
+        // Assertion using targeted modifier
+        $resolverItems = new ItemCollection($testObject);
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                '~myId:.',
+                '?unique',
+                '?consider@~myId' => function ($item) {
+                    return $item->get() !== 'ID#6';
                 }
             ],
 
         ]);
-
         $this->assertEquals($expected, $resolverItems->getValue());
-
     }
 
     /**

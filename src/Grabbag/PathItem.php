@@ -93,7 +93,16 @@ class PathItem
         return !$this->isKeyword() && in_array($this->key, ['.', '..']);
     }
 
+    /**
+     * Indicate if PathItem instance is a multi-matching one.
+     *
+     * Multi-matching means it can match several values when resolving.
+     *
+     * @return bool
+     */
     public function isMutipleMatching(){
+
+        //@todo ought to find something better than litteral ref !
         if ($this->isKeyword() && $this->getKey() === 'any'){
             return TRUE;
         }

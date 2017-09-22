@@ -2,12 +2,8 @@
 
 namespace Grabbag;
 
-use Grabbag\Resolver;
-use Grabbag\Item;
-use Grabbag\Cnst;
-use Grabbag\ItemAccessor;
-use Grabbag\exceptions\CantApplyUniqueModifierException;
 use Grabbag\exceptions\CantApplyConsiderModifierException;
+use Grabbag\exceptions\CantApplyUniqueModifierException;
 
 /**
  * Resolver items contains values handled by resolver.
@@ -101,12 +97,12 @@ class ItemCollection
      */
     public function resolve($path, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        // Prepare
+        // Prepare stuff.
         $pathArray = is_array($path) ? $path : [$path];
         $modifiers = self::prepareModifiers($pathArray);
         $preparedPaths = self::preparePathArray($pathArray);
 
-        // Grab each items
+        // Grab each items.
         $newItems = [];
         foreach ($this->items as $item) {
             $values = $this->resolveEach($item, $preparedPaths, $modifiers, $defaultValue, $exceptionEnabled);
@@ -117,18 +113,18 @@ class ItemCollection
         $this->items = $newItems;
 
         // Keep only unique if requiered.
-        if ((isset($modifiers['unique']) && $modifiers['unique'])) {
+        if (($modifiers->exists('unique') && $modifiers->getDefault('unique'))) {
             try {
                 $this->items = self::keepUniqueValuesOnly($this->items);
             } catch (CantApplyUniqueModifierException $e) {
 
-                // When CantApplyUniqueModifierException are generate in keepUniqueValuesOnly, it's converted in
-                // a PHP warning.
+                // When CantApplyUniqueModifierException is generated in keepUniqueValuesOnly,
+                // it's converted in a PHP warning.
                 trigger_error($e->getMessage(), E_USER_WARNING);
             }
         }
 
-        // Chaining
+        // Chaining pattern.
         return $this;
     }
 
@@ -136,20 +132,28 @@ class ItemCollection
      * Resolve one result item regarding the path or Query provided.
      * @param Item $item Item to be resolved.
      * @param mixed[] $preparedPaths Path or Query.
+     * @param mixed[] $modifiers Prepared modifiers.
+     * @param mixed $defaultValue t
+     * @params bool $exceptionEnabled
      * @return Item[] Resolved items.
+     * @throws CantApplyConsiderModifierException
      */
-    private function resolveEach(Item $item, $preparedPaths, $modifiers, $defaultValue = NULL, $exceptionEnabled = FALSE)
+    private function resolveEach(Item $item, $preparedPaths, Modifiers $modifiers, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        $exceptionEnabled = isset($modifiers['exception-enabled']) ? $modifiers['exception-enabled'] : $exceptionEnabled;
+        $exceptionEnabled = $modifiers->exists('exception-enabled') ? $modifiers->getDefault('exception-enabled') : $exceptionEnabled;
+
         // Init Resolver.
         $resolver = new Resolver($item,
-            isset($modifiers['default-value']) ? $modifiers['default-value'] : $defaultValue,
+            NULL,
             $exceptionEnabled
         );
 
         $resultValues = [];
         foreach ($preparedPaths as $preparedPath) {
+
             $pathId = $preparedPath['pathObject']->getPathId();
+
+            $resolver->setDefaultValue($modifiers->exists('default-value') ? $modifiers->get('default-value', $pathId) : $defaultValue);
 
             // Resolve the path
             $resolvedItems = $resolver->resolve($preparedPath['pathObject']);
@@ -163,11 +167,14 @@ class ItemCollection
 
             // Consider modifier
             $keep = TRUE;
-            if (isset($modifiers['consider']) && $pathId !== NULL) {
+            if ($modifiers->exists('consider') && $pathId !== NULL) {
                 if (is_array($value)) {
                     throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
                 }
-                $keep = call_user_func_array($modifiers['consider'], [new ItemAccessor($value), $pathId]);
+                $keep = call_user_func_array(
+                    $modifiers->get('consider', $pathId),
+                    [new ItemAccessor($value), $pathId]
+                );
                 $keep = $keep === NULL ? TRUE : $keep;
             }
 
@@ -178,13 +185,19 @@ class ItemCollection
                 if ($pathId !== NULL) {
 
                     // Transform modifier
-                    if (isset($modifiers['transform'])) {
-                        $value->update(call_user_func_array($modifiers['transform'], [$value->get(), $pathId]));
+                    if ($modifiers->exists('transform')) {
+                        $value->update(call_user_func_array(
+                                $modifiers->get('transform', $pathId),
+                                [$value->get(), $pathId]
+                            )
+                        );
                     }
 
                     // Debug modifier
-                    if (isset($modifiers['debug'])) {
-                        self::debugVariable($modifiers['debug'], $value->get(), $pathId);
+                    if ($modifiers->exists('debug')) {
+                        self::debugVariable(
+                            $modifiers->getDefault('debug'),
+                            $value->get(), $pathId);
                     }
                 }
 
@@ -201,7 +214,7 @@ class ItemCollection
         // Return the very value instead of an array result contains just one single value,
         return count($resultValues) === 1
         && array_keys($resultValues)[0] === 0
-        && !(isset($modifiers['keep-array']) && $modifiers['keep-array']) ? $resultValues[0] : $resultValues;
+        && !($modifiers->exists('keep-array') && $modifiers->getDefault('keep-array')) ? $resultValues[0] : $resultValues;
     }
 
     /**
@@ -211,13 +224,13 @@ class ItemCollection
      */
     static private function prepareModifiers($pathArray)
     {
-        $modifiers = [];
+
+
+        $modifiers = new Modifiers();
         foreach ($pathArray as $left => $right) {
             $handlerName = is_integer($left) ? $right : $left;
             $handlerValue = is_integer($left) ? TRUE : $right;
-            if (is_string($handlerName) && substr($handlerName, 0, 1) === Cnst::MODIFIER_CHAR) {
-                $modifiers[substr($handlerName, 1)] = $handlerValue;
-            }
+            $modifiers->submit($handlerName, $handlerValue);
         }
         return $modifiers;
     }

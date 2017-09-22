@@ -2,11 +2,6 @@
 
 namespace Grabbag;
 
-use Grabbag\Path;
-use Grabbag\Item;
-use Grabbag\ItemCollection;
-use Grabbag\VoidDefaultValue;
-use Grabbag\NullDefaultValue;
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
@@ -33,8 +28,17 @@ class Resolver
     {
 
         $this->items = Item::prepareResolverItem($item);
-        $this->defaultValue = $defaultValue === NULL ? new VoidDefaultValue() : ($defaultValue instanceof NullDefaultValue ? NULL : $defaultValue);
         $this->exceptionEnabled = $exceptionEnabled;
+        $this->setDefaultValue($defaultValue);
+    }
+
+    /**
+     * Setter for defaultValue property.
+     * @param $defaultValue new default value;
+     */
+    public function setDefaultValue($defaultValue)
+    {
+        $this->defaultValue = $defaultValue === NULL ? new VoidDefaultValue() : ($defaultValue instanceof NullDefaultValue ? NULL : $defaultValue);
     }
 
     /**
@@ -48,7 +52,7 @@ class Resolver
 
         $this->appliedPath = $path;
 
-        $itemCollection = new ItemCollection($this->resolveRecurse($path, $this->items),FALSE);
+        $itemCollection = new ItemCollection($this->resolveRecurse($path, $this->items), FALSE);
 
         // If a path is meant to match multiple values, we must force array when output.
         $itemCollection->setForceArray($path->isMutipleMatching());
@@ -83,7 +87,7 @@ class Resolver
         $allResultObjects = [];
         foreach ($items as $item) {
 
-            $resultObjects = $this->catchExceptionIfNeed(function() use ($item, $pathItem){
+            $resultObjects = $this->catchExceptionIfNeed(function () use ($item, $pathItem) {
                 if ($pathItem->isKeyword()) {
                     $resultObjects = $this->resolveKeyword($pathItem, $item);
                 }
@@ -104,12 +108,12 @@ class Resolver
             });
 
             // The path item returned a array (multi-matching path item).
-            if(is_array($resultObjects)){
+            if (is_array($resultObjects)) {
                 $allResultObjects = array_merge($allResultObjects, $resultObjects);
             }
 
             // The path item returned non-void item.
-            else if(! $resultObjects->get() instanceof VoidDefaultValue){
+            else if (!$resultObjects->get() instanceof VoidDefaultValue) {
                 $allResultObjects[] = $resultObjects;
             }
 
@@ -161,7 +165,7 @@ class Resolver
         $resultObjects = [];
         switch ($pathItem->getKey()) {
             case 'any':
-                foreach ($item->get() as $key=>$entry) {
+                foreach ($item->get() as $key => $entry) {
                     $resultObjects[] = self::makeResolverItem($item, $entry, $key);
                 }
                 break;
@@ -279,7 +283,8 @@ class Resolver
      * @param $callable Items-producing callable.
      * @return Item|Item[] the produced items or the the default value.
      */
-    private function catchExceptionIfNeed($callable){
+    private function catchExceptionIfNeed($callable)
+    {
         if ($this->exceptionEnabled) {
             $items = $callable();
         }
