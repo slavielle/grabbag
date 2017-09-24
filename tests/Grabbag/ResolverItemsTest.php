@@ -691,10 +691,42 @@ final class ResolverItemsTest extends TestCase
                 '?consider@~myId' => function ($item) {
                     return $item->get() !== 'ID#6';
                 }
-            ],
 
+            ],
         ]);
+
         $this->assertEquals($expected, $resolverItems->getValue());
+    }
+
+    /**
+     * Test if a path-array having multiple path items but returning one single value
+     * do return an array (in this case single value must not be returned itself but in an array containing the
+     * single value).
+     */
+    public function testResolverMultiplePathItemMustNotReturnASingleValue()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+
+        // Assertion using targeted modifier
+        $resolverItems = new ItemCollection($testObject);
+        $resolverItems->resolve([
+            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+                '~myId:.',
+                '~myId2:.',
+                '?consider@~myId' => function ($item) {
+                    return $item->get() !== 'ID#6';
+                },
+                '?consider@~myId2' => function ($item) {
+                    return $item->get() !== 'ID#12';
+                }
+
+            ],
+        ]);
+        $this->assertTrue(is_array($resolverItems->getValue()));
+        foreach ($resolverItems->getValue() as $item) {
+            $this->assertTrue(is_array($item));
+        }
     }
 
     /**

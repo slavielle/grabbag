@@ -211,10 +211,22 @@ class ItemCollection
             }
         }
 
-        // Return the very value instead of an array result contains just one single value,
-        return count($resultValues) === 1
-        && array_keys($resultValues)[0] === 0
-        && !($modifiers->exists('keep-array') && $modifiers->getDefault('keep-array')) ? $resultValues[0] : $resultValues;
+        // Return a single value instead of an array containing just one single value, in following circumstance ...
+        $returnSingleValue =
+
+            // if there is only one result,
+            count($resultValues) === 1
+
+            // and if there is ony one path in the path-array,
+            && count($preparedPaths) === 1
+
+            // and if the single result has a numeric index (not a key),
+            && array_keys($resultValues)[0] === 0
+
+            // and if there's no keep-array modifier in the path-array,
+            && !($modifiers->exists('keep-array') && $modifiers->getDefault('keep-array'));
+
+        return $returnSingleValue ? $resultValues[0] : $resultValues;
     }
 
     /**

@@ -222,6 +222,8 @@ We request same objects pretty the same way, but we added an embedded path array
 
 see the [source code here](../examples/1-my-first-embedded-path-array/example.php);
 
+Result scope 
+
 ## Symbols
 
 * . : The element corresponding to the current path item
