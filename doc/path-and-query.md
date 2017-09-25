@@ -11,7 +11,8 @@
     * [Ids and modifiers](#ids-and-modifiers)     
 * [Query, let's go further](#query-lets-go-further)
     * [Embedded path arrays](#embedded-path-arrays)
-    * [Result scope](result-scope)
+    * [Result scope](#result-scope)
+    * [Single value path-array](#single-value-path-array)
 * [Symbols](#symbols)
 * [Keywords](#keywords)
 * [Modifiers](#modifiers)
@@ -222,14 +223,96 @@ We request same objects pretty the same way, but we added an embedded path array
 
 see the [source code here](../examples/1-my-first-embedded-path-array/example.php);
 
-### Single value Result scope.
+### Single value path-array.
 
-There is an exception on result scope behavior producing an array.
-It's sometimes convenient to have result scope not producting an array but a single value when the expected value is obviously a single value.
+It's sometimes convenient to have result scope not producing an array but a single value when the expected value is obviously single.
+
+example :
+
+```php
+["this/is/my/path"];
+```
+
+This path arrays would normally produce an array as a result scope. But is it of use ?
+
+* The path is obviously not returning multiple values (no %any or such in path expression)
+* the path does not have multiple path neither path id producing a keyed value in result scope.
+
+In this case default behavior is : the value returned in the value itself an not an array containing the single value.
 
 
+The principe applies also on embedded path arrays. The previous example is equivalent to next ones:
 
+```php
+[
+    "this/is" => [
+        "my/path"
+    ]
+];
+```
+```php
+[
+    "this" => [
+        "is/my/path"
+    ]
+];
+```
+```php
+[
+    "this" => [
+        "is" => [
+            "my" => [
+                "path"
+            ]
+        ]
+    ]
+];
+```
 
+All Queries above works and return an identical result, even if there is no reason to use last solutions as-is.
+
+* Usage : * 
+
+you can couple this with modifiers, for instance to define a default value.
+
+```php 
+[
+    "~value:this/is/my/path",
+    "?default-value" => "oh sorry nothing there !"
+];
+```
+
+More complex example it can be useful used with exception-enabled modifier for example :
+
+```php
+[
+    "this" => [
+        "is/my" => [
+            "path",
+            exception-enabled:TRUE    
+        ],
+        exception-enabled:FALSE
+    ],
+    exception-enabled:TRUE,
+    "?default-value" => "oh sorry nothing there !"
+];
+```
+In this very last example, this/is/my/path will be resolved, 
+if path can't be resolved on "this" or "path" parts, an exception will be thrown.
+if path can't be resolved on "is" or "my" parts, the default value will be returned.
+
+This last one is a bit tricky an can be useful on very special cases but it illustrate how embedded single-matching-path-arrays can be used.
+ 
+Forcing single-matching path-array to produce array.
+
+If for any reason you want to force an single-matching path-array to produce an array and not a single value you can force it using the modifier ?keep-array :
+
+```php
+[
+    "~value:this/is/my/path",
+    "?keep-array"
+];
+```
 
 ## Symbols
 
