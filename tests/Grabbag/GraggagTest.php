@@ -45,9 +45,10 @@ final class GrabbagTest extends TestCase
     }
 
 
-    public function testGrab(){
+    public function testGrab()
+    {
         $testObject = sourceDataHelper::getDataIndexedL1();
-        $this->assertEquals('test 3' , Grabbag::grab($testObject, 'getAllObjects/3/getName'));
+        $this->assertEquals('test 3', Grabbag::grab($testObject, 'getAllObjects/#3/getName'));
     }
 
 }

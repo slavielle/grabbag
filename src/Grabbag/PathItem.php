@@ -19,7 +19,7 @@ class PathItem
 
     /**
      * Constructor.
-     * @param string $special Special character prefixing the key (e.g. '#' in '#any).
+     * @param string $special Special character prefixing the key (e.g. '#' in '%any).
      * @param string $key Key (can be a method, à property name, an array key).
      * @param string $param (param when $key is a method with param).
      */
@@ -29,6 +29,10 @@ class PathItem
         $this->key = $key;
         if (strlen($param) > 0) {
             $this->param = $param;
+        }
+
+        if ((string)$key === (string)(int)$key && $special !== Cnst::PATH_NUMERICAL_INDEX_PREFIX) {
+            throw new PathParsingException('Numerical value encoutered without "#"');
         }
     }
 
@@ -81,7 +85,7 @@ class PathItem
      */
     public function isKeyword()
     {
-        return $this->special === '#';
+        return $this->special === Cnst::PATH_KEYWORD_PREFIX;
     }
 
     /**
@@ -100,10 +104,11 @@ class PathItem
      *
      * @return bool
      */
-    public function isMutipleMatching(){
+    public function isMutipleMatching()
+    {
 
         //@todo ought to find something better than litteral ref !
-        if ($this->isKeyword() && $this->getKey() === 'any'){
+        if ($this->isKeyword() && $this->getKey() === 'any') {
             return TRUE;
         }
         return FALSE;

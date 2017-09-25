@@ -1,4 +1,4 @@
-# #key keyword
+# %key keyword
 
 Get the key value of an element if it has a key.
 
@@ -21,9 +21,9 @@ Get the key value of an element if it has a key.
 ```
 #### Query
 ```
-['#any/#any' => [
+['%any/%any' => [
     'food:.',
-    'food-group:../#key'
+    'food-group:../%key'
 ]]
 ```
 #### Result

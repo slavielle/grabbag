@@ -8,23 +8,23 @@ use Grabbag\Grabbag;
 
 $input_data = [
     'my' => [
-        'object'=>(object)[
+        'object' => (object)[
             [
-                'continues'=>[
+                'continues' => [
                     "My string 1-1",
                     "My string 1-2"
                 ],
-                'again'=>[
+                'again' => [
                     "My string 1-3",
                     "My string 1-4"
                 ]
             ],
             [
-                'continues'=>[
+                'continues' => [
                     "My string 2-1",
                     "My string 2-2"
                 ],
-                'again'=>[
+                'again' => [
                     "My string 2-3",
                     "My string 2-4"
                 ]
@@ -35,15 +35,15 @@ $input_data = [
 ];
 
 echo "\n\nwithout nested path array:\n";
-$result = Grabbag::grab($input_data, 'my/object/#any/continues/#any');
+$result = Grabbag::grab($input_data, 'my/object/%any/continues/%any');
 
 var_export($result);
 
 echo "\n\nwith nested path array:\n";
 $result = Grabbag::grab($input_data, [
-    "my/object/#any" =>
+    "my/object/%any" =>
         [
-            "continues/#any"
+            "continues/%any"
         ]
 ]);
 

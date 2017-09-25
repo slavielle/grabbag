@@ -8,19 +8,13 @@
 
 namespace Grabbag\tests;
 
-use PHPUnit\Framework\TestCase;
-use Grabbag\exceptions\NotAdressableException;
-use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\PathParsingException;
+use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
-use Grabbag\Grabbag;
 use Grabbag\Path;
-use Grabbag\PathItem;
 use Grabbag\Resolver;
-use Grabbag\ItemCollection;
-
 use Grabbag\tests\sourceData\SourceDataHelper;
-use Grabbag\tests\testData\TestDataHelper;
+use PHPUnit\Framework\TestCase;
 
 class ResolverTest extends TestCase
 {
@@ -69,7 +63,8 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
      */
-    public function testResolveWithBadPathReturnException(){
+    public function testResolveWithBadPathReturnException()
+    {
         $testObject = SourceDataHelper::getDataIndexedL2();
 
         // Must raise an exception when exception activated and path not found.
@@ -86,14 +81,14 @@ class ResolverTest extends TestCase
     {
         // One level structure test.
         $testObject = SourceDataHelper::getDataIndexedL1();
-        $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
+        $pathVariants = ['getAllObjects/#3/getName', 'allObjects/#3/name', 'objects/#3/myName'];
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
-            $this->assertEquals('test 3' , $result->getValue());
+            $this->assertEquals('test 3', $result->getValue());
         }
     }
-
+    
     /**
      * Test resolving with invalid numerical index values in path.
      */
@@ -101,11 +96,11 @@ class ResolverTest extends TestCase
     {
         // One level structure test.
         $testObject = SourceDataHelper::getDataIndexedL1();
-        $pathVariants = ['getAllObjects/100000/getName', 'allObjects/100000/name', 'objects/100000/myName'];
+        $pathVariants = ['getAllObjects/#100000/getName', 'allObjects/#100000/name', 'objects/#100000/myName'];
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject, 'my-default-value');
             $result = $resolver->resolve(new Path($pathVariant));
-            $this->assertEquals('my-default-value' , $result->getValue());
+            $this->assertEquals('my-default-value', $result->getValue());
         }
     }
 
@@ -116,7 +111,7 @@ class ResolverTest extends TestCase
     {
         // Two level structure test.
         $testObject = SourceDataHelper::getDataIndexedL2();
-        $pathVariants = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
+        $pathVariants = ['getAllObjects/#3/getAllObjects/#2/getName', 'allObjects/#3/allObjects/#2/name', 'objects/#3/objects/#2/myName'];
         foreach ($pathVariants as $pathVariant) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($pathVariant));
@@ -185,23 +180,23 @@ class ResolverTest extends TestCase
         $testObject = SourceDataHelper::getDataIndexedL1();
         $resolver = new Resolver($testObject);
         $this->expectException(UnknownPathKeywordException::class);
-        $resolver->resolve(new Path('getAllObjects/#unknownkeyword'));
+        $resolver->resolve(new Path('getAllObjects/%unknownkeyword'));
     }
 
     /**
-     * Test resolving path with #any keyword
+     * Test resolving path with %any keyword
      */
     public function testResolverWithAny()
     {
         $testObject = SourceDataHelper::getDataIndexedL1();
 
         $pathList = [
-            'getAllObjects/#any/getName',
-            'allObjects/#any/getName',
-            'objects/#any/getName',
+            'getAllObjects/%any/getName',
+            'allObjects/%any/getName',
+            'objects/%any/getName',
         ];
 
-        foreach($pathList as $path){
+        foreach ($pathList as $path) {
             $resolver = new Resolver($testObject);
             $result = $resolver->resolve(new Path($path));
             $this->assertEquals(

@@ -35,8 +35,8 @@ The data transformation part can be done using a simple query (above) wrapped wi
 
 ```php
 [
-    'my-friends:#any/name',
-    'fruits-they-like:#any/food/liked/fruits/#any' => [
+    'my-friends:%any/name',
+    'fruits-they-like:%any/food/liked/fruits/%any' => [
         '.',
         '?unique'
     ]

@@ -1,10 +1,10 @@
-# #any keyword
+# %any keyword
 
 Get any values form an array or an object usable with foreach (such as array or instance of class implemented from Iterator Interface)
 
 ## Example
 ```
-my/path/with/#any
+my/path/with/%any
 ```
 Result example : 
 ```php

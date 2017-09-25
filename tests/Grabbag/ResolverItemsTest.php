@@ -215,8 +215,8 @@ final class ResolverItemsTest extends TestCase
         foreach ($defaultValueSet as $defaultValue) {
             $resolverItems = new ItemCollection($testObject);
             $resolverItems->resolve([
-                'getAllObjects/3' => [
-                    'getAllObjects/#any/myLeaf2Secret',
+                'getAllObjects/#3' => [
+                    'getAllObjects/%any/myLeaf2Secret',
                     '?default-value' => $defaultValue['in']
                 ],
             ]);
@@ -257,8 +257,8 @@ final class ResolverItemsTest extends TestCase
         $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
-            'getAllObjects/3' => [
-                'getAllObjects/#any/myLeaf2Secret'
+            'getAllObjects/#3' => [
+                'getAllObjects/%any/myLeaf2Secret'
             ],
             '?exception-enabled'
         ]);
@@ -275,8 +275,8 @@ final class ResolverItemsTest extends TestCase
         $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
-            'getAllObjects/3' => [
-                'getAllObjects/#any/myLeaf2Secret',
+            'getAllObjects/#3' => [
+                'getAllObjects/%any/myLeaf2Secret',
                 '?exception-enabled' => FALSE
             ],
             '?exception-enabled'
@@ -292,7 +292,7 @@ final class ResolverItemsTest extends TestCase
     {
         // One level structure test.
         $testObject = SourceDataHelper::getDataIndexedL1();
-        $pathVariants = ['getAllObjects/3/getName', 'allObjects/3/name', 'objects/3/myName'];
+        $pathVariants = ['getAllObjects/#3/getName', 'allObjects/#3/name', 'objects/#3/myName'];
         foreach ($pathVariants as $pathVariant) {
             $resolverItems = new ItemCollection([
                 new Item($testObject),
@@ -316,7 +316,7 @@ final class ResolverItemsTest extends TestCase
 
         // Two level structure test.
         $testObject = SourceDataHelper::getDataIndexedL2();
-        $pathVariants = ['getAllObjects/3/getAllObjects/2/getName', 'allObjects/3/allObjects/2/name', 'objects/3/objects/2/myName'];
+        $pathVariants = ['getAllObjects/#3/getAllObjects/#2/getName', 'allObjects/#3/allObjects/#2/name', 'objects/#3/objects/#2/myName'];
         foreach ($pathVariants as $pathVariant) {
             $resolverItems = new ItemCollection([
                 new Item($testObject),
@@ -327,6 +327,38 @@ final class ResolverItemsTest extends TestCase
                 'test 3.2',
                 'test 3.2'
             ], $resolverItems->getValue());
+        }
+    }
+
+    /**
+     * Test resolving with numerical index (2 levels) values in path.
+     * Similar test to ResolverTest::testResolveWithIndexOn2Levels but with embedded path-array producing single value.
+     */
+    public function testResolveWithIndexOn2Levels2()
+    {
+
+        // Two level structure test.
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $pathVariants = [
+
+            // Using full named getter
+            ['getAllObjects/#3' => ['getAllObjects' => ['#2/getName']]],
+            ['getAllObjects' => ['#3' => ['getAllObjects' => ['#2' => 'getName']]]],
+
+
+            // Using short named getter
+//            ['AllObjects / 3' => ['AllObjects' => ['2 / getName']]],
+
+            // Using direct object access
+//            ['objects / 3' => ['objects' => ['2 / getName']]],
+        ];
+        foreach ($pathVariants as $pathVariant) {
+            $resolverItems = new ItemCollection([
+                new Item($testObject),
+            ], FALSE);
+            $resolverItems->resolve($pathVariant);
+            $this->assertEquals('test 3.2', $resolverItems->getValue());
         }
     }
 
@@ -405,7 +437,7 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test resolving path with #any keyword
+     * Test resolving path with %any keyword
      * Similar test to ResolverTest::testResolverWithAny but on a set of Item.
      */
     public function testResolverWithAny()
@@ -413,9 +445,9 @@ final class ResolverItemsTest extends TestCase
         $testObject = SourceDataHelper::getDataIndexedL1();
 
         $pathList = [
-            'getAllObjects/#any/getName',
-            'allObjects/#any/getName',
-            'objects/#any/getName',
+            'getAllObjects/%any/getName',
+            'allObjects/%any/getName',
+            'objects/%any/getName',
         ];
 
         foreach ($pathList as $path) {
@@ -432,17 +464,17 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test resolving query using #any
+     * Test resolving query using %any
      */
     public function testResolverQueryWithAny2level()
     {
         $resolverItems = new ItemCollection(SourceDataHelper::getDataNamedL2());
 
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects/#any' => [
+                'content:getAllObjects/%any' => [
                     'id:getId',
                     'name:getName'
                 ]
@@ -455,7 +487,7 @@ final class ResolverItemsTest extends TestCase
     }
 
     /**
-     * Test resolving query using #any
+     * Test resolving query using %any
      */
     public function testResolverQueryWithAny2levelB()
     {
@@ -479,7 +511,7 @@ final class ResolverItemsTest extends TestCase
             'my_value_3_5',
         ];
 
-        $resolverItems->resolve('getAllObjects/#any/getAllObjects/#any/#key');
+        $resolverItems->resolve('getAllObjects/%any/getAllObjects/%any/%key');
 
 
         $this->assertEquals(
@@ -495,13 +527,13 @@ final class ResolverItemsTest extends TestCase
         $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 'id:myId',
                 'name:getName',
-                'content-L2:getAllObjects/#any' => [
+                'content-L2:getAllObjects/%any' => [
                     'id:getId',
                     'name:getName',
-                    'content-L3:getAllObjects/#any' => [
+                    'content-L3:getAllObjects/%any' => [
                         'id:getId',
                         'name:getName'
                     ]
@@ -526,7 +558,7 @@ final class ResolverItemsTest extends TestCase
         // Assertion using non-targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 '~myId:myId',
                 '?transform' => function ($value, $id) {
                     return 'transformed ' . $id . '-' . $value;
@@ -538,7 +570,7 @@ final class ResolverItemsTest extends TestCase
         // Assertion using targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 '~myId:myId',
                 '?transform@~myId' => function ($value, $id) {
                     return 'transformed ' . $id . '-' . $value;
@@ -562,7 +594,7 @@ final class ResolverItemsTest extends TestCase
         $expected = ['ID#0', 'ID#6', 'ID#12'];
 
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId',
+            'getAllObjects/%any/getAllObjects/%any/../../myId',
             '?unique',
         ]);
 
@@ -584,7 +616,7 @@ final class ResolverItemsTest extends TestCase
 
 
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '.',
                 '?unique'
             ],
@@ -611,7 +643,7 @@ final class ResolverItemsTest extends TestCase
 
 
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '.',
                 '.',
                 '?unique'
@@ -642,7 +674,7 @@ final class ResolverItemsTest extends TestCase
         ];
 
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 'my-id:.',
                 '?unique'
             ],
@@ -669,7 +701,7 @@ final class ResolverItemsTest extends TestCase
         // Assertion using non-targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '?unique',
                 '?consider' => function ($item, $id) {
@@ -685,7 +717,7 @@ final class ResolverItemsTest extends TestCase
         // Assertion using targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '?unique',
                 '?consider@~myId' => function ($item) {
@@ -711,7 +743,7 @@ final class ResolverItemsTest extends TestCase
         // Assertion using targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any/getAllObjects/#any/../../myId' => [
+            'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '~myId2:.',
                 '?consider@~myId' => function ($item) {
@@ -742,7 +774,7 @@ final class ResolverItemsTest extends TestCase
 
         $this->expectException(CantApplyConsiderModifierException::class);
         $resolverItems->resolve([
-            '~myId:getAllObjects/#any/getAllObjects/#any/../../myId',
+            '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
             '?unique',
             '?consider' => function ($item, $id) {
                 if ($id === "~myId") {
@@ -763,7 +795,7 @@ final class ResolverItemsTest extends TestCase
         $resolverItems = new ItemCollection($testObject);
         $myDebugInfo = NULL;
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 '~debug:.',
                 '?debug' => function ($key, $debug) use (&$myDebugInfo) {
                     if ($key === '~debug') {
@@ -803,7 +835,7 @@ final class ResolverItemsTest extends TestCase
         $resolverItems = new ItemCollection($testObject);
 
         $resolverItems->resolve([
-            'getAllObjects/#any/objects/#any/myId' => [
+            'getAllObjects/%any/objects/%any/myId' => [
                 'myId:.'
             ]
         ]);
@@ -820,10 +852,10 @@ final class ResolverItemsTest extends TestCase
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects/#any' => [
+                'content:getAllObjects/%any' => [
                     'id:getId',
                     'name:getName',
                     'parent-id:../../myId'
@@ -847,10 +879,10 @@ final class ResolverItemsTest extends TestCase
         $this->expectException(ResolveItemStackEmptyException::class);
 
         $resolverItems->resolve([
-            'getAllObjects/#any' => [
+            'getAllObjects/%any' => [
                 'id:myId',
                 'name:getName',
-                'content:getAllObjects/#any' => [
+                'content:getAllObjects/%any' => [
                     'id:getId',
                     'name:getName',
                     'parent-id:../../../../../../../myId'

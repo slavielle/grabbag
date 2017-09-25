@@ -20,9 +20,9 @@ $input_data = [
 ];
 
 $result = Grabbag::grab($input_data, [
-    '#any/#any' => [
+    '%any/%any' => [
         'food:.',
-        'food-type:../#key',
+        'food-type:../%key',
         '?transform' => function ($value, $key) {
             var_export($value);
             // Remove the trailing 's' from value

@@ -26,7 +26,7 @@ a mechanism allowing to define default values using *?default-value* modifier.
 Query :
 ```
 [
-    '#any/value',
+    '%any/value',
     '?default-value' => $defaultValue['in']
 ]
 
@@ -44,7 +44,7 @@ No value is produced for unmatching element.
 Query :
 ```
 [
-    '#any/value',
+    '%any/value',
     '?default-value' => new VoidDefaultValue()
 ]
 
@@ -62,7 +62,7 @@ As in default case, no value is produced for unmatching element. those 2 solutio
 Query :
 ```
 [
-    '#any/value',
+    '%any/value',
     '?default-value' => new NullDefaultValue()
 ]
 
@@ -80,7 +80,7 @@ NULL is produced for unmatching element.
 Query :
 ```
 [
-    '#any/value',
+    '%any/value',
     '?default-value' => 'No Value'
 ]
 

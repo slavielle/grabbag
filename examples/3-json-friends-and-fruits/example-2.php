@@ -20,29 +20,28 @@ $json = json_encode(
         // Here comes the Grabbag query
         [
             // Get my friends selection.
-            'my-friends:#any' => [
+            'my-friends:%any' => [
                 '~name:name',
-                '?consider' => function($item, $id) use ($filterFriends){
-                    if($id === '~name'){
+                '?consider' => function ($item, $id) use ($filterFriends) {
+                    if ($id === '~name') {
                         return in_array($item->get(), $filterFriends);
                     }
                 },
             ],
 
             // Get my friends selection prefered fruits.
-            'fruits-they-like:#any/food/liked/fruits/#any' => [
+            'fruits-they-like:%any/food/liked/fruits/%any' => [
 
                 '~fruit:.',
 
-                '?consider' => function($item, $id) use ($filterFriends){
-                    if($id === '~fruit'){
+                '?consider' => function ($item, $id) use ($filterFriends) {
+                    if ($id === '~fruit') {
                         return in_array($item->grab('../../../../name'), ['Mary', 'Tom']);
                     }
                 },
 
                 // If some of them love same fruits, no need to list a fruit twice !
                 '?unique'
-
 
 
             ]

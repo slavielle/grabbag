@@ -181,7 +181,7 @@ Result scope is an important Grabbag concepts.
 
 Let consider the following path : 
 ```
-my/object/#any/continues/#any
+my/object/%any/continues/%any
 ```
 
 The result would be something like this : 
@@ -197,9 +197,9 @@ If we now split this path in a query containing 2 embedded path array like this 
  
 ```php
 [ // Path array #1
-    "my/object/#any" => 
+    "my/object/%any" => 
     [ // Path array #2
-        "continues/#any"
+        "continues/%any"
     ]
 ]
 ```
@@ -222,7 +222,14 @@ We request same objects pretty the same way, but we added an embedded path array
 
 see the [source code here](../examples/1-my-first-embedded-path-array/example.php);
 
-Result scope 
+### Single value Result scope.
+
+There is an exception on result scope behavior producing an array.
+It's sometimes convenient to have result scope not producting an array but a single value when the expected value is obviously a single value.
+
+
+
+
 
 ## Symbols
 
@@ -233,8 +240,8 @@ Result scope
 
 Keywords are path items prefixed by "#" that implements special behaviors.
 
-* [\#any](path-keywords/any-keyword.md)
-* [\#key](path-keywords/key-keyword.md)
+* [\%any](path-keywords/any-keyword.md)
+* [\%key](path-keywords/key-keyword.md)
 
 ## Modifiers
 

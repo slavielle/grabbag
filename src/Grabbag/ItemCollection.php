@@ -240,8 +240,8 @@ class ItemCollection
 
         $modifiers = new Modifiers();
         foreach ($pathArray as $left => $right) {
-            $handlerName = is_integer($left) ? $right : $left;
-            $handlerValue = is_integer($left) ? TRUE : $right;
+            $handlerName = (int)$left === $left ? $right : $left;
+            $handlerValue = (int)$left === $left ? TRUE : $right;
             $modifiers->submit($handlerName, $handlerValue);
         }
         return $modifiers;
@@ -259,16 +259,19 @@ class ItemCollection
 
             $preparedPath = [];
 
-            // Get sub path array
-            $preparedPath['pathArray'] = is_integer($left) ? NULL : $right;
+            // Get sub path array.
+            $preparedPath['pathArray'] = (int)$left === $left ? NULL : $right;
 
             // Get either simple path from left or path with a sub path array from right
-            $path = is_integer($left) ? $right : $left;
+            $path = (int)$left === $left ? $right : $left;
+
 
             // Path is a Path instance already
             if ($path instanceof Path) {
                 $preparedPath['pathObject'] = $path;
-            } // Path is a string to be instanciated using Path class
+            }
+
+            // Path is a string to be instantiated using Path class
             else {
 
                 // Exclude modifiers
@@ -305,7 +308,7 @@ class ItemCollection
                     // Items is normally a list of Item instances, but, in some cases, $items is an array
                     // containing one element containing a list of Item instances. In this case we just recurse
                     // only one level up.
-                    if (count($items) === 1 && is_integer($key) && $recurseLevel === 0) {
+                    if (count($items) === 1 && (int)$key === $key && $recurseLevel === 0) {
                         $newValues[] = self::keepUniqueValuesOnly($item, $recurseLevel + 1);
                         break;
                     }
@@ -323,7 +326,7 @@ class ItemCollection
                 $itemValue = $item->get();
                 if (!in_array($itemValue, $uniqueValues)) {
                     $uniqueValues[] = $itemValue;
-                    if (is_integer($key)) {
+                    if ((int)$key === $key) {
                         $newValues[] = $item;
                     }
                     else {

@@ -2,9 +2,7 @@
 
 namespace Grabbag;
 
-use Grabbag\PathItem;
 use Grabbag\exceptions\PathParsingException;
-use Grabbag\Cnst;
 
 /**
  * Path allows to define path to be grabbed.
@@ -35,7 +33,7 @@ class Path
             $matches = [];
             $regex =
                 '/^(' .
-                Cnst::REGEX_PATH_KEYWORD_PREFIX . ')?(' .
+                Cnst::REGEX_PATH_SPECIAL_CHAR . ')?(' .
                 Cnst::REGEX_PATH_NAME . ')(?:' .
                 Cnst::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
             $match_result = preg_match($regex, $path, $matches);
@@ -47,8 +45,10 @@ class Path
                 if (strlen($path) === 0) {
                     break;
                 }
-            } else {
-                throw new PathParsingException('Can \'t parse path');
+
+            }
+            else {
+                throw new PathParsingException(sprintf('Can \'t parse path near "%s"', $path));
             }
         }
         $this->rewind();
@@ -89,7 +89,8 @@ class Path
     {
         if (count($this->pathItemList) > 0) {
             $this->index = 0;
-        } else {
+        }
+        else {
             $this->index = NULL;
         }
     }
@@ -118,10 +119,14 @@ class Path
     }
 
     /**
+     * Getter for mutipleMatching property.
+     *
+     * mutipleMatching indicates whether path contains items leading to produce multiple results.
      *
      * @return bool
      */
-    public function isMutipleMatching(){
+    public function isMutipleMatching()
+    {
         return $this->mutipleMatching;
     }
 

@@ -11,7 +11,7 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 ## Features :
 * Compact path like syntax using uniform syntax for getter, method or property
 * Prevent exception while accessing objects chains and provide a default value when a path cannot be resolved
-* Multiple values result using #any
+* Multiple values result using %any
 * Structured result using query
 
 ## A first example
@@ -34,15 +34,15 @@ echo $result;
 * Raw PHP expression is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would have to test some of the values before accessing them. That's a really boring point developer often have to deal with : it's repetitive, unappealing, can induce bugs and makes code less readable. 
 * Grabbag expression is implicitly secure. If it's not possible to walk along the object chain, result will be NULL by default, or set to a default-value to be specified or you can also let the exception pops.
 
-## Multiple values result using #any
+## Multiple values result using %any
 
-Path can collect more than one simple value using #any keyword.
-Let's consider the following example that looks like the previous one except for the #any
+Path can collect more than one simple value using %any keyword.
+Let's consider the following example that looks like the previous one except for the %any
 ```php
-$result = Grabbag::grab($node, 'get("field_media_image")/#any/get("entity")/target/value/get("field_image")/entity/fileUri');
+$result = Grabbag::grab($node, 'get("field_media_image")/%any/get("entity")/target/value/get("field_image")/entity/fileUri');
 var_dump($result);
 ```
-if the value corresponding to #any in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), #any will resolve the path considering each one of these values.
+if the value corresponding to %any in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), %any will resolve the path considering each one of these values.
 
 For instance if 
 ```php
@@ -65,7 +65,7 @@ Lets take an example :
 
 $result = Grabbag::grab($node, [
     'content-title:get("title").value',
-    'images:get("field_media_image")/#any/get("entity")/target/value/get("field_image")' => [
+    'images:get("field_media_image")/%any/get("entity")/target/value/get("field_image")' => [
         'uri:entity/fileUri',
         'alt:alt'
     ]

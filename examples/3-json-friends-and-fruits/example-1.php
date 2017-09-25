@@ -18,10 +18,10 @@ $json = json_encode(
         // Here comes the Grabbag query
         [
             // Get all my friends list.
-            'my-friends:#any/name',
+            'my-friends:%any/name',
 
             // Get all fruits they love.
-            'fruits-they-like:#any/food/liked/fruits/#any' => [
+            'fruits-they-like:%any/food/liked/fruits/%any' => [
                 '.',
 
                 // If some of them love same fruits, no need to list one fruit twice !

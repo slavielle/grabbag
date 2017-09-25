@@ -13,7 +13,7 @@ echo "json output: \n";
 
 $data = json_decode(file_get_contents($basePath . '/data.json'));
 
-$hatedFruit = Grabbag::grab($data, ['#any/food/hated/fruits/#any', '?unique']);
+$hatedFruit = Grabbag::grab($data, ['%any/food/hated/fruits/%any', '?unique']);
 
 $json = json_encode(
     Grabbag::grab(
@@ -22,13 +22,13 @@ $json = json_encode(
         // Here comes the Grabbag query
         [
             // Get all my friends list.
-            'my-friends:#any/name',
+            'my-friends:%any/name',
 
             // Get all fruits they love.
-            'fruits-they-like:#any/food/liked/fruits/#any' => [
+            'fruits-they-like:%any/food/liked/fruits/%any' => [
                 '~fruit:.',
-                '?consider' => function($item, $id) use ($hatedFruit){
-                    if($id === '~fruit'){
+                '?consider' => function ($item, $id) use ($hatedFruit) {
+                    if ($id === '~fruit') {
                         return !in_array($item->get(), $hatedFruit);
                     }
                 },
