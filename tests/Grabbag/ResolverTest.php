@@ -75,6 +75,20 @@ class ResolverTest extends TestCase
     }
 
     /**
+     * Test resolving with numerical index only as a path.
+     */
+
+    public function testResolveWithSingleIndex()
+    {
+        // One level structure test.
+        $testObject = ['A', 'B', 'C'];
+
+        $resolver = new Resolver($testObject);
+        $result = $resolver->resolve(new Path('#2'));
+        $this->assertEquals('C', $result->getValue());
+    }
+
+    /**
      * Test resolving with numerical index values in path.
      */
     public function testResolveWithIndex()
@@ -88,7 +102,8 @@ class ResolverTest extends TestCase
             $this->assertEquals('test 3', $result->getValue());
         }
     }
-    
+
+
     /**
      * Test resolving with invalid numerical index values in path.
      */
@@ -117,6 +132,20 @@ class ResolverTest extends TestCase
             $result = $resolver->resolve(new Path($pathVariant));
             $this->assertEquals('test 3.2', $result->getValue());
         }
+    }
+
+    /**
+     * Test resolving any on a non traversable object
+     */
+    public function testResolveWithIndexOn2Levels2()
+    {
+        // Two level structure test.
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $resolver = new Resolver($testObject);
+        $result = $resolver->resolve(new Path('getAllObjects/#3/getName/%any'));
+        var_dump($result->getValue());
+        $this->assertEquals([], $result->getValue());
     }
 
     /**

@@ -80,7 +80,7 @@ class PathItem
     }
 
     /**
-     * Test if Key is a keyword prefixed with '#'.
+     * Test if Key is a keyword prefixed with '%'.
      * @return bool
      */
     public function isKeyword()

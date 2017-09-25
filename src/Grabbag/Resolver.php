@@ -165,8 +165,13 @@ class Resolver
         $resultObjects = [];
         switch ($pathItem->getKey()) {
             case 'any':
-                foreach ($item->get() as $key => $entry) {
-                    $resultObjects[] = self::makeResolverItem($item, $entry, $key);
+                if (is_array($item->get()) || $item->get() instanceof Traversable) {
+                    foreach ($item->get() as $key => $entry) {
+                        $resultObjects[] = self::makeResolverItem($item, $entry, $key);
+                    }
+                }
+                else {
+                    throw new NotAdressableException('Trying to apply %any on non traversable value.');
                 }
                 break;
             case 'key':
@@ -256,7 +261,6 @@ class Resolver
      */
     private function resolveArray(PathItem $pathItem, Item $item)
     {
-
         if (isset($item->get()[$pathItem->getKey()])) {
             $value = $item->get()[$pathItem->getKey()];
             return self::makeResolverItem($item, $value, $pathItem->getKey());
