@@ -136,7 +136,7 @@ final class ResolverItemsTest extends TestCase
 
     /**
      * Test default result when requesting with a valid but non-matching path
-     * using embedded path array.
+     * using embedded path-array.
      */
     public function testResolveWithValidButNonMatchingPathOnEmbeddedPathArray()
     {

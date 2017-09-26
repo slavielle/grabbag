@@ -34,12 +34,12 @@ $input_data = [
     ]
 ];
 
-echo "\n\nwithout nested path array:\n";
+echo "\n\nwithout nested path-array:\n";
 $result = Grabbag::grab($input_data, 'my/object/%any/continues/%any');
 
 var_export($result);
 
-echo "\n\nwith nested path array:\n";
+echo "\n\nwith nested path-array:\n";
 $result = Grabbag::grab($input_data, [
     "my/object/%any" =>
         [
