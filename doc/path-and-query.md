@@ -4,13 +4,13 @@
     * [Path items](#path-items)
     * [Path items syntax](#path-items-syntax)
 * [Query, a quick overview](#query-a-quick-overview)
-    * [Path arrays](#path-arrays)
+    * [path-arrays](#path-arrays)
 * [Path ids](#path-ids)
     * [Usage](#usage)
     * [Explicit or internal id](#explicit-or-internal-id)
     * [Ids and modifiers](#ids-and-modifiers)     
 * [Query, let's go further](#query-lets-go-further)
-    * [Embedded path arrays](#embedded-path-arrays)
+    * [Embedded path-arrays](#embedded-path-arrays)
     * [Result scope](#result-scope)
     * [Single value path-array](#single-value-path-array)
 * [Symbols](#symbols)
@@ -75,9 +75,9 @@ All will be explained as soon as i tell you the simplest form of a query is a pa
 
 So now the question is : what a query could be if it's non (only) a path !
 
-### Path arrays
+### path-arrays
 
-Path arrays gathers paths in order to produce structured arrays.
+path-arrays gathers paths in order to produce structured arrays.
 
 **Example :**
 ```php
@@ -136,7 +136,7 @@ An example using transform modifier :
 [
     "lv-1:my/first/path", //this is an explicit id
     "~lv-2:my/second/path", //this is an internal id
-    "lv-3:my/first/path",
+    "lv-3:my/third/path/goes/here",
     "?transform" => function($value, $id){
         if($id === "~lv-2"){
             return '>>>' . $value . '<<<';
@@ -154,17 +154,17 @@ An example using transform modifier :
 ## Query, let's go further
 
 We've seen that the simplest form of a query is a Path, 
-We've seen to that a Query can be a path array, using or not ids.
+We've seen also a query can be a path-array, using or not path-ids.
 
-Fine. Let's make a step ahead.
+Fine. Let's make a step ahead with embedded path-arrays.
 
-### Embedded path arrays
+### Embedded path-arrays
 
-In a query, Path arrays can be embedded in order to produce leveled structured results. 
-Each path array can contain paths or embedded path arrays that will be resolved to produce results in the 
+In a query, path-arrays can be embedded in order to produce leveled structured results. 
+Each path-array can contain paths or embedded path-arrays that will be resolved to produce results in the 
 related result scope.
 
-Embedded path arrays example : 
+Embedded path-arrays example : 
 
 ```php
 [
@@ -194,18 +194,18 @@ The result would be something like this :
     "My string 2-2"
 ]
 ```
-If we now split this path in a query containing 2 embedded path array like this :
+If we now split this path in a query containing 2 embedded path-array like this :
  
 ```php
-[ // Path array #1
+[ // path-array #1
     "my/object/%any" => 
-    [ // Path array #2
+    [ // path-array #2
         "continues/%any"
     ]
 ]
 ```
 
-We request same objects pretty the same way, but we added an embedded path array having its own result scope. The whole result will now be someting like this :
+We request same objects pretty the same way, but we added an embedded path-array having its own result scope. The whole result will now be someting like this :
 
 
 ```php
@@ -233,7 +233,7 @@ example :
 ["this/is/my/path"];
 ```
 
-This path arrays would normally produce an array as a result scope. But is it of use ?
+This path-arrays would normally produce an array as a result scope. But is it of use ?
 
 * The path is obviously not returning multiple values (no %any or such in path expression)
 * the path does not have multiple path neither path id producing a keyed value in result scope.
@@ -241,7 +241,7 @@ This path arrays would normally produce an array as a result scope. But is it of
 In this case default behavior is : the value returned in the value itself an not an array containing the single value.
 
 
-The principe applies also on embedded path arrays. The previous example is equivalent to next ones:
+The principe applies also on embedded path-arrays. The previous example is equivalent to next ones:
 
 ```php
 [
@@ -328,8 +328,47 @@ Keywords are path items prefixed by "#" that implements special behaviors.
 
 ## Modifiers
 
-In a query, path arrays can contain modifiers.
-Modifiers are prefixed using "?" and allows to alter the path array behavior.
+In a query, path-arrays can contain modifiers.
+Modifiers are prefixed using "?" and allows to alter values or behavior inside the path-array.
+
+### Global or Path modifiers
+
+There is different kind of modifiers : 
+
+* **Gobal modifier** that applies on the global path-array such as ?unique, ?keep-array, ?exception-enabled.
+* **Path modifiers** that applies on a given path in the path array such as ?transform, ?consider, ?default-value.
+
+### Un-targeted/targeted Path modifiers
+
+Path modifiers can have an un-targeted and targeted syntax.
+
+Un-targeted syntax : 
+
+```php
+[
+~myId:this/is/my/path,
+"?my-path-modifier" => "whatever my modifier takes as an input"
+];
+```
+
+Targeted syntax : 
+
+```php
+[
+~myId:this/is/my/path,
+"?my-path-modifier@~myId" => "whatever my modifier takes as an input"
+];
+```
+
+How does that works
+
+a targeted path modifiers is used for path having its id specified after the "@" char in the modifier name. 
+If there is no targeted path modifier, the un-targeted path modifier will be used if exists.
+
+for un-targeted modifier triggering a callback function, the path-id is passed as a function argument.
+
+
+### All Path modifier
 
 * [?unique](query-modifiers/unique-modifier.md)
 * [?transform](query-modifiers/transform-modifier.md)
