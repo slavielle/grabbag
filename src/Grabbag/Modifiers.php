@@ -11,7 +11,7 @@ namespace Grabbag;
 /**
  * Class Modifiers
  *
- * Implement modifiers for path array.
+ * Implement modifiers for path-array.
  *
  * @package Grabbag
  */
@@ -28,10 +28,10 @@ class Modifiers
     }
 
     /**
-     * Submit a path array item. if path array item name's fitting as a modifier, modifier is recorded and the function
+     * Submit a path-array item. if path-array item name's fitting as a modifier, modifier is recorded and the function
      * return TRUE to indicate modifier had been recognized and recorded. FALSE otherwise.
-     * @param string $pathArrayItemName Path array item name.
-     * @param mixed $pathArrayItemValue Path array item value.
+     * @param string $pathArrayItemName path-array item name.
+     * @param mixed $pathArrayItemValue path-array item value.
      * @return bool Fit as a modifier.
      * @throws \Exception
      */

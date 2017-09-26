@@ -181,26 +181,6 @@ class ItemCollection
             // Value is to be kept.
             if ($keep) {
 
-                // Modifiers are invoqued only on path with id.
-                if ($pathId !== NULL) {
-
-                    // Transform modifier
-                    if ($modifiers->exists('transform')) {
-                        $value->update(call_user_func_array(
-                                $modifiers->get('transform', $pathId),
-                                [$value->get(), $pathId]
-                            )
-                        );
-                    }
-
-                    // Debug modifier
-                    if ($modifiers->exists('debug')) {
-                        self::debugVariable(
-                            $modifiers->getDefault('debug'),
-                            $value->get(), $pathId);
-                    }
-                }
-
                 // Append value
                 if ($pathId !== NULL && substr($pathId, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
                     $resultValues[$pathId] = $value;
@@ -209,6 +189,36 @@ class ItemCollection
                     $resultValues[] = $value;
                 }
             }
+        }
+
+        foreach ($resultValues as $resultValue) {
+            // Modifiers are invoqued only on path with id.
+            //if ($pathId !== NULL) {
+
+            // Transform modifier
+            if ($modifiers->exists('transform')) {
+                $resultValue->update(call_user_func_array(
+                        $modifiers->get('transform', $pathId),
+                        [$resultValue->get(), $pathId, new ItemAccessor($resultValue), $resultValues]
+                    )
+                );
+            }
+
+            // call modifier
+            if ($modifiers->exists('call')) {
+                call_user_func_array(
+                    $modifiers->get('transform', $pathId),
+                    [$resultValue->get(), $pathId, new ItemAccessor($resultValue), $resultValues]
+                );
+            }
+
+            // Debug modifier
+            if ($modifiers->exists('debug')) {
+                self::debugVariable(
+                    $modifiers->getDefault('debug'),
+                    $resultValue->get(), $pathId);
+            }
+            //}
         }
 
         // Return a single value instead of an array containing just one single value, in following circumstance ...
@@ -230,8 +240,8 @@ class ItemCollection
     }
 
     /**
-     * Extract and prepare modifiers from path array.
-     * @param array $pathArray User defined path array.
+     * Extract and prepare modifiers from path-array.
+     * @param array $pathArray User defined path-array.
      * @return array
      */
     static private function prepareModifiers($pathArray)
@@ -259,10 +269,10 @@ class ItemCollection
 
             $preparedPath = [];
 
-            // Get sub path array.
+            // Get sub path-array.
             $preparedPath['pathArray'] = (int)$left === $left ? NULL : $right;
 
-            // Get either simple path from left or path with a sub path array from right
+            // Get either simple path from left or path with a sub path-array from right
             $path = (int)$left === $left ? $right : $left;
 
 
