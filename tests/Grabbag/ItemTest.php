@@ -8,11 +8,11 @@
 
 namespace Grabbag\tests;
 
-use PHPUnit\Framework\TestCase;
 use Grabbag\Item;
+use PHPUnit\Framework\TestCase;
 
 
-class ResolverItemTest extends \PHPUnit_Framework_TestCase
+class ItemTest extends \PHPUnit_Framework_TestCase
 {
     public function testGet()
     {
@@ -88,7 +88,8 @@ class ResolverItemTest extends \PHPUnit_Framework_TestCase
         $poppedValue = $resolverItem->pop();
     }
 
-    public function testUpdate(){
+    public function testUpdate()
+    {
         $testValue = '';
         $resolverItem = new Item($testValue);
         $resolverItem->update('updated-value-1');

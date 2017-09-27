@@ -144,7 +144,6 @@ class ResolverTest extends TestCase
 
         $resolver = new Resolver($testObject);
         $result = $resolver->resolve(new Path('getAllObjects/#3/getName/%any'));
-        var_dump($result->getValue());
         $this->assertEquals([], $result->getValue());
     }
 

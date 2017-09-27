@@ -17,6 +17,7 @@ use Grabbag\PathItem;
 use Grabbag\Resolver;
 use Grabbag\Item;
 use Grabbag\ItemCollection;
+use Grabbag\ItemAccessor;
 use Grabbag\VoidDefaultValue;
 use Grabbag\NullDefaultValue;
 use Grabbag\tests\sourceData\SourceDataHelper;
@@ -32,7 +33,7 @@ use Grabbag\exceptions\CantApplyConsiderModifierException;
 /**
  * @covers Resolver
  */
-final class ResolverItemsTest extends TestCase
+final class ItemCollectionTest extends TestCase
 {
 
     /**
@@ -730,6 +731,103 @@ final class ResolverItemsTest extends TestCase
         $this->assertEquals($expected, $resolverItems->getValue());
     }
 
+
+    /**
+     * Test consider argument passed to a modifier callback.
+     */
+    public function testResolverQueryConsiderModifier3()
+    {
+
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $expected = [
+            [
+                'value' => 'ID#1',
+                'id' => '~myId'
+            ],
+            [
+                'value' => 'ID#2',
+                'id' => '~myId2'
+            ],
+            [
+                'value' => 'ID#3',
+                'id' => '~myId3'
+            ],
+            [
+                'value' => 'ID#4',
+                'id' => NULL
+            ],
+
+        ];
+
+        $collect = [];
+
+        $resolverItems = new ItemCollection($testObject);
+        $resolverItems->resolve([
+            'getAllObjects/#0' => [
+                '~myId:getAllObjects/#0/myId',
+                '~myId2:getAllObjects/#1/myId',
+                '~myId3:getAllObjects/#2/myId',
+
+                // Case of a path without path-id.
+                'getAllObjects/#3/myId',
+
+                // Case of a multi-valued function
+                '~myId5:getAllObjects/%any/myId',
+
+                '?call' => function ($value, $id, $itemAccessor, $allItems) use (&$collect) {
+                    $collect[] = [
+                        'value' => $value,
+                        'id' => $id,
+                        'itemAccessor' => $itemAccessor,
+                        'allItems' => $allItems,
+                    ];
+                },
+            ],
+
+        ]);
+
+        $this->assertEquals(4, count($collect));
+        foreach ($collect as $index => $collectedItem) {
+            $this->assertEquals($expected[$index]['value'], $collectedItem['value']);
+            $this->assertEquals($expected[$index]['id'], $collectedItem['id']);
+            $this->assertTrue($collectedItem['itemAccessor'] instanceof ItemAccessor);
+            $this->assertEquals(5, count($collectedItem['allItems']));
+            $this->assertTrue($collectedItem['allItems']['~myId'] instanceof ItemAccessor);
+            $this->assertTrue($collectedItem['allItems']['~myId2'] instanceof ItemAccessor);
+            $this->assertTrue($collectedItem['allItems']['~myId3'] instanceof ItemAccessor);
+            $this->assertTrue($collectedItem['allItems'][0] instanceof ItemAccessor);
+            $this->assertTrue($collectedItem['allItems']['~myId5'] === NULL);
+            //foreach ($)
+        }
+
+    }
+
+    /**
+     * Test resolving with a consider modifier on a path's multi-valued result.
+     * This case must throw an CantApplyConsiderModifierException exception.
+     * Consider can't be applied on a multi-valued path result.
+     */
+    public function testResolverQueryConsiderModifier2()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+        $resolverItems = new ItemCollection($testObject);
+
+        $this->expectException(CantApplyConsiderModifierException::class);
+        $resolverItems->resolve([
+            '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
+            '?unique',
+            '?consider' => function ($item, $id) {
+                if ($id === "~myId") {
+                    return $item->get() !== 'ID#6';
+                }
+            }
+        ]);
+
+
+    }
+
     /**
      * Test if a path-array having multiple path items but returning one single value
      * do return an array (in this case single value must not be returned itself but in an array containing the
@@ -759,31 +857,6 @@ final class ResolverItemsTest extends TestCase
         foreach ($resolverItems->getValue() as $item) {
             $this->assertTrue(is_array($item));
         }
-    }
-
-    /**
-     * Test resolving with a consider modifier on a path's multi-valued result.
-     * This case must throw an CantApplyConsiderModifierException exception.
-     * Consider can't be applied on a multi-valued path result.
-     */
-    public function testResolverQueryConsiderModifier2()
-    {
-
-        $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ItemCollection($testObject);
-
-        $this->expectException(CantApplyConsiderModifierException::class);
-        $resolverItems->resolve([
-            '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
-            '?unique',
-            '?consider' => function ($item, $id) {
-                if ($id === "~myId") {
-                    return $item->get() !== 'ID#6';
-                }
-            }
-        ]);
-
-
     }
 
     /**

@@ -132,9 +132,9 @@ class ItemCollection
      * Resolve one result item regarding the path or Query provided.
      * @param Item $item Item to be resolved.
      * @param mixed[] $preparedPaths Path or Query.
-     * @param mixed[] $modifiers Prepared modifiers.
+     * @param Modifiers $modifiers Prepared modifiers.
      * @param mixed $defaultValue t
-     * @params bool $exceptionEnabled
+     * @param bool $exceptionEnabled
      * @return Item[] Resolved items.
      * @throws CantApplyConsiderModifierException
      */
@@ -148,7 +148,8 @@ class ItemCollection
             $exceptionEnabled
         );
 
-        $resultValues = [];
+        //Resolving loop.
+        $beforeModifiersValues = [];
         foreach ($preparedPaths as $preparedPath) {
 
             $pathId = $preparedPath['pathObject']->getPathId();
@@ -165,16 +166,86 @@ class ItemCollection
 
             $value = $resolvedItems->getItems();
 
+            if ($pathId !== NULL) {
+                $beforeModifiersValues[$pathId] = $value;
+            }
+            else {
+                $beforeModifiersValues[] = $value;
+            }
+
+        }
+
+        // Prepare limited accessors for every path value in the path-array.
+        $beforeModifiersValueAccessors = [];
+        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+
+            if ($beforeModifiersValue instanceof Item) {
+                $itemAccessor = new ItemAccessor($beforeModifiersValue);
+            }
+            else {
+                // Multi-valued paths are not supported.
+                $itemAccessor = NULL;
+            }
+
+            if (NULL !== ($pathId = is_integer($key) ? NULL : $key)) {
+                $beforeModifiersValueAccessors[$pathId] = $itemAccessor;
+            }
+            else {
+                $beforeModifiersValueAccessors[] = $itemAccessor;
+            }
+        }
+
+        //After-resolving modifiers loop.
+        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+
+            $pathId = is_integer($key) ? NULL : $key;
+
+            // Transform modifier
+            // Restriction : Transform modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
+            // instance of Item).
+            if ($modifiers->exists('transform') && $beforeModifiersValue instanceof Item) {
+                $beforeModifiersValue->update(call_user_func_array(
+                        $modifiers->get('transform', $pathId),
+                        [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
+                    )
+                );
+            }
+
+            // Call modifier
+            // Restriction : Call modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
+            // instance of Item).
+            if ($modifiers->exists('call') && $beforeModifiersValue instanceof Item) {
+                call_user_func_array(
+                    $modifiers->get('call', $pathId),
+                    [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
+                );
+            }
+
+            // Debug modifier
+            if ($modifiers->exists('debug')) {
+                self::debugVariable(
+                    $modifiers->getDefault('debug'),
+                    $beforeModifiersValue->get(), $pathId);
+            }
+        }
+
+        // Keep loop.
+        $resultValues = [];
+        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+            $pathId = is_integer($key) ? NULL : $key;
+
             // Consider modifier
             $keep = TRUE;
             if ($modifiers->exists('consider') && $pathId !== NULL) {
-                if (is_array($value)) {
+                if (is_array($beforeModifiersValue)) {
                     throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
                 }
                 $keep = call_user_func_array(
                     $modifiers->get('consider', $pathId),
-                    [new ItemAccessor($value), $pathId]
+                    [new ItemAccessor($beforeModifiersValue), $pathId]
                 );
+
+                // NULL returned by callback means keep.
                 $keep = $keep === NULL ? TRUE : $keep;
             }
 
@@ -183,42 +254,12 @@ class ItemCollection
 
                 // Append value
                 if ($pathId !== NULL && substr($pathId, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
-                    $resultValues[$pathId] = $value;
+                    $resultValues[$pathId] = $beforeModifiersValue;
                 }
                 else {
-                    $resultValues[] = $value;
+                    $resultValues[] = $beforeModifiersValue;
                 }
             }
-        }
-
-        foreach ($resultValues as $resultValue) {
-            // Modifiers are invoqued only on path with id.
-            //if ($pathId !== NULL) {
-
-            // Transform modifier
-            if ($modifiers->exists('transform')) {
-                $resultValue->update(call_user_func_array(
-                        $modifiers->get('transform', $pathId),
-                        [$resultValue->get(), $pathId, new ItemAccessor($resultValue), $resultValues]
-                    )
-                );
-            }
-
-            // call modifier
-            if ($modifiers->exists('call')) {
-                call_user_func_array(
-                    $modifiers->get('transform', $pathId),
-                    [$resultValue->get(), $pathId, new ItemAccessor($resultValue), $resultValues]
-                );
-            }
-
-            // Debug modifier
-            if ($modifiers->exists('debug')) {
-                self::debugVariable(
-                    $modifiers->getDefault('debug'),
-                    $resultValue->get(), $pathId);
-            }
-            //}
         }
 
         // Return a single value instead of an array containing just one single value, in following circumstance ...
@@ -242,7 +283,7 @@ class ItemCollection
     /**
      * Extract and prepare modifiers from path-array.
      * @param array $pathArray User defined path-array.
-     * @return array
+     * @return Modifiers
      */
     static private function prepareModifiers($pathArray)
     {
@@ -300,8 +341,9 @@ class ItemCollection
     /**
      * Implements ?unique modifier behavior : Return an array containing only unique value in array.
      * @param Item[] $items Array to be filtered.
-     * @maram integer $recurseLevel. Level of recursion.
+     * @param integer $recurseLevel . Level of recursion.
      * @return Item[] Result array.
+     * @throws CantApplyUniqueModifierException
      */
     static private function keepUniqueValuesOnly($items, $recurseLevel = 0)
     {
