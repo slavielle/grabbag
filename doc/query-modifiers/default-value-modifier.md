@@ -8,7 +8,7 @@ a mechanism allowing to define default values using *?default-value* modifier.
 
 
 ## Source data
-```
+```php
 [
     (object)[
         'value' => 'My value 1',
@@ -24,15 +24,15 @@ a mechanism allowing to define default values using *?default-value* modifier.
 
 ## Default behavior
 Query :
-```
-[
+```php
+$result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => $defaultValue['in']
-]
+]);
 
 ```
 Result : 
-```
+```php
 [
     'My value 1',
     'My value 3',
@@ -42,33 +42,33 @@ Result :
 No value is produced for unmatching element.
 ## With *new VoidDefaultValue()* as ?default-value'
 Query :
-```
-[
+```php
+$result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => new VoidDefaultValue()
-]
+]);
 
 ```
 Result : 
-```
-[
+```php
+$result = Grabbag::grab($subject, [
     'My value 1',
     'My value 3',
-]
+]);
 
 ```
 As in default case, no value is produced for unmatching element. those 2 solutions are equivalent.
 ## With *new NullDefaultValue()* as ?default-value'
 Query :
-```
-[
+```php
+$result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => new NullDefaultValue()
-]
+]);
 
 ```
 Result : 
-```
+```php
 [
     'My value 1',
     NULL,
@@ -78,15 +78,15 @@ Result :
 NULL is produced for unmatching element.
 ## With a variable as ?default-value'
 Query :
-```
-[
+```php
+$result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => 'No Value'
-]
+]);
 
 ```
 Result : 
-```
+```php
 [
     'My value 1',
     'No Value',

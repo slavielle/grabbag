@@ -81,16 +81,16 @@ path-arrays gathers paths in order to produce structured arrays.
 
 **Example :**
 ```php
-[
+$result = Grabbag::grab($subject, [
     "my/first/path",
     "my/second/path"
-]
+]);
 ```
 **Example result  :** 
 ```php
 ['my value #1', 'my value #2',]
 ```
-In query, paths are often prefixed with id (See Path ids) allowing to produce a keyed value in the result.
+In query, paths are often prefixed with a path id (See Path ids) allowing to produce a keyed value in the result.
 
 ## Path ids
 
@@ -112,11 +112,11 @@ If you want to avoid the key to be used in result scope you must prefix it with 
 Usage 1 example : 
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "lv-1:my/first/path", //this is an explicit id
     "~lv-2:my/second/path", //this is an internal id
     "lv-3:my/first/path"
-]
+]);
 ```
 Result example :
 ```php
@@ -124,7 +124,7 @@ Result example :
      "lv-1" => "Result 1",
      "Result 2",
      "lv-3" => "Result 3"
- ]
+]
 ```
 ### Ids and modifiers
 
@@ -133,7 +133,7 @@ Internal or explicit ids can be used with modifiers to alter the path result.
 An example using transform modifier :
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "lv-1:my/first/path", //this is an explicit id
     "~lv-2:my/second/path", //this is an internal id
     "lv-3:my/third/path/goes/here",
@@ -142,7 +142,7 @@ An example using transform modifier :
             return '>>>' . $value . '<<<';
         }
     }
-]
+]);
 ```
 ```php
 [
@@ -167,22 +167,22 @@ related result scope.
 Embedded path-arrays example : 
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "my-key-A:my/first/path",
     "my-key-B:my/second/path" => [
         "my-key-AA:continue/here",
         "my-key-AB:continue/there"
     ]
     "my-key-C:my/first/path",
-]
+]);
 ```
 ### Result scope
 
 Result scope is an important Grabbag concepts.
 
 Let consider the following path : 
-```
-my/object/%any/continues/%any
+```php
+$result = Grabbag::grab($subject, 'my/object/%any/continues/%any');
 ```
 
 The result would be something like this : 
@@ -197,15 +197,18 @@ The result would be something like this :
 If we now split this path in a query containing 2 embedded path-array like this :
  
 ```php
-[ // path-array #1
-    "my/object/%any" => 
-    [ // path-array #2
+$result = Grabbag::grab($subject, [ 
+    
+    // path-array #1
+    "my/object/%any" => [ 
+        
+        // path-array #2
         "continues/%any"
     ]
 ]
 ```
 
-We request same objects pretty the same way, but we added an embedded path-array having its own result scope. The whole result will now be someting like this :
+We request same objects pretty the same (my/object/%any/continues/%any), but we plitted it and added an embedded path-array having its own result scope. The whole result will now be something like this :
 
 
 ```php
@@ -230,35 +233,38 @@ It's sometimes convenient to have result scope not producing an array but a sing
 example :
 
 ```php
-["this/is/my/path"];
+$result = Grabbag::grab($subject, 'this/is/my/path');
+```
+Same query with a path-array: 
+```php
+$result = Grabbag::grab($subject, ['this/is/my/path']);
 ```
 
-This path-arrays would normally produce an array as a result scope. But is it of use ?
+Regarding path-array logic, this latter query (having a path-array) would normally produce an array. But is it of use ?
 
 * The path is obviously not returning multiple values (no %any or such in path expression)
 * the path does not have multiple path neither path id producing a keyed value in result scope.
 
-In this case default behavior is : the value returned in the value itself an not an array containing the single value.
+In this case default behavior is : the value returned is the value itself an not an array containing the single value.
 
-
-The principe applies also on embedded path-arrays. The previous example is equivalent to next ones:
+The principle applies also on embedded path-arrays. The previous example is equivalent to next ones:
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "this/is" => [
         "my/path"
     ]
-];
+]);
 ```
 ```php
-[
+$result = Grabbag::grab($subject, [
     "this" => [
         "is/my/path"
     ]
-];
+]);
 ```
 ```php
-[
+$result = Grabbag::grab($subject, [
     "this" => [
         "is" => [
             "my" => [
@@ -266,26 +272,26 @@ The principe applies also on embedded path-arrays. The previous example is equiv
             ]
         ]
     ]
-];
+]);
 ```
 
-All Queries above works and return an identical result, even if there is no reason to use last solutions as-is.
+All Queries above works and return an identical result, even if there is no point to use last solutions as-is.
 
 * Usage : * 
 
 you can couple this with modifiers, for instance to define a default value.
 
 ```php 
-[
+$result = Grabbag::grab($subject, [
     "~value:this/is/my/path",
     "?default-value" => "oh sorry nothing there !"
-];
+]);
 ```
 
 More complex example it can be useful used with exception-enabled modifier for example :
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "this" => [
         "is/my" => [
             "path",
@@ -295,7 +301,7 @@ More complex example it can be useful used with exception-enabled modifier for e
     ],
     exception-enabled:TRUE,
     "?default-value" => "oh sorry nothing there !"
-];
+]);
 ```
 In this very last example, this/is/my/path will be resolved, 
 if path can't be resolved on "this" or "path" parts, an exception will be thrown.
@@ -308,10 +314,10 @@ Forcing single-matching path-array to produce array.
 If for any reason you want to force an single-matching path-array to produce an array and not a single value you can force it using the modifier ?keep-array :
 
 ```php
-[
+$result = Grabbag::grab($subject, [
     "~value:this/is/my/path",
     "?keep-array"
-];
+]);
 ```
 
 ## Symbols
@@ -345,19 +351,19 @@ Path modifiers can have an un-targeted and targeted syntax.
 Un-targeted syntax : 
 
 ```php
-[
+$result = Grabbag::grab($subject, [
 ~myId:this/is/my/path,
 "?my-path-modifier" => "whatever my modifier takes as an input"
-];
+]);
 ```
 
 Targeted syntax : 
 
 ```php
-[
+$result = Grabbag::grab($subject, [
 ~myId:this/is/my/path,
 "?my-path-modifier@~myId" => "whatever my modifier takes as an input"
-];
+]);
 ```
 
 How does that works

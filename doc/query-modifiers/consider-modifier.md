@@ -8,8 +8,8 @@ Callback function prototype
 
 function($value, $pathId){}
 
-* $value: SerialResolver instance of the element matched.
-* $pathId: Id of the path the value had been matched with.
+* **$value**: SerialResolver instance of the element matched.
+* **$pathId**: Id of the path the value had been matched with.
 
 This modifier is invoked only on path having a path id.
 
