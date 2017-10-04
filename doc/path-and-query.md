@@ -21,7 +21,7 @@
 ## Path principle
 
 Grabbag offer an alternative to PHP chain to get value from PHP elements (objects or arrays).
-It principle is to use a path that act similar to PHP chain but with some benefits.
+It principle is to use a path that acts similarly to PHP chain but with some benefits.
 
 for example, a PHP chain such as : 
 ```php
