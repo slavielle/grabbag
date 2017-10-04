@@ -14,8 +14,8 @@ Grabbag is a PHP library that aims provide a simple secure way to request PHP ob
 * Multiple values result using %any
 * Structured result using query
 
-## A first example
-
+## What is it about ... a first example
+When you develop on top of PHP object-based frameworks or CMS, you often have to use long chain expressions to access objects.
 Lets take an example from Drupal 8 : Getting the image URL from a node using entity reference field pointing to a media entity would give someting like this :
 
 **Using raw PHP :**
