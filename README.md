@@ -42,13 +42,13 @@ Let's consider the following example that looks like the previous one except for
 $result = Grabbag::grab($node, 'get("field_media_image")/%any/get("entity")/target/value/get("field_image")/entity/fileUri');
 var_dump($result);
 ```
-if the value corresponding to %any in the path can be iterated (if it's an array or an object implementing [Iterator interface](http://php.net/manual/en/class.iterator.php) for instance), %any will resolve the path considering each one of these values.
+if the value corresponding to %any in the path can be used with php foreach (if it's an array or a [traversable object](http://php.net/manual/en/class.traversable.php)), %any will resolve the path considering each one of these values.
 
 For instance if 
 ```php
 $node->get('field_media_image') 
 ```
-contains 4 items, then the result value will be an array looking like this : 
+contains 4 items, then the result value of the previous example will be an array looking like this : 
 ```php
 [
     "my/image/1.jpg", 
