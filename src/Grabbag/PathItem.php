@@ -32,7 +32,7 @@ class PathItem
         }
 
         if ((string)$key === (string)(int)$key && $special !== Cnst::PATH_NUMERICAL_INDEX_PREFIX) {
-            throw new PathParsingException('Numerical value encoutered without "#"');
+            throw new PathParsingException(PathParsingException::ERR_1);
         }
     }
 
@@ -66,15 +66,19 @@ class PathItem
         // String parameter.
         if (preg_match('/^"([^"]*)"$/', $this->param, $matches)) {
             return [$matches[1]];
-        } // Numeric parameter expected.
+        }
+
+        // Numeric parameter expected.
         else {
 
             // Numeric parameter.
             if (is_numeric($this->param)) {
                 return [$this->param + 0];
-            } // Parse error
+            }
+
+            // Parse error
             else {
-                throw new PathParsingException(sprintf('can\'t parse parameter ""'));
+                throw new PathParsingException(PathParsingException::ERR_2, [$this->param]);
             }
         }
     }

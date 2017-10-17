@@ -101,7 +101,7 @@ class Resolver
                     $resultObjects = $this->resolveArray($pathItem, $item);
                 }
                 else {
-                    throw new NotAdressableException('Can\'t resolve');
+                    throw new NotAdressableException(NotAdressableException::ERR_1);
                 }
 
                 return $resultObjects;
@@ -118,7 +118,6 @@ class Resolver
             }
 
             // The path item returned void item on a single-matching path item.
-
             else if (!$this->appliedPath->isMutipleMatching()) {
                 $allResultObjects[] = $this->makeResolverItem($item, $resultObjects->get()->getFallbackDefaultValue());
             }
@@ -171,7 +170,7 @@ class Resolver
                     }
                 }
                 else {
-                    throw new NotAdressableException('Trying to apply %any on non traversable value.');
+                    throw new NotAdressableException(NotAdressableException::ERR_2);
                 }
                 break;
             case 'key':
@@ -181,7 +180,7 @@ class Resolver
             // To be continued on future needs.
 
             default :
-                throw new UnknownPathKeywordException(sprintf('Unknown keyword "#%s" in path', $pathItem->getKey()));
+                throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_1, [$pathItem->getKey()]);
         }
         return $resultObjects;
     }
@@ -213,7 +212,7 @@ class Resolver
 
         // Throw exception : None of the previous solutions worked.
         else {
-            throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on item', $pathItem->getKey()));
+            throw new PropertyNotFoundException(PropertyNotFoundException::ERR_1, [$pathItem->getKey()]);
         }
     }
 
@@ -246,14 +245,14 @@ class Resolver
         try {
             $value = call_user_func_array([$item->get(), $prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey()], $params);
         } catch (\Exception $e) {
-            throw new NotAdressableException('Parameters passed to method thrown an exception');
+            throw new NotAdressableException(NotAdressableException::ERR_3);
         }
 
         return self::makeResolverItem($item, $value);
     }
 
     /**
-     * Resolve array : Get the value form the array key defined in the $pathItem.
+     * Resolve array : Get the value form the array ($item) defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
      * @throws PropertyNotFoundException if property cant be found in $item.
@@ -265,7 +264,7 @@ class Resolver
             $value = $item->get()[$pathItem->getKey()];
             return self::makeResolverItem($item, $value, $pathItem->getKey());
         }
-        throw new PropertyNotFoundException(sprintf('Can\'t resolve "%s" on array', $pathItem->getKey()));
+        throw new PropertyNotFoundException(PropertyNotFoundException::ERR_2, [$pathItem->getKey()]);
     }
 
     /**

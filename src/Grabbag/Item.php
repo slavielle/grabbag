@@ -2,7 +2,8 @@
 
 namespace Grabbag;
 
-use \Grabbag\exceptions\ResolveItemStackEmptyException;
+use Grabbag\exceptions\ResolveItemStackEmptyException;
+
 /**
  * Class Item
  *
@@ -11,7 +12,6 @@ use \Grabbag\exceptions\ResolveItemStackEmptyException;
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package Grabbag
  */
-
 class Item
 {
 
@@ -24,7 +24,7 @@ class Item
      * @param mixed $item Item value.
      * @param string|integer Item key.
      */
-    public function __construct($item, $key=NULL)
+    public function __construct($item, $key = NULL)
     {
         $this->update($item, $key);
         $this->previous = [];
@@ -73,7 +73,7 @@ class Item
     {
         $popped = array_pop($this->previous);
         if ($popped === NULL) {
-            throw new ResolveItemStackEmptyException(ResolveItemStackEmptyException::CODE_1);
+            throw new ResolveItemStackEmptyException(ResolveItemStackEmptyException::ERR_1);
         }
         $this->item = $popped['item'];
         $this->key = $popped['key'];
@@ -102,7 +102,8 @@ class Item
     {
         if (is_array($item)) {
             return $item instanceof Item ? $item : [new Item($item)];
-        } else {
+        }
+        else {
             return $item instanceof Item ? [$item] : [new Item($item)];
         }
     }

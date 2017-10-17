@@ -798,7 +798,6 @@ final class ItemCollectionTest extends TestCase
             $this->assertTrue($collectedItem['allItems']['~myId3'] instanceof ItemAccessor);
             $this->assertTrue($collectedItem['allItems'][0] instanceof ItemAccessor);
             $this->assertTrue($collectedItem['allItems']['~myId5'] === NULL);
-            //foreach ($)
         }
 
     }
@@ -813,18 +812,25 @@ final class ItemCollectionTest extends TestCase
 
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ItemCollection($testObject);
+        $expectedException = NULL;
 
-        $this->expectException(CantApplyConsiderModifierException::class);
-        $resolverItems->resolve([
-            '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
-            '?unique',
-            '?consider' => function ($item, $id) {
-                if ($id === "~myId") {
-                    return $item->get() !== 'ID#6';
+        try {
+            $resolverItems->resolve([
+                '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
+                '?unique',
+                '?consider' => function ($item, $id) {
+                    if ($id === "~myId") {
+                        return $item->get() !== 'ID#6';
+                    }
                 }
-            }
-        ]);
+            ]);
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
 
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\CantApplyConsiderModifierException');
+        $this->assertEquals($expectedException->getCode(), 1);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t apply ?consider modifier in a multi-valued path result.');
 
     }
 

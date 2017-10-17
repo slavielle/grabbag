@@ -9,7 +9,6 @@
 namespace Grabbag\tests;
 
 use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\UnknownPathKeywordException;
 use Grabbag\Path;
 use Grabbag\Resolver;
@@ -61,17 +60,118 @@ class ResolverTest extends TestCase
     }
 
     /**
-     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     * Test if resolving with a non matching path raise an exception.
+     * Case :
+     *  - PropertyNotFoundException
+     *  - Error code 1
      */
     public function testResolveWithBadPathReturnException()
     {
         $testObject = SourceDataHelper::getDataIndexedL2();
+        $expectedException = NULL;
+
+        // Must raise an exception.
+        try {
+            $resolver = new Resolver($testObject, NULL, TRUE);
+            $resolver->resolve(new Path('badpath'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PropertyNotFoundException');
+        $this->assertEquals($expectedException->getCode(), 1);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
+    }
+
+    /**
+     * Test if resolving with a non matching path raise an exception.
+     * Case :
+     *  - PropertyNotFoundException
+     *  - Error code 1
+     */
+    public function testResolveWithBadPathReturnException2()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+        $expectedException = NULL;
+
+        // Must raise an exception.
+        try {
+            $resolver = new Resolver($testObject, NULL, TRUE);
+            $resolver->resolve(new Path('getAllObjects/badpath'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PropertyNotFoundException');
+        $this->assertEquals($expectedException->getCode(), 2);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on array.');
+    }
+
+    /**
+     * Test if resolving with a non matching path raise an exception.
+     * Case :
+     *  - NotAdressableException
+     *  - Error code 1
+     */
+    public function testResolveWithBadPathReturnException3()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+        $expectedException = NULL;
+
+        // Must raise an exception.
+        try {
+            $resolver = new Resolver($testObject, NULL, TRUE);
+            $resolver->resolve(new Path('getAllObjects/#3/getName/not_existing_item'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 1);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve.');
+    }
+
+    /**
+     * Test if resolving with a non matching path raise an exception.
+     * Case :
+     *  - NotAdressableException
+     *  - Error code 2
+     */
+    public function testResolveWithBadPathReturnException4()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+        $expectedException = NULL;
+
+        // Must raise an exception.
+        try {
+            $resolver = new Resolver($testObject, NULL, TRUE);
+            $resolver->resolve(new Path('getAllObjects/#3/getName/%any'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 2);
+        $this->assertEquals($expectedException->getMessage(), 'Trying to apply %any on non traversable value.');
+    }
+
+    /**
+     * Test if resolving with a non matching path raise an exception.
+     * Case :
+     *  - NotAdressableException
+     *  - Error code 3
+     */
+    public function testResolveWithBadPathReturnException5()
+    {
+        $testObject = SourceDataHelper::getDataNamedL1();
+        $expectedException = NULL;
 
         // Must raise an exception when exception activated and path not found.
-        $this->expectException(PropertyNotFoundException::class);
-
-        $resolver = new Resolver($testObject, NULL, TRUE);
-        $resolver->resolve(new Path('badpath'));
+        try {
+            $resolver = new Resolver($testObject, NULL, TRUE);
+            $resolver->resolve(new Path('getOneObject("non existing item")'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 3);
+        $this->assertEquals($expectedException->getMessage(), 'Parameters passed to method thrown an exception.');
     }
 
     /**

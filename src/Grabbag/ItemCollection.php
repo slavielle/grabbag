@@ -238,7 +238,7 @@ class ItemCollection
             $keep = TRUE;
             if ($modifiers->exists('consider') && $pathId !== NULL) {
                 if (is_array($beforeModifiersValue)) {
-                    throw new CantApplyConsiderModifierException('Can\'t apply ?consider modifier in a multi-valued path result.');
+                    throw new CantApplyConsiderModifierException(CantApplyConsiderModifierException::ERR_1);
                 }
                 $keep = call_user_func_array(
                     $modifiers->get('consider', $pathId),
@@ -370,7 +370,7 @@ class ItemCollection
                     else {
 
                         //@todo identify each case in order to give the end user more information about what's going on.
-                        throw new CantApplyUniqueModifierException('Unable to apply ?unique modifier on this result scope.');
+                        throw new CantApplyUniqueModifierException(CantApplyUniqueModifierException::ERR_1);
                     }
                 }
 

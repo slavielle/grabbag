@@ -2,6 +2,17 @@
 
 namespace Grabbag\exceptions;
 
-class NotAdressableException extends \Exception
+class NotAdressableException extends BaseException
 {
+    // Exception codes
+    const ERR_1 = 1;
+    const ERR_2 = 2;
+    const ERR_3 = 3;
+
+    // Exception messages
+    const MESSAGE = [
+        self::ERR_1 => 'Can\'t resolve.',
+        self::ERR_2 => 'Trying to apply %%any on non traversable value.',
+        self::ERR_3 => 'Parameters passed to method thrown an exception.',
+    ];
 }

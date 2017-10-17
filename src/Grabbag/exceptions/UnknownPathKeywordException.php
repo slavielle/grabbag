@@ -2,7 +2,14 @@
 
 namespace Grabbag\exceptions;
 
-class UnknownPathKeywordException extends \Exception
+class UnknownPathKeywordException extends BaseException
 {
-    //put your code here
+    // Exception codes
+    const ERR_1 = 1;
+
+    // Exception messages
+    const MESSAGE = [
+        self::ERR_1 => 'Unknown keyword "#%s" in path',
+    ];
+
 }

@@ -48,7 +48,7 @@ class Path
 
             }
             else {
-                throw new PathParsingException(sprintf('Can \'t parse path near "%s"', $path));
+                throw new PathParsingException(PathParsingException::ERR_3, [$path]);
             }
         }
         $this->rewind();
