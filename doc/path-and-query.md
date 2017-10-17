@@ -70,14 +70,14 @@ Path item allowing to access directly to a PHP element is called an accessor. Th
 
 We talked about path till now ? flub! we would have talk about query !
 
-in fact, the second parameter Grabbag::grab method accepts is not a path but a query.
+In fact, the second parameter Grabbag::grab method accepts is not a path but a query.
 All will be explained as soon as i tell you the simplest form of a query is a path.
 
 So now the question is : what a query could be if it's non (only) a path !
 
 ### path-arrays
 
-path-arrays gathers paths in order to produce structured arrays.
+path-arrays gather paths in order to produce structured arrays.
 
 **Example :**
 ```php
