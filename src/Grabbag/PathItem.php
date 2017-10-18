@@ -3,6 +3,7 @@
 namespace Grabbag;
 
 use Grabbag\exceptions\PathParsingException;
+use Grabbag\exceptions\UnknownPathKeywordException;
 
 /**
  * PathItem composing a Path.
@@ -13,13 +14,18 @@ use Grabbag\exceptions\PathParsingException;
 class PathItem
 {
 
+    const KEYWORDS_METADATA = [
+        'any' => ['mx' => TRUE],
+        'key' => ['mx' => FALSE],
+    ];
+
     private $special;
     private $key;
     private $param;
 
     /**
      * Constructor.
-     * @param string $special Special character prefixing the key (e.g. '#' in '%any).
+     * @param string $special Special character prefixing the key (e.g. '%' in '%any).
      * @param string $key Key (can be a method, à property name, an array key).
      * @param string $param (param when $key is a method with param).
      */
@@ -31,6 +37,7 @@ class PathItem
             $this->param = $param;
         }
 
+        // Numeric key value shall be prefixed with numerical index prefix.
         if ((string)$key === (string)(int)$key && $special !== Cnst::PATH_NUMERICAL_INDEX_PREFIX) {
             throw new PathParsingException(PathParsingException::ERR_1);
         }
@@ -111,10 +118,18 @@ class PathItem
     public function isMutipleMatching()
     {
 
-        //@todo ought to find something better than litteral ref !
-        if ($this->isKeyword() && $this->getKey() === 'any') {
+        if ($this->isKeyword() && self::GetKeywordMetadata($this->getKey())['mx'] === TRUE) {
             return TRUE;
         }
         return FALSE;
+    }
+
+    public static function GetKeywordMetadata($keyword)
+    {
+        if (array_key_exists($keyword, self::KEYWORDS_METADATA)) {
+            return self::KEYWORDS_METADATA[$keyword];
+        }
+
+        throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_2, [$keyword]);
     }
 }

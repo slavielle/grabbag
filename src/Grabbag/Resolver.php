@@ -162,27 +162,32 @@ class Resolver
     private function resolveKeyword(PathItem $pathItem, Item $item)
     {
         $resultObjects = [];
-        switch ($pathItem->getKey()) {
-            case 'any':
-                if (is_array($item->get()) || $item->get() instanceof Traversable) {
-                    foreach ($item->get() as $key => $entry) {
-                        $resultObjects[] = self::makeResolverItem($item, $entry, $key);
+
+        if (PathItem::GetKeywordMetadata($pathItem->getKey())) {
+
+            switch ($pathItem->getKey()) {
+                case 'any':
+                    if (is_array($item->get()) || $item->get() instanceof Traversable) {
+                        foreach ($item->get() as $key => $entry) {
+                            $resultObjects[] = self::makeResolverItem($item, $entry, $key);
+                        }
                     }
-                }
-                else {
-                    throw new NotAdressableException(NotAdressableException::ERR_2);
-                }
-                break;
-            case 'key':
-                $resultObjects[] = self::makeResolverItem($item, $item->getKey());
-                break;
+                    else {
+                        throw new NotAdressableException(NotAdressableException::ERR_2);
+                    }
+                    break;
+                case
+                'key':
+                    $resultObjects[] = self::makeResolverItem($item, $item->getKey());
+                    break;
 
-            // To be continued on future needs.
+                // To be continued on future needs.
 
-            default :
-                throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_1, [$pathItem->getKey()]);
+                default :
+                    throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_1, [$pathItem->getKey()]);
+            }
+            return $resultObjects;
         }
-        return $resultObjects;
     }
 
     /**

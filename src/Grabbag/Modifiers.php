@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: slavielle
- * Date: 22/09/17
- * Time: 17:43
- */
 
 namespace Grabbag;
 
