@@ -61,8 +61,8 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - PropertyNotFoundException
-     *  - Error code 1
+     *  - NotAdressableException
+     *  - Error code 4
      */
     public function testResolveWithBadPathReturnException()
     {
@@ -76,16 +76,16 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PropertyNotFoundException');
-        $this->assertEquals($expectedException->getCode(), 1);
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 4);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
     }
 
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - PropertyNotFoundException
-     *  - Error code 1
+     *  - NotAdressableException
+     *  - Error code 2
      */
     public function testResolveWithBadPathReturnException2()
     {
@@ -99,8 +99,8 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PropertyNotFoundException');
-        $this->assertEquals($expectedException->getCode(), 2);
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 5);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on array.');
     }
 

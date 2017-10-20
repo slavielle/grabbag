@@ -23,7 +23,6 @@ use Grabbag\NullDefaultValue;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\NotAdressableException;
-use Grabbag\exceptions\PropertyNotFoundException;
 use Grabbag\exceptions\PathException;
 use Grabbag\exceptions\ResolveItemStackEmptyException;
 use Grabbag\exceptions\CantApplyConsiderModifierException;
@@ -228,47 +227,83 @@ final class ItemCollectionTest extends TestCase
     }
 
     /**
-     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
+     * Test if resolving with a non matching path raise a NotAdressableException exception.
      * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
      */
     public function testResolveWithBadPathReturnException()
     {
         $testObject = SourceDataHelper::getDataIndexedL2();
-
-        // Must raise an exception when exception activated and path not found.
-        $this->expectException(PropertyNotFoundException::class);
-
         $resolverItems = new ItemCollection($testObject);
+        // Must raise an exception when exception enabled and path not found.
+        $expectedException = NULL;
+        try {
+            $resolverItems->resolve(['badpath', '?exception-enabled']);
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
 
-        $resolverItems->resolve(['badpath', '?exception-enabled']);
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 4);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
+
     }
 
     /**
-     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
-     * Test ?exception-enabled propagating to upper level
+     * Test if resolving with a non matching path raise a NotAdressableException exception.
+     * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
      */
     public function testResolveWithBadPathReturnException2()
     {
-        $testObject = SourceDataHelper::getDataIndexedL2();
-
-        // Must raise an exception when exception activated and path not found.
-        $this->expectException(PropertyNotFoundException::class);
-
+        $testObject = SourceDataHelper::getDataIndexedL1();
         $resolverItems = new ItemCollection($testObject);
+        // Must raise an exception when exception enabled and path not found.
+        $expectedException = NULL;
+        try {
+            $resolverItems->resolve(['allObjects/#25', '?exception-enabled']);
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
 
-        $resolverItems->resolve([
-            'getAllObjects/#3' => [
-                'getAllObjects/%any/myLeaf2Secret'
-            ],
-            '?exception-enabled'
-        ]);
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 5);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "25" on array.');
+
     }
 
     /**
-     * Test if resolving with a non matching path raise a PropertyNotFoundException exception.
-     * Test ?exception-enabled propagating to upper level and can be overriden.
+     * Test if resolving with a non matching path raise a NotAdressableException exception.
+     * Test ?exception-enabled propagating to upper level
      */
     public function testResolveWithBadPathReturnException3()
+    {
+        $testObject = SourceDataHelper::getDataIndexedL2();
+
+        $resolverItems = new ItemCollection($testObject);
+
+        // Must raise an exception when exception activated and path not found.
+        // Test propagate on upper
+        $expectedException = NULL;
+        try {
+            $resolverItems->resolve([
+                'getAllObjects/#3' => [
+                    'getAllObjects/%any/myLeaf2Secret'
+                ],
+                '?exception-enabled'
+            ]);
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals($expectedException->getCode(), 4);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "myLeaf2Secret" on item.');
+    }
+
+    /**
+     * Test if resolving with a non matching path do not raise a NotAdressableException exception.
+     * Test ?exception-enabled propagating to upper level and can is overriden.
+     */
+    public function testResolveWithBadPathReturnException4()
     {
         $testObject = SourceDataHelper::getDataIndexedL2();
 

@@ -4,7 +4,6 @@ namespace Grabbag;
 
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PathException;
-use Grabbag\exceptions\PropertyNotFoundException;
 
 /**
  * Resolver allows to resolve path applied to an item in order to get a result.
@@ -195,7 +194,7 @@ class Resolver
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
      * @return Item Resolved item.
-     * @throws PropertyNotFoundException
+     * @throws NotAdressableException
      */
     private function resolveObject(PathItem $pathItem, Item $item)
     {
@@ -217,7 +216,7 @@ class Resolver
 
         // Throw exception : None of the previous solutions worked.
         else {
-            throw new PropertyNotFoundException(PropertyNotFoundException::ERR_1, [$pathItem->getKey()]);
+            throw new NotAdressableException(NotAdressableException::ERR_4, [$pathItem->getKey()]);
         }
     }
 
@@ -260,7 +259,7 @@ class Resolver
      * Resolve array : Get the value form the array ($item) defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
-     * @throws PropertyNotFoundException if property cant be found in $item.
+     * @throws NotAdressableException if property cant be found in $item.
      * @return Item Resolved Item.
      */
     private function resolveArray(PathItem $pathItem, Item $item)
@@ -269,7 +268,7 @@ class Resolver
             $value = $item->get()[$pathItem->getKey()];
             return self::makeResolverItem($item, $value, $pathItem->getKey());
         }
-        throw new PropertyNotFoundException(PropertyNotFoundException::ERR_2, [$pathItem->getKey()]);
+        throw new NotAdressableException(NotAdressableException::ERR_5, [$pathItem->getKey()]);
     }
 
     /**
@@ -300,8 +299,6 @@ class Resolver
             try {
                 $items = $callable();
             } catch (NotAdressableException $e) {
-                $items = new Item($this->defaultValue);
-            } catch (PropertyNotFoundException $e) {
                 $items = new Item($this->defaultValue);
             }
         }
