@@ -2,7 +2,12 @@
 
 namespace Grabbag\exceptions;
 
-
+/**
+ * Base exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
 class BaseException extends \Exception
 {
     public function __construct($code = 0, $params = [])

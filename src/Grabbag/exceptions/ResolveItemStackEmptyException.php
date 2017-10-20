@@ -2,6 +2,12 @@
 
 namespace Grabbag\exceptions;
 
+/**
+ * Item exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
 class ResolveItemStackEmptyException extends BaseException
 {
     // Exception codes

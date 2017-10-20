@@ -2,7 +2,13 @@
 
 namespace Grabbag\exceptions;
 
-class NotAdressableException extends BaseException
+/**
+ * Item exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
+class ResolverException extends BaseException
 {
     // Exception codes
     const ERR_1 = 1;

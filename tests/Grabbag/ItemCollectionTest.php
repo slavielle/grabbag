@@ -22,10 +22,10 @@ use Grabbag\VoidDefaultValue;
 use Grabbag\NullDefaultValue;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
-use Grabbag\exceptions\NotAdressableException;
+use Grabbag\exceptions\ResolverException;
 use Grabbag\exceptions\PathException;
 use Grabbag\exceptions\ResolveItemStackEmptyException;
-use Grabbag\exceptions\CantApplyConsiderModifierException;
+use Grabbag\exceptions\ModifierException;
 
 
 /**
@@ -227,7 +227,7 @@ final class ItemCollectionTest extends TestCase
     }
 
     /**
-     * Test if resolving with a non matching path raise a NotAdressableException exception.
+     * Test if resolving with a non matching path raise a ResolverException exception.
      * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
      */
     public function testResolveWithBadPathReturnException()
@@ -242,14 +242,14 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 4);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
 
     }
 
     /**
-     * Test if resolving with a non matching path raise a NotAdressableException exception.
+     * Test if resolving with a non matching path raise a ResolverException exception.
      * Similar to ResolverTest::testResolveWithBadPathReturnException but using exception-enabled modifier.
      */
     public function testResolveWithBadPathReturnException2()
@@ -264,14 +264,14 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 5);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "25" on array.');
 
     }
 
     /**
-     * Test if resolving with a non matching path raise a NotAdressableException exception.
+     * Test if resolving with a non matching path raise a ResolverException exception.
      * Test ?exception-enabled propagating to upper level
      */
     public function testResolveWithBadPathReturnException3()
@@ -294,13 +294,13 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 4);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "myLeaf2Secret" on item.');
     }
 
     /**
-     * Test if resolving with a non matching path do not raise a NotAdressableException exception.
+     * Test if resolving with a non matching path do not raise a ResolverException exception.
      * Test ?exception-enabled propagating to upper level and can is overriden.
      */
     public function testResolveWithBadPathReturnException4()
@@ -838,7 +838,7 @@ final class ItemCollectionTest extends TestCase
 
     /**
      * Test resolving with a consider modifier on a path's multi-valued result.
-     * This case must throw an CantApplyConsiderModifierException exception.
+     * This case must throw an ModifierException exception.
      * Consider can't be applied on a multi-valued path result.
      */
     public function testResolverQueryConsiderModifier2()
@@ -862,7 +862,7 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\CantApplyConsiderModifierException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ModifierException');
         $this->assertEquals($expectedException->getCode(), 1);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t apply ?consider modifier in a multi-valued path result.');
 

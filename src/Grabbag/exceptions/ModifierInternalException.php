@@ -2,8 +2,13 @@
 
 namespace Grabbag\exceptions;
 
-
-class CantApplyUniqueModifierException extends BaseException
+/**
+ * Modifier internal exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
+class ModifierInternalException extends BaseException
 {
     // Exception codes
     const ERR_1 = 1;

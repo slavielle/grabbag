@@ -2,8 +2,8 @@
 
 namespace Grabbag;
 
-use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PathException;
+use Grabbag\exceptions\ResolverException;
 
 /**
  * Resolver allows to resolve path applied to an item in order to get a result.
@@ -79,7 +79,7 @@ class Resolver
      * @param PathItem $pathItem Path item to resolve.
      * @param Item[] $items Item to be resolved.
      * @return Item[] A set of resolved items.
-     * @throws NotAdressableException
+     * @throws ResolverException
      */
     private function resolveEach(PathItem $pathItem, $items)
     {
@@ -100,7 +100,7 @@ class Resolver
                     $resultObjects = $this->resolveArray($pathItem, $item);
                 }
                 else {
-                    throw new NotAdressableException(NotAdressableException::ERR_1);
+                    throw new ResolverException(ResolverException::ERR_1);
                 }
 
                 return $resultObjects;
@@ -172,7 +172,7 @@ class Resolver
                         }
                     }
                     else {
-                        throw new NotAdressableException(NotAdressableException::ERR_2);
+                        throw new ResolverException(ResolverException::ERR_2);
                     }
                     break;
                 case
@@ -194,7 +194,7 @@ class Resolver
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
      * @return Item Resolved item.
-     * @throws NotAdressableException
+     * @throws ResolverException
      */
     private function resolveObject(PathItem $pathItem, Item $item)
     {
@@ -216,7 +216,7 @@ class Resolver
 
         // Throw exception : None of the previous solutions worked.
         else {
-            throw new NotAdressableException(NotAdressableException::ERR_4, [$pathItem->getKey()]);
+            throw new ResolverException(ResolverException::ERR_4, [$pathItem->getKey()]);
         }
     }
 
@@ -236,7 +236,7 @@ class Resolver
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
      * @param bool $prefixWithGet Try to find a method name using path item key prefixed with 'get'.
-     * @throws NotAdressableException if method call throw an exception.
+     * @throws ResolverException if method call throw an exception.
      * @return Item Resolved Item.
      */
     private function resolveObjectMethod(PathItem $pathItem, Item $item, $prefixWithGet = FALSE)
@@ -249,7 +249,7 @@ class Resolver
         try {
             $value = call_user_func_array([$item->get(), $prefixWithGet ? 'get' . ucfirst($pathItem->getKey()) : $pathItem->getKey()], $params);
         } catch (\Exception $e) {
-            throw new NotAdressableException(NotAdressableException::ERR_3);
+            throw new ResolverException(ResolverException::ERR_3);
         }
 
         return self::makeResolverItem($item, $value);
@@ -259,7 +259,7 @@ class Resolver
      * Resolve array : Get the value form the array ($item) defined in the $pathItem.
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
-     * @throws NotAdressableException if property cant be found in $item.
+     * @throws ResolverException if property cant be found in $item.
      * @return Item Resolved Item.
      */
     private function resolveArray(PathItem $pathItem, Item $item)
@@ -268,7 +268,7 @@ class Resolver
             $value = $item->get()[$pathItem->getKey()];
             return self::makeResolverItem($item, $value, $pathItem->getKey());
         }
-        throw new NotAdressableException(NotAdressableException::ERR_5, [$pathItem->getKey()]);
+        throw new ResolverException(ResolverException::ERR_5, [$pathItem->getKey()]);
     }
 
     /**
@@ -298,7 +298,7 @@ class Resolver
         else {
             try {
                 $items = $callable();
-            } catch (NotAdressableException $e) {
+            } catch (ResolverException $e) {
                 $items = new Item($this->defaultValue);
             }
         }

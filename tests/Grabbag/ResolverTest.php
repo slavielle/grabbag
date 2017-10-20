@@ -61,7 +61,7 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - NotAdressableException
+     *  - ResolverException
      *  - Error code 4
      */
     public function testResolveWithBadPathReturnException()
@@ -76,7 +76,7 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 4);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
     }
@@ -84,7 +84,7 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - NotAdressableException
+     *  - ResolverException
      *  - Error code 2
      */
     public function testResolveWithBadPathReturnException2()
@@ -99,7 +99,7 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 5);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on array.');
     }
@@ -107,7 +107,7 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - NotAdressableException
+     *  - ResolverException
      *  - Error code 1
      */
     public function testResolveWithBadPathReturnException3()
@@ -122,7 +122,7 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 1);
         $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve.');
     }
@@ -130,7 +130,7 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - NotAdressableException
+     *  - ResolverException
      *  - Error code 2
      */
     public function testResolveWithBadPathReturnException4()
@@ -145,7 +145,7 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 2);
         $this->assertEquals($expectedException->getMessage(), 'Trying to apply %any on non traversable value.');
     }
@@ -153,7 +153,7 @@ class ResolverTest extends TestCase
     /**
      * Test if resolving with a non matching path raise an exception.
      * Case :
-     *  - NotAdressableException
+     *  - ResolverException
      *  - Error code 3
      */
     public function testResolveWithBadPathReturnException5()
@@ -168,7 +168,7 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\NotAdressableException');
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
         $this->assertEquals($expectedException->getCode(), 3);
         $this->assertEquals($expectedException->getMessage(), 'Parameters passed to method thrown an exception.');
     }

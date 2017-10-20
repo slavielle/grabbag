@@ -2,6 +2,12 @@
 
 namespace Grabbag\exceptions;
 
+/**
+ * Path exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
 class PathException extends BaseException
 {
     // Exception codes

@@ -2,8 +2,8 @@
 
 namespace Grabbag;
 
-use Grabbag\exceptions\CantApplyConsiderModifierException;
-use Grabbag\exceptions\CantApplyUniqueModifierException;
+use Grabbag\exceptions\ModifierException;
+use Grabbag\exceptions\ModifierInternalException;
 
 /**
  * Resolver items contains values handled by resolver.
@@ -116,9 +116,9 @@ class ItemCollection
         if (($modifiers->exists('unique') && $modifiers->getDefault('unique'))) {
             try {
                 $this->items = self::keepUniqueValuesOnly($this->items);
-            } catch (CantApplyUniqueModifierException $e) {
+            } catch (ModifierInternalException $e) {
 
-                // When CantApplyUniqueModifierException is generated in keepUniqueValuesOnly,
+                // When ModifierInternalException is generated in keepUniqueValuesOnly,
                 // it's converted in a PHP warning.
                 trigger_error($e->getMessage(), E_USER_WARNING);
             }
@@ -136,7 +136,7 @@ class ItemCollection
      * @param mixed $defaultValue t
      * @param bool $exceptionEnabled
      * @return Item[] Resolved items.
-     * @throws CantApplyConsiderModifierException
+     * @throws ModifierException
      */
     private function resolveEach(Item $item, $preparedPaths, Modifiers $modifiers, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
@@ -238,7 +238,7 @@ class ItemCollection
             $keep = TRUE;
             if ($modifiers->exists('consider') && $pathId !== NULL) {
                 if (is_array($beforeModifiersValue)) {
-                    throw new CantApplyConsiderModifierException(CantApplyConsiderModifierException::ERR_1);
+                    throw new ModifierException(ModifierException::ERR_1);
                 }
                 $keep = call_user_func_array(
                     $modifiers->get('consider', $pathId),
@@ -343,7 +343,7 @@ class ItemCollection
      * @param Item[] $items Array to be filtered.
      * @param integer $recurseLevel . Level of recursion.
      * @return Item[] Result array.
-     * @throws CantApplyUniqueModifierException
+     * @throws ModifierInternalException
      */
     static private function keepUniqueValuesOnly($items, $recurseLevel = 0)
     {
@@ -370,7 +370,7 @@ class ItemCollection
                     else {
 
                         //@todo identify each case in order to give the end user more information about what's going on.
-                        throw new CantApplyUniqueModifierException(CantApplyUniqueModifierException::ERR_1);
+                        throw new ModifierInternalException(ModifierInternalException::ERR_1);
                     }
                 }
 

@@ -2,8 +2,13 @@
 
 namespace Grabbag\exceptions;
 
-
-class CantApplyConsiderModifierException extends BaseException
+/**
+ * Modifier exception for Grabbag.
+ *
+ * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ * @package Grabbag
+ */
+class ModifierException extends BaseException
 {
     // Exception codes
     const ERR_1 = 1;
