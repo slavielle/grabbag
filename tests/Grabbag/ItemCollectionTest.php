@@ -24,7 +24,7 @@ use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\ResolverException;
 use Grabbag\exceptions\PathException;
-use Grabbag\exceptions\ResolveItemStackEmptyException;
+use Grabbag\exceptions\ItemException;
 use Grabbag\exceptions\ModifierException;
 
 
@@ -989,19 +989,27 @@ final class ItemCollectionTest extends TestCase
         $testObject = SourceDataHelper::getDataNamedL2();
         $resolverItems = new ItemCollection($testObject);
 
-        $this->expectException(ResolveItemStackEmptyException::class);
-
-        $resolverItems->resolve([
-            'getAllObjects/%any' => [
-                'id:myId',
-                'name:getName',
-                'content:getAllObjects/%any' => [
-                    'id:getId',
+        //$this->expectException(ItemException::class);
+        $expectedException = NULL;
+        try {
+            $resolverItems->resolve([
+                'getAllObjects/%any' => [
+                    'id:myId',
                     'name:getName',
-                    'parent-id:../../../../../../../myId'
+                    'content:getAllObjects/%any' => [
+                        'id:getId',
+                        'name:getName',
+                        'parent-id:../../../../../../../myId'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ItemException');
+        $this->assertEquals($expectedException->getCode(), 1);
+        $this->assertEquals($expectedException->getMessage(), 'Can\'t pop an empty stack');
     }
 
 }

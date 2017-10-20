@@ -8,7 +8,7 @@ namespace Grabbag\exceptions;
  * @author Sylvain Lavielle <sylvain.lavielle@netelios.fr>
  * @package Grabbag
  */
-class ResolveItemStackEmptyException extends BaseException
+class ItemException extends BaseException
 {
     // Exception codes
     const ERR_1 = 1;

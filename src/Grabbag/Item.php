@@ -2,7 +2,7 @@
 
 namespace Grabbag;
 
-use Grabbag\exceptions\ResolveItemStackEmptyException;
+use Grabbag\exceptions\ItemException;
 
 /**
  * Class Item
@@ -73,7 +73,7 @@ class Item
     {
         $popped = array_pop($this->previous);
         if ($popped === NULL) {
-            throw new ResolveItemStackEmptyException(ResolveItemStackEmptyException::ERR_1);
+            throw new ItemException(ItemException::ERR_1);
         }
         $this->item = $popped['item'];
         $this->key = $popped['key'];

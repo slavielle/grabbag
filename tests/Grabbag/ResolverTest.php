@@ -316,7 +316,7 @@ class ResolverTest extends TestCase
 
         $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PathException');
         $this->assertEquals($expectedException->getCode(), 5);
-        $this->assertEquals($expectedException->getMessage(), 'Unknown keyword "#unknownkeyword" in path');
+        $this->assertEquals($expectedException->getMessage(), 'Unknown keyword "#unknownkeyword" in path.');
 
     }
 

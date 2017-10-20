@@ -19,10 +19,10 @@ class PathException extends BaseException
 
     // Exception messages
     const MESSAGE = [
-        self::ERR_1 => 'Numerical value encoutered without "#"',
-        self::ERR_2 => 'can\'t parse parameter "%s"',
-        self::ERR_3 => 'Can \'t parse path near "%s"',
-        self::ERR_4 => 'Keyword "#%s" not implemented',
-        self::ERR_5 => 'Unknown keyword "#%s" in path',
+        self::ERR_1 => 'Numerical value encoutered without "#".',
+        self::ERR_2 => 'Can\'t parse parameter "%s".',
+        self::ERR_3 => 'Can \'t parse path near "%s".',
+        self::ERR_4 => 'Keyword "#%s" is not implemented.',
+        self::ERR_5 => 'Unknown keyword "#%s" in path.',
     ];
 }
