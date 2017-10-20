@@ -8,8 +8,6 @@
 
 namespace Grabbag;
 
-use Grabbag\Item;
-
 /**
  * Class ItemAccessor
  *
@@ -56,6 +54,10 @@ class ItemAccessor
         return $value;
     }
 
+    /**
+     * Get item value.
+     * @return mixed
+     */
     public function get()
     {
         return $this->resolverItem->get();

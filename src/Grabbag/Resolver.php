@@ -3,8 +3,8 @@
 namespace Grabbag;
 
 use Grabbag\exceptions\NotAdressableException;
+use Grabbag\exceptions\PathException;
 use Grabbag\exceptions\PropertyNotFoundException;
-use Grabbag\exceptions\UnknownPathKeywordException;
 
 /**
  * Resolver allows to resolve path applied to an item in order to get a result.
@@ -156,7 +156,7 @@ class Resolver
      *
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
-     * @throws UnknownPathKeywordException if a keyword is unknown.
+     * @throws PathException if a keyword is unknown.
      * @return Item[] A set of Resolved item.
      */
     private function resolveKeyword(PathItem $pathItem, Item $item)
@@ -184,7 +184,7 @@ class Resolver
                 // To be continued on future needs.
 
                 default :
-                    throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_1, [$pathItem->getKey()]);
+                    throw new PathException(PathException::ERR_1, [$pathItem->getKey()]);
             }
             return $resultObjects;
         }

@@ -18,7 +18,7 @@ class ItemCollection
 
     /**
      * ItemCollection constructor.
-     * @param Item[] $items Array of Item composing the result from resolver.
+     * @param Item|Item[] $items Array of Item (or single item) composing the result from resolver.
      */
     public function __construct($items, $prepare = TRUE)
     {

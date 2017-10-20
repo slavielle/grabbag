@@ -24,8 +24,7 @@ use Grabbag\tests\sourceData\SourceDataHelper;
 use Grabbag\tests\testData\TestDataHelper;
 use Grabbag\exceptions\NotAdressableException;
 use Grabbag\exceptions\PropertyNotFoundException;
-use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\exceptions\PathException;
 use Grabbag\exceptions\ResolveItemStackEmptyException;
 use Grabbag\exceptions\CantApplyConsiderModifierException;
 

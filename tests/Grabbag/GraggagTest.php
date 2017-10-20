@@ -10,19 +10,11 @@ require_once 'sourceData/SourceDataHelper.php';
 require_once 'testData/TestDataHelper.php';
 */
 
-use PHPUnit\Framework\TestCase;
-use Grabbag\exceptions\NotAdressableException;
-use Grabbag\exceptions\PropertyNotFoundException;
-use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\UnknownPathKeywordException;
 use Grabbag\Grabbag;
-use Grabbag\Path;
-use Grabbag\PathItem;
-use Grabbag\Resolver;
 use Grabbag\ItemCollection;
-
+use Grabbag\Resolver;
 use Grabbag\tests\sourceData\SourceDataHelper;
-use Grabbag\tests\testData\TestDataHelper;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers Resolver

@@ -2,8 +2,7 @@
 
 namespace Grabbag;
 
-use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\exceptions\PathException;
 
 /**
  * PathItem composing a Path.
@@ -28,6 +27,7 @@ class PathItem
      * @param string $special Special character prefixing the key (e.g. '%' in '%any).
      * @param string $key Key (can be a method, à property name, an array key).
      * @param string $param (param when $key is a method with param).
+     * @throws PathException
      */
     public function __construct($special, $key, $param)
     {
@@ -39,7 +39,7 @@ class PathItem
 
         // Numeric key value shall be prefixed with numerical index prefix.
         if ((string)$key === (string)(int)$key && $special !== Cnst::PATH_NUMERICAL_INDEX_PREFIX) {
-            throw new PathParsingException(PathParsingException::ERR_1);
+            throw new PathException(PathException::ERR_1);
         }
     }
 
@@ -64,7 +64,7 @@ class PathItem
     /**
      * Param property getter.
      * @return mixed Parameter value.
-     * @throws PathParsingException
+     * @throws PathException
      */
     public function getParams()
     {
@@ -85,7 +85,7 @@ class PathItem
 
             // Parse error
             else {
-                throw new PathParsingException(PathParsingException::ERR_2, [$this->param]);
+                throw new PathException(PathException::ERR_2, [$this->param]);
             }
         }
     }
@@ -124,12 +124,18 @@ class PathItem
         return FALSE;
     }
 
+    /**
+     * Get metadata for a given keyword.
+     * @param string $keyword Keyword.
+     * @return array Metadata.
+     * @throws PathException
+     */
     public static function GetKeywordMetadata($keyword)
     {
         if (array_key_exists($keyword, self::KEYWORDS_METADATA)) {
             return self::KEYWORDS_METADATA[$keyword];
         }
 
-        throw new UnknownPathKeywordException(UnknownPathKeywordException::ERR_2, [$keyword]);
+        throw new PathException(PathException::ERR_5, [$keyword]);
     }
 }

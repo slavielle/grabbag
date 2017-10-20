@@ -8,8 +8,7 @@
 
 namespace Grabbag\tests;
 
-use Grabbag\exceptions\PathParsingException;
-use Grabbag\exceptions\UnknownPathKeywordException;
+use Grabbag\exceptions\PathException;
 use Grabbag\Path;
 use Grabbag\Resolver;
 use Grabbag\tests\sourceData\SourceDataHelper;
@@ -25,7 +24,7 @@ class ResolverTest extends TestCase
     {
         $testObject = SourceDataHelper::getDataIndexedL1();
         $resolver = new Resolver($testObject);
-        $this->expectException(PathParsingException::class);
+        $this->expectException(PathException::class);
         $resolver->resolve(new Path('getAllObjects/ something'));
     }
 
@@ -307,8 +306,18 @@ class ResolverTest extends TestCase
     {
         $testObject = SourceDataHelper::getDataIndexedL1();
         $resolver = new Resolver($testObject);
-        $this->expectException(UnknownPathKeywordException::class);
-        $resolver->resolve(new Path('getAllObjects/%unknownkeyword'));
+
+        $expectedException = NULL;
+        try {
+            $resolver->resolve(new Path('getAllObjects/%unknownkeyword'));
+        } catch (\Exception $e) {
+            $expectedException = $e;
+        }
+
+        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PathException');
+        $this->assertEquals($expectedException->getCode(), 5);
+        $this->assertEquals($expectedException->getMessage(), 'Unknown keyword "#unknownkeyword" in path');
+
     }
 
     /**

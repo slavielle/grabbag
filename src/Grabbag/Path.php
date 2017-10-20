@@ -2,7 +2,7 @@
 
 namespace Grabbag;
 
-use Grabbag\exceptions\PathParsingException;
+use Grabbag\exceptions\PathException;
 
 /**
  * Path allows to define path to be grabbed.
@@ -21,7 +21,7 @@ class Path
     /**
      * Constructor.
      * @param string $path The path itself.
-     * @throws PathParsingException
+     * @throws PathException
      */
     public function __construct($path)
     {
@@ -48,7 +48,7 @@ class Path
 
             }
             else {
-                throw new PathParsingException(PathParsingException::ERR_3, [$path]);
+                throw new PathException(PathException::ERR_3, [$path]);
             }
         }
         $this->rewind();
