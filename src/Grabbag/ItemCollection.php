@@ -224,7 +224,7 @@ class ItemCollection
             // Debug modifier
             if ($modifiers->exists('debug')) {
                 self::debugVariable(
-                    $modifiers->getDefault('debug'),
+                    $modifiers->get('debug', $pathId),
                     $beforeModifiersValue->get(), $pathId);
             }
         }

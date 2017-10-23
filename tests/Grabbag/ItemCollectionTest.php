@@ -905,20 +905,7 @@ final class ItemCollectionTest extends TestCase
     public function testResolverQueryWithDebugModifier()
     {
         $testObject = SourceDataHelper::getDataNamedL2();
-        $resolverItems = new ItemCollection($testObject);
-        $myDebugInfo = NULL;
-        $resolverItems->resolve([
-            'getAllObjects/%any' => [
-                '~debug:.',
-                '?debug' => function ($key, $debug) use (&$myDebugInfo) {
-                    if ($key === '~debug') {
-                        $myDebugInfo = $debug;
-                    }
-                }
-            ]
-        ]);
-
-        $this->assertEquals([
+        $expectedResult = [
             'class-name' => 'Grabbag\tests\sourceData\List1',
             'method' => [
                 '__construct',
@@ -934,7 +921,35 @@ final class ItemCollectionTest extends TestCase
                 'myName',
                 'myId',
             ]
-        ], $myDebugInfo);
+        ];
+        
+        $resolverItems = new ItemCollection($testObject);
+        $myDebugInfo = NULL;
+        $resolverItems->resolve([
+            'getAllObjects/%any' => [
+                '~debug:.',
+                '?debug' => function ($key, $debug) use (&$myDebugInfo) {
+                    if ($key === '~debug') {
+                        $myDebugInfo = $debug;
+                    }
+                }
+            ]
+        ]);
+        $this->assertEquals($expectedResult, $myDebugInfo);
+
+
+        $resolverItems = new ItemCollection($testObject);
+        $myDebugInfo = NULL;
+        $resolverItems->resolve([
+            'getAllObjects/%any' => [
+                '~debug:.',
+                '?debug@~debug' => function ($key, $debug) use (&$myDebugInfo) {
+                    $myDebugInfo = $debug;
+                }
+            ]
+        ]);
+
+        $this->assertEquals($expectedResult, $myDebugInfo);
 
     }
 

@@ -67,7 +67,6 @@ class Modifiers
     public function exists($name)
     {
         return isset($this->modifiers[$name]);
-
     }
 
     /**
