@@ -1,35 +1,30 @@
 # ?default-value modifier
 
+## Type
+[Path modifier](../path-and-query.md#modifier-types)
+
+## Usage
 Allows to define default value when a path cannot be resolved.
 
 Grabbag avoid PHP exceptions when trying to resolve a path that cannot be resolved and have 
 a mechanism allowing to define default values using *?default-value* modifier.
 
-
-
-## Source data
+## example
+### Source data
 ```php
 [
-    (object)[
-        'value' => 'My value 1',
-    ],
-    (object)[
-        'no-value' => TRUE,
-    ],
-    (object)[
-        'value' => 'My value 3'
-    ],      
+    (object)['value' => 'My value 1'],
+    (object)['no-value' => TRUE],
+    (object)['value' => 'My value 3'],      
 ]
 ```
 
-## Default behavior
+### Default behavior
 Query :
 ```php
 $result = Grabbag::grab($subject, [
     '%any/value',
-    '?default-value' => $defaultValue['in']
 ]);
-
 ```
 Result : 
 ```php
@@ -37,17 +32,15 @@ Result :
     'My value 1',
     'My value 3',
 ]
-
 ```
 No value is produced for unmatching element.
-## With *new VoidDefaultValue()* as ?default-value'
+### With *new VoidDefaultValue()* as ?default-value'
 Query :
 ```php
 $result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => new VoidDefaultValue()
 ]);
-
 ```
 Result : 
 ```php
@@ -55,17 +48,15 @@ $result = Grabbag::grab($subject, [
     'My value 1',
     'My value 3',
 ]);
-
 ```
 As in default case, no value is produced for unmatching element. those 2 solutions are equivalent.
-## With *new NullDefaultValue()* as ?default-value'
+### With *new NullDefaultValue()* as ?default-value'
 Query :
 ```php
 $result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => new NullDefaultValue()
 ]);
-
 ```
 Result : 
 ```php
@@ -76,14 +67,13 @@ Result :
 ]
 ```
 NULL is produced for unmatching element.
-## With a variable as ?default-value'
+### With a variable as ?default-value'
 Query :
 ```php
 $result = Grabbag::grab($subject, [
     '%any/value',
     '?default-value' => 'No Value'
 ]);
-
 ```
 Result : 
 ```php

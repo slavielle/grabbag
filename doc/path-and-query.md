@@ -295,9 +295,9 @@ $result = Grabbag::grab($subject, [
     "this" => [
         "is/my" => [
             "path",
-            exception-enabled:TRUE    
+            ?exception-enabled:TRUE    
         ],
-        exception-enabled:FALSE
+        ?exception-enabled:FALSE
     ],
     exception-enabled:TRUE,
     "?default-value" => "oh sorry nothing there !"
@@ -337,18 +337,19 @@ Keywords are path items prefixed by "#" that implements special behaviors.
 In a query, path-arrays can contain modifiers.
 Modifiers are prefixed using "?" and allows to alter values or behavior inside the path-array.
 
-### Global or Path modifiers
+### modifier types
 
-There is different kind of modifiers : 
+There is different type of modifiers : 
 
-* **Gobal modifier** that applies on the global path-array such as ?unique, ?keep-array, ?exception-enabled.
-* **Path modifiers** that applies on a given path in the path array such as ?transform, ?consider, ?default-value.
+* **Path modifier** that applies on a given path in the path array such as ?transform, ?consider ?call and ?default-value.
+* **Path-array modifier** that applies on the all path-array such as ?unique, ?keep-array.
+* **Up-propagating modifier** that applies on the current path-array and all of its nested path-array such as ?exception-enabled.
 
 ### Un-targeted/targeted Path modifiers
 
 Path modifiers can have an un-targeted and targeted syntax.
 
-Un-targeted syntax : 
+#### Un-targeted syntax : 
 
 ```php
 $result = Grabbag::grab($subject, [
@@ -357,7 +358,7 @@ $result = Grabbag::grab($subject, [
 ]);
 ```
 
-Targeted syntax : 
+#### Targeted syntax : 
 
 ```php
 $result = Grabbag::grab($subject, [
@@ -368,7 +369,7 @@ $result = Grabbag::grab($subject, [
 
 How does that works
 
-a targeted path modifiers is used for path having its id specified after the "@" char in the modifier name. 
+A targeted path modifiers is used for path having its id specified after the "@" char in the modifier name. 
 If there is no targeted path modifier, the un-targeted path modifier will be used if exists.
 
 for un-targeted modifier triggering a callback function, the path-id is passed as a function argument.
@@ -379,6 +380,7 @@ for un-targeted modifier triggering a callback function, the path-id is passed a
 * [?unique](query-modifiers/unique-modifier.md)
 * [?transform](query-modifiers/transform-modifier.md)
 * [?consider](query-modifiers/consider-modifier.md)
+* [?call](query-modifiers/call-modifier.md)
 * [?keep-array](query-modifiers/keep-array-modifier.md)
 * [?default-value](query-modifiers/default-value-modifier.md)
 * [?exception-enabled](query-modifiers/exception-enabled-modifier.md)
