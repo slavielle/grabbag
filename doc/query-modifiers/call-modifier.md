@@ -10,7 +10,7 @@ Call is a way to call a callback function you can use to get path result value. 
 ```php
 $result = Grabbag::grab($stuff, [
     "this/is/%any/thing" => [
-        @call:function($value) use ($myObject){
+        "?call" => function($value) use ($myObject){
             $myObject->push($value);
         }
     ]
