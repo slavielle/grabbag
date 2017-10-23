@@ -1,9 +1,15 @@
 <?php
 
-namespace Grabbag;
+/*
+ * This file is part of the Grabbag package.
+ *
+ * (c) Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use Grabbag\Resolver;
-use Grabbag\ItemCollection;
+namespace Grabbag;
 
 /**
  * Grabber Allows to resolve value(s) on object chain.
@@ -42,7 +48,8 @@ class Grabbag
      * @param mixed $defaultValue Value to return when path resolution fail.
      * @return array|mixed The result value.
      */
-    public static function grab($item, $query, $defaultValue = NULL){
+    public static function grab($item, $query, $defaultValue = NULL)
+    {
         $resolverItems = new ItemCollection($item);
         $resolverItems->resolve($query, $defaultValue);
 

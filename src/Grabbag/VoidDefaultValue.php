@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: slavielle
- * Date: 20/09/17
- * Time: 18:01
+
+/*
+ * This file is part of the Grabbag package.
+ *
+ * (c) Sylvain Lavielle <sylvain.lavielle@netelios.fr>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 
 namespace Grabbag;
 
@@ -21,7 +25,8 @@ class VoidDefaultValue
         $this->fallbackDefaultValue = $fallbackDefaultValue;
     }
 
-    public function getFallbackDefaultValue(){
+    public function getFallbackDefaultValue()
+    {
         return $this->fallbackDefaultValue;
     }
 }
