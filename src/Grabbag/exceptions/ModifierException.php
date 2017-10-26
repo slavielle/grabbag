@@ -21,9 +21,11 @@ class ModifierException extends BaseException
 {
     // Exception codes
     const ERR_1 = 1;
+    const ERR_2 = 2;
 
     // Exception messages
     const MESSAGE = [
         self::ERR_1 => 'Can\'t apply ?consider modifier in a multi-valued path result.',
+        self::ERR_2 => 'Unknown modifier "%s".',
     ];
 }

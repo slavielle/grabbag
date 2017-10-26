@@ -22,6 +22,20 @@ use Grabbag\exceptions\PathException;
 class Path
 {
 
+    const PATH_INTERNAL_ID_CHAR = '~';
+    const PATH_ID_SEPARATOR = ':';
+    const PATH_KEYWORD_PREFIX = '%';
+    const PATH_NUMERICAL_INDEX_PREFIX = '#';
+
+    const REGEX_PATH_INTERNAL_ID_CHAR = self::PATH_INTERNAL_ID_CHAR;
+    const REGEX_PATH_ID_SEPARATOR = self::PATH_ID_SEPARATOR;
+    const REGEX_PATH_ID_NAME = '[0-9a-zA-Z_-]+';
+    const REGEX_PATH_KEYWORD_PREFIX = self::PATH_KEYWORD_PREFIX;
+    const REGEX_PATH_NUMERICAL_INDEX_PREFIX = self::PATH_NUMERICAL_INDEX_PREFIX;
+    const REGEX_PATH_SPECIAL_CHAR = self::REGEX_PATH_KEYWORD_PREFIX . '|' . self::REGEX_PATH_NUMERICAL_INDEX_PREFIX;
+    const REGEX_PATH_NAME = '[0-9a-zA-Z_]+|\.\.|\.';
+    const REGEX_PATH_PARAMETER = '\(([^\)]+)\)';
+
     private $pathItemList;
     private $index;
     private $pathId;
@@ -42,9 +56,9 @@ class Path
             $matches = [];
             $regex =
                 '/^(' .
-                Cnst::REGEX_PATH_SPECIAL_CHAR . ')?(' .
-                Cnst::REGEX_PATH_NAME . ')(?:' .
-                Cnst::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
+                Path::REGEX_PATH_SPECIAL_CHAR . ')?(' .
+                Path::REGEX_PATH_NAME . ')(?:' .
+                Path::REGEX_PATH_PARAMETER . ')?\/?(.*)$/';
             $match_result = preg_match($regex, $path, $matches);
             if ($match_result) {
                 $pathItem = new PathItem($matches[1], $matches[2], $matches[3]);
@@ -79,9 +93,9 @@ class Path
         $matches = [];
         $regex = '/^' .
             '(' .
-            Cnst::REGEX_PATH_INTERNAL_ID_CHAR . '?' .
-            Cnst::REGEX_PATH_ID_NAME .
-            Cnst::REGEX_PATH_ID_SEPARATOR .
+            Path::REGEX_PATH_INTERNAL_ID_CHAR . '?' .
+            Path::REGEX_PATH_ID_NAME .
+            Path::REGEX_PATH_ID_SEPARATOR .
             ')(.*)$/';
         $match_result = preg_match($regex, $path, $matches);
         if ($match_result) {

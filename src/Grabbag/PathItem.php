@@ -47,7 +47,7 @@ class PathItem
         }
 
         // Numeric key value shall be prefixed with numerical index prefix.
-        if ((string)$key === (string)(int)$key && $special !== Cnst::PATH_NUMERICAL_INDEX_PREFIX) {
+        if ((string)$key === (string)(int)$key && $special !== Path::PATH_NUMERICAL_INDEX_PREFIX) {
             throw new PathException(PathException::ERR_1);
         }
     }
@@ -105,7 +105,7 @@ class PathItem
      */
     public function isKeyword()
     {
-        return $this->special === Cnst::PATH_KEYWORD_PREFIX;
+        return $this->special === Path::PATH_KEYWORD_PREFIX;
     }
 
     /**

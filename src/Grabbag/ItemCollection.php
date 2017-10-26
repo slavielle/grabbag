@@ -103,12 +103,14 @@ class ItemCollection
      * Resolve every result items regarding the path or query provided.
      * @param string | string[] $path Path or Query.
      * @param mixed $defaultValue Default value to provide in case the path resolution fails.
+     * @param boolean $exceptionEnabled Exception enabling.
+     * @return ItemCollection Return $this (chaining pattern).
      */
     public function resolve($path, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
         // Prepare stuff.
         $pathArray = is_array($path) ? $path : [$path];
-        $modifiers = self::prepareModifiers($pathArray);
+        $modifiers = new Modifiers($pathArray);
         $preparedPaths = self::preparePathArray($pathArray);
 
         // Grab each items.
@@ -262,7 +264,7 @@ class ItemCollection
             if ($keep) {
 
                 // Append value
-                if ($pathId !== NULL && substr($pathId, 0, 1) !== Cnst::PATH_INTERNAL_ID_CHAR) {
+                if ($pathId !== NULL && substr($pathId, 0, 1) !== Path::PATH_INTERNAL_ID_CHAR) {
                     $resultValues[$pathId] = $beforeModifiersValue;
                 }
                 else {
@@ -296,14 +298,7 @@ class ItemCollection
      */
     static private function prepareModifiers($pathArray)
     {
-
-
-        $modifiers = new Modifiers();
-        foreach ($pathArray as $left => $right) {
-            $handlerName = (int)$left === $left ? $right : $left;
-            $handlerValue = (int)$left === $left ? TRUE : $right;
-            $modifiers->submit($handlerName, $handlerValue);
-        }
+        $modifiers = new Modifiers($pathArray);
         return $modifiers;
     }
 
@@ -335,7 +330,7 @@ class ItemCollection
             else {
 
                 // Exclude modifiers
-                if (substr($path, 0, 1) !== Cnst::MODIFIER_CHAR) {
+                if (substr($path, 0, 1) !== Modifiers::MODIFIER_CHAR) {
                     $preparedPath['pathObject'] = new Path($path);
                 }
                 else {
