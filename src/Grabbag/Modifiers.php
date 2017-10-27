@@ -34,21 +34,54 @@ class Modifiers
 
     // Modifiers info
     const MODIFIERS_INFO_LIST = [
-        'call' => [],
-        'consider' => [],
-        'debug' => [],
-        'default-value' => [],
-        'exception-enabled' => [],
-        'keep-array' => [],
-        'transform' => [],
-        'unique' => []
+        'call' => [
+            'param_type' => 'callback',
+            'empty_param_allowed' => FALSE,
+            'targettable' => TRUE,
+        ],
+        'consider' => [
+            'param_type' => 'callback',
+            'empty_param_allowed' => FALSE,
+            'targettable' => TRUE,
+        ],
+        'debug' => [
+            'param_type' => 'callback',
+            'empty_param_allowed' => TRUE,
+            'targettable' => TRUE,
+        ],
+        'default-value' => [
+            'param_type' => 'mixed',
+            'empty_param_allowed' => FALSE,
+            'targettable' => TRUE,
+        ],
+        'exception-enabled' => [
+            'param_type' => 'bool',
+            'empty_param_allowed' => TRUE,
+            'targettable' => FALSE,
+        ],
+        'keep-array' => [
+            'param_type' => 'bool',
+            'empty_param_allowed' => TRUE,
+            'targettable' => FALSE,
+        ],
+        'transform' => [
+            'param_type' => 'callback',
+            'empty_param_allowed' => FALSE,
+            'targettable' => TRUE,
+        ],
+        'unique' => [
+            'param_type' => 'bool',
+            'empty_param_allowed' => TRUE,
+            'targettable' => FALSE,
+        ]
     ];
 
     // Class properties.
     private $modifiers;
 
     /**
-     * Constructor
+     * Constructor.
+     * @param $pathArray Path array to get the modifiers from.
      */
     public function __construct($pathArray)
     {
@@ -75,8 +108,11 @@ class Modifiers
 
             // Test if modifier exists.
             if (!array_key_exists($matches[1], self::MODIFIERS_INFO_LIST)) {
-                throw new ModifierException(ModifierException::ERR_2, $matches[1]);
+                throw new ModifierException(ModifierException::ERR_2, [$matches[1]]);
             }
+
+            // Check modifier parameter type
+            self::checkModifierParamType($matches[1], $pathArrayItemValue);
 
             // Create modifier namespace in $modifiers property.
             if (!isset($this->modifiers[$matches[1]])) {
@@ -85,9 +121,17 @@ class Modifiers
 
             // Create by-id namespace in $modifiers property.
             if (!empty($matches[2])) {
+
+                // Test if modifier is targettable
+                if (self::MODIFIERS_INFO_LIST[$matches[1]]['targettable'] !== TRUE) {
+                    throw new ModifierException(ModifierException::ERR_5, [$matches[1]]);
+                }
+
+                // Create by_id namespace in modifier property if not already set.
                 if (!isset($this->modifiers[$matches[1]]['by_id'])) {
                     $this->modifiers[$matches[1]]['by_id'] = [];
                 }
+
                 $this->modifiers[$matches[1]]['by_id'][$matches[2]] = $pathArrayItemValue;
             }
 
@@ -102,7 +146,7 @@ class Modifiers
 
     /**
      * Test if the modifier exists.
-     * @param $name modifier name.
+     * @param string $name Modifier name.
      * @return bool
      */
     public function exists($name)
@@ -114,16 +158,22 @@ class Modifiers
      * Get the modifier default value.
      * @param string $name Modifier name.
      * @return mixed Default modifier value.
+     * @throws ModifierException.
      */
     public function getDefault($name)
     {
-        return $this->modifiers[$name]['default'];
+        if (isset($this->modifiers[$name])) {
+            return $this->modifiers[$name]['default'];
+        }
+        throw new ModifierException(ModifierException::ERR_4, [$name]);
     }
 
     /**
      * Get the modifier value depending on the path ID.
      * @param string $name Modifier name.
-     * @return mixed Modifier value.
+     * @param string $pathId Target path id for the modifier.
+     * @return mixed Modifier parameter value.
+     * @throws ModifierException
      */
     public function get($name, $pathId = NULL)
     {
@@ -135,7 +185,29 @@ class Modifiers
                 return $this->modifiers[$name]['default'];
             }
         }
-        return NULL;
+        throw new ModifierException(ModifierException::ERR_4, [$name]);
+    }
+
+    /**
+     *
+     * @param $modifier_name
+     * @param $parameter
+     * @throws ModifierException
+     */
+    private function checkModifierParamType($modifier_name, $parameter)
+    {
+        switch (self::MODIFIERS_INFO_LIST[$modifier_name]['param_type']) {
+            case 'callback':
+                if (!is_object($parameter) || !get_class($parameter) === 'Closure') {
+                    throw new ModifierException(ModifierException::ERR_3, [$modifier_name, "Closure"]);
+                }
+                break;
+            case 'bool':
+                if (!is_bool($parameter)) {
+                    throw new ModifierException(ModifierException::ERR_3, [$modifier_name, "boolean value"]);
+                }
+                break;
+        }
     }
 
 }
