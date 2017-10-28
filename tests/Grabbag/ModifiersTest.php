@@ -52,7 +52,7 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
     /**
      * Test modifier parameter is set to TRUE by default.
      */
-    public function testDefaultValue()
+    public function testModifierWithDefaultValues()
     {
         $modifier = new Modifiers([
             '?exception-enabled',
@@ -135,8 +135,6 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Grabbag\exceptions\ModifierException', get_class($expectedException));
         $this->assertEquals(4, $expectedException->getCode());
         $this->assertEquals('Undefined modifier "unique".', $expectedException->getMessage());
-
-
     }
 
     public function testGet()
@@ -173,7 +171,10 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Undefined modifier "default-value".', $expectedException->getMessage());
     }
 
-    public function testParameterType()
+    /**
+     * Must throw exception when bad parameter type is prodvided for a given modifier.
+     */
+    public function testBadParameterType()
     {
         $expectedException = NULL;
         try {
@@ -188,4 +189,68 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedException->getCode(), 3);
         $this->assertEquals($expectedException->getMessage(), 'Bad parameter type on "?call" modifier. Expected : Closure.');
     }
+
+    /**
+     * Test exist with non targetted modifiers
+     */
+    public function testExist()
+    {
+        $modifier = new Modifiers([
+            '?call' => function () {
+            },
+            '?consider' => function () {
+            },
+            '?default-value' => 'my default_value',
+            '?exception-enabled' => TRUE,
+            '?unique' => TRUE,
+        ]);
+
+        $this->assertEquals(TRUE, $modifier->exists('call'));
+        $this->assertEquals(FALSE, $modifier->exists('keep-array'));
+    }
+
+    /**
+     * Test exist with targetted modifiers
+     */
+    public function testExist2()
+    {
+        $modifier = new Modifiers([
+            '?call@test' => function () {
+            },
+            '?consider@test' => function () {
+            },
+            '?default-value@test' => 'my default_value',
+        ]);
+
+        $this->assertEquals(TRUE, $modifier->exists('call'));
+        $this->assertEquals(TRUE, $modifier->exists('consider'));
+        $this->assertEquals(FALSE, $modifier->exists('keep-array'));
+    }
+
+    /**
+     * Test exist with targetted modifiers
+     */
+    public function testGetUnmatchedPath()
+    {
+        $expectedResult = [
+            'this/is/not/a/modifier',
+            'this/is/not/a/modifier/too',
+            'this/is/not/a/modifier/again',
+        ];
+
+        $modifier = new Modifiers([
+            'this/is/not/a/modifier',
+
+            '?call@test' => function () {
+            },
+            'this/is/not/a/modifier/too',
+            '?consider@test' => function () {
+            },
+            'this/is/not/a/modifier/again',
+            '?default-value@test' => 'my default_value',
+        ]);
+
+        $this->assertEquals($expectedResult, $modifier->getUnmatchedPath());
+    }
+
 }
