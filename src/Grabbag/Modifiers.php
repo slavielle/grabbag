@@ -78,6 +78,7 @@ class Modifiers
 
     // Class properties.
     private $modifiers;
+    private $unmatchedPath;
 
     /**
      * Constructor.
@@ -86,12 +87,69 @@ class Modifiers
     public function __construct($pathArray)
     {
         $this->modifiers = [];
+        $this->unmatchedPath = [];
 
         foreach ($pathArray as $left => $right) {
             $handlerName = (int)$left === $left ? $right : $left;
             $handlerValue = (int)$left === $left ? TRUE : $right;
-            $this->submit($handlerName, $handlerValue);
+            if (!$this->submit($handlerName, $handlerValue)) {
+                $this->unmatchedPath[$left] = $right;
+            }
         }
+    }
+
+    /**
+     * Test if the modifier exists.
+     * @param string $name Modifier name.
+     * @return bool
+     */
+    public function exists($name)
+    {
+        return isset($this->modifiers[$name]);
+    }
+
+    /**
+     * Get the modifier default value.
+     * @param string $name Modifier name.
+     * @return mixed Default modifier value.
+     * @throws ModifierException.
+     */
+    public function getDefault($name)
+    {
+        if (isset($this->modifiers[$name])) {
+            return $this->modifiers[$name]['default'];
+        }
+        throw new ModifierException(ModifierException::ERR_4, [$name]);
+    }
+
+    /**
+     * Get the modifier value depending on the path ID.
+     * @param string $name Modifier name.
+     * @param string $pathId Target path id for the modifier.
+     * @return mixed Modifier parameter value.
+     * @throws ModifierException
+     */
+    public function get($name, $pathId = NULL)
+    {
+        if (isset($this->modifiers[$name])) {
+            if ($pathId !== NULL && isset($this->modifiers[$name]['by_id']) && isset($this->modifiers[$name]['by_id'][$pathId])) {
+                return $this->modifiers[$name]['by_id'][$pathId];
+            }
+            else {
+                return $this->modifiers[$name]['default'];
+            }
+        }
+        throw new ModifierException(ModifierException::ERR_4, [$name]);
+    }
+
+
+    /**
+     * Get unmatched paths (path that are not modifiers).
+     * @return array
+     */
+    public function getUnmatchedPath()
+    {
+        return $this->unmatchedPath;
     }
 
     /**
@@ -145,56 +203,13 @@ class Modifiers
     }
 
     /**
-     * Test if the modifier exists.
-     * @param string $name Modifier name.
-     * @return bool
-     */
-    public function exists($name)
-    {
-        return isset($this->modifiers[$name]);
-    }
-
-    /**
-     * Get the modifier default value.
-     * @param string $name Modifier name.
-     * @return mixed Default modifier value.
-     * @throws ModifierException.
-     */
-    public function getDefault($name)
-    {
-        if (isset($this->modifiers[$name])) {
-            return $this->modifiers[$name]['default'];
-        }
-        throw new ModifierException(ModifierException::ERR_4, [$name]);
-    }
-
-    /**
-     * Get the modifier value depending on the path ID.
-     * @param string $name Modifier name.
-     * @param string $pathId Target path id for the modifier.
-     * @return mixed Modifier parameter value.
+     * Helper function to check modifier parameter regarding modifier name.
+     * It throws an exception if checking fails.
+     * @param $modifier_name Modifier name.
+     * @param $parameter Parameter to check
      * @throws ModifierException
      */
-    public function get($name, $pathId = NULL)
-    {
-        if (isset($this->modifiers[$name])) {
-            if ($pathId !== NULL && isset($this->modifiers[$name]['by_id']) && isset($this->modifiers[$name]['by_id'][$pathId])) {
-                return $this->modifiers[$name]['by_id'][$pathId];
-            }
-            else {
-                return $this->modifiers[$name]['default'];
-            }
-        }
-        throw new ModifierException(ModifierException::ERR_4, [$name]);
-    }
-
-    /**
-     *
-     * @param $modifier_name
-     * @param $parameter
-     * @throws ModifierException
-     */
-    private function checkModifierParamType($modifier_name, $parameter)
+    private static function checkModifierParamType($modifier_name, $parameter)
     {
         switch (self::MODIFIERS_INFO_LIST[$modifier_name]['param_type']) {
             case 'callback':

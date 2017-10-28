@@ -103,11 +103,11 @@ class Item
     }
 
     /**
-     * Prepare $item to normalize it to be an array of Item.
-     * @param Item | mixed $item
-     * @return array|Item
+     * Normalize $item to be an array of Item.
+     * @param Item | mixed $item Item to normalize.
+     * @return array|Item Normalized item.
      */
-    public static function prepareResolverItem($item)
+    public static function normalizeResolverItem($item)
     {
         if (is_array($item)) {
             return $item instanceof Item ? $item : [new Item($item)];

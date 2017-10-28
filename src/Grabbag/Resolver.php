@@ -35,7 +35,7 @@ class Resolver
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
 
-        $this->items = Item::prepareResolverItem($item);
+        $this->items = Item::normalizeResolverItem($item);
         $this->exceptionEnabled = $exceptionEnabled;
         $this->setDefaultValue($defaultValue);
     }

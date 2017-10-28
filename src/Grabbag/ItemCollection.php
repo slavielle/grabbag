@@ -28,11 +28,12 @@ class ItemCollection
     /**
      * ItemCollection constructor.
      * @param Item|Item[] $items Array of Item (or single item) composing the result from resolver.
+     * @param bool $normalize
      */
-    public function __construct($items, $prepare = TRUE)
+    public function __construct($items, $normalize = TRUE)
     {
         $this->forceArray = FALSE;
-        $this->items = $prepare ? Item::prepareResolverItem($items) : $items;
+        $this->items = $normalize ? Item::normalizeResolverItem($items) : $items;
     }
 
     /**
@@ -50,30 +51,28 @@ class ItemCollection
      * If the result contains only one item, it returns value itself.
      * if it contains many it returns an array of values.
      *
-     * @param bool $forceArray Force the method result to be an array even if there is only one result item.
      * @return array|mixed
      */
-    public function getValue($forceArray = FALSE)
+    public function getValue()
     {
-        return $this->getItems($forceArray, TRUE);
+        return $this->getItems(TRUE);
     }
 
     /**
      * Get item(s) instance or item values from $items property.
-     * @param bool $forceArray Force the method result to be an array even if there is only one result item.
      * @param bool $extractValues Is TRUE, will use Item value(s) instead of Item instance(s) in result .
      * @return Item | Item[] | mixed | mixed[] items array
      */
-    private function getItems($forceArray = FALSE, $extractValues = FALSE)
+    private function getItems($extractValues = FALSE)
     {
-        $forceArray = TRUE;
+
         if ($extractValues) {
             $resultValue = $this->getValueRecurse($this->items);
         }
         else {
             $resultValue = $this->items;
         }
-        return count($resultValue) === 1 && !($forceArray && $this->forceArray) ? $resultValue[0] : $resultValue;
+        return count($resultValue) === 1 && !$this->forceArray ? $resultValue[0] : $resultValue;
     }
 
     /**
@@ -111,7 +110,7 @@ class ItemCollection
         // Prepare stuff.
         $pathArray = is_array($path) ? $path : [$path];
         $modifiers = new Modifiers($pathArray);
-        $preparedPaths = self::preparePathArray($pathArray);
+        $preparedPaths = self::preparePathArray($modifiers->getUnmatchedPath());
 
         // Grab each items.
         $newItems = [];
@@ -309,37 +308,24 @@ class ItemCollection
      */
     static private function preparePathArray($pathArray)
     {
-        $preparedPaths = [];
+        $preparedPathArray = [];
         foreach ($pathArray as $left => $right) {
-
-            $preparedPath = [];
-
-            // Get sub path-array.
-            $preparedPath['pathArray'] = (int)$left === $left ? NULL : $right;
 
             // Get either simple path from left or path with a sub path-array from right
             $path = (int)$left === $left ? $right : $left;
 
+            // Prepare path array
+            $preparedPathArray[] = [
 
-            // Path is a Path instance already
-            if ($path instanceof Path) {
-                $preparedPath['pathObject'] = $path;
-            }
+                // Normalize path as Path object.
+                'pathObject' => $path instanceof Path ? $path : new Path($path),
 
-            // Path is a string to be instantiated using Path class
-            else {
+                // Get sub path array if any
+                'pathArray' => (int)$left === $left ? NULL : $right,
 
-                // Exclude modifiers
-                if (substr($path, 0, 1) !== Modifiers::MODIFIER_CHAR) {
-                    $preparedPath['pathObject'] = new Path($path);
-                }
-                else {
-                    break;
-                }
-            }
-            $preparedPaths[] = $preparedPath;
+            ];
         }
-        return $preparedPaths;
+        return $preparedPathArray;
     }
 
     /**
