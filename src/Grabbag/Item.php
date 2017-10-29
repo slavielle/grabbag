@@ -24,7 +24,7 @@ use Grabbag\exceptions\ItemException;
 class Item
 {
 
-    private $item;
+    private $value;
     private $key;
     private $previous;
 
@@ -45,7 +45,7 @@ class Item
      */
     public function get()
     {
-        return $this->item;
+        return $this->value;
     }
 
     /**
@@ -59,24 +59,24 @@ class Item
 
     /**
      * Push new item value on stack.
-     * @param mixed $item Item value.
+     * @param mixed $value Item value.
      * @param string|integer Item key.
      * @return mixed
      */
-    public function push($item, $key = NULL)
+    public function push($value, $key = NULL)
     {
         $this->previous[] = [
-            'item' => $this->item,
+            'value' => $this->value,
             'key' => $this->key
         ];
-        $this->item = $item;
+        $this->value = $value;
         $this->key = $key;
     }
 
     /**
      * Pop value from stack.
      * @return mixed Item value.
-     * @throws \ResolveItemStackEmptyException
+     * @throws ItemException
      */
     public function pop()
     {
@@ -84,21 +84,21 @@ class Item
         if ($popped === NULL) {
             throw new ItemException(ItemException::ERR_1);
         }
-        $this->item = $popped['item'];
+        $this->value = $popped['value'];
         $this->key = $popped['key'];
 
-        return $this->item;
+        return $this->value;
     }
 
     /**
      * Update top stack item without pushing it on stack.
-     * @param mixed $item Item value.
+     * @param mixed $value Item value.
      * @param string|integer Item key.
-     * @param mixed $item
+     * @param mixed $value
      */
-    public function update($item, $key = NULL)
+    public function update($value, $key = NULL)
     {
-        $this->item = $item;
+        $this->value = $value;
         $this->key = $key;
     }
 
@@ -109,12 +109,7 @@ class Item
      */
     public static function normalizeResolverItem($item)
     {
-        if (is_array($item)) {
-            return $item instanceof Item ? $item : [new Item($item)];
-        }
-        else {
-            return $item instanceof Item ? [$item] : [new Item($item)];
-        }
+        return $item instanceof Item ? [$item] : [new Item($item)];
     }
 
 
