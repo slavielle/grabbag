@@ -76,9 +76,9 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 4);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(4, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve "badpath" on item.', $expectedException->getMessage());
     }
 
     /**
@@ -99,9 +99,9 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 5);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on array.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(5, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve "badpath" on array.', $expectedException->getMessage());
     }
 
     /**
@@ -122,9 +122,9 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 1);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(1, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve.', $expectedException->getMessage());
     }
 
     /**
@@ -145,9 +145,9 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 2);
-        $this->assertEquals($expectedException->getMessage(), 'Trying to apply %any on non traversable value.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(2, $expectedException->getCode());
+        $this->assertEquals('Trying to apply %any on non traversable value.', $expectedException->getMessage());
     }
 
     /**
@@ -168,9 +168,9 @@ class ResolverTest extends TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 3);
-        $this->assertEquals($expectedException->getMessage(), 'Parameters passed to method thrown an exception.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(3, $expectedException->getCode());
+        $this->assertEquals('Parameters passed to method thrown an exception.', $expectedException->getMessage());
     }
 
     /**
@@ -314,9 +314,9 @@ class ResolverTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PathException');
-        $this->assertEquals($expectedException->getCode(), 5);
-        $this->assertEquals($expectedException->getMessage(), 'Unknown keyword "#unknownkeyword" in path.');
+        $this->assertEquals('Grabbag\exceptions\PathException', get_class($expectedException));
+        $this->assertEquals(5, $expectedException->getCode());
+        $this->assertEquals('Unknown keyword "#unknownkeyword" in path.', $expectedException->getMessage());
 
     }
 

@@ -56,9 +56,9 @@ class PathTest extends \PHPUnit_Framework_TestCase
         } catch (\Exception $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\PathException');
-        $this->assertEquals($expectedException->getCode(), 3);
-        $this->assertEquals($expectedException->getMessage(), 'Can \'t parse path near "+Id:this/is/my/path".');
+        $this->assertEquals('Grabbag\exceptions\PathException', get_class($expectedException));
+        $this->assertEquals(3, $expectedException->getCode());
+        $this->assertEquals('Can \'t parse path near "+Id:this/is/my/path".', $expectedException->getMessage());
 
 
     }

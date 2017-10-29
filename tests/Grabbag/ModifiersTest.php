@@ -77,9 +77,9 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
         } catch (ModifierException $e) {
             $expectedException = $e;
         }
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ModifierException');
-        $this->assertEquals($expectedException->getCode(), 2);
-        $this->assertEquals($expectedException->getMessage(), 'Unknown modifier "non-existing-modifier".');
+        $this->assertEquals('Grabbag\exceptions\ModifierException', get_class($expectedException));
+        $this->assertEquals(2, $expectedException->getCode());
+        $this->assertEquals('Unknown modifier "non-existing-modifier".', $expectedException->getMessage());
     }
 
     /**
@@ -185,9 +185,9 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ModifierException');
-        $this->assertEquals($expectedException->getCode(), 3);
-        $this->assertEquals($expectedException->getMessage(), 'Bad parameter type on "?call" modifier. Expected : Closure.');
+        $this->assertEquals('Grabbag\exceptions\ModifierException', get_class($expectedException));
+        $this->assertEquals(3, $expectedException->getCode());
+        $this->assertEquals('Bad parameter type on "?call" modifier. Expected : Closure.', $expectedException->getMessage());
     }
 
     /**

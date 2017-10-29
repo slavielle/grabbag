@@ -242,9 +242,9 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 4);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "badpath" on item.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(4, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve "badpath" on item.', $expectedException->getMessage());
 
     }
 
@@ -264,9 +264,9 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 5);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "25" on array.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(5, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve "25" on array.', $expectedException->getMessage());
 
     }
 
@@ -294,9 +294,9 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ResolverException');
-        $this->assertEquals($expectedException->getCode(), 4);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t resolve "myLeaf2Secret" on item.');
+        $this->assertEquals('Grabbag\exceptions\ResolverException', get_class($expectedException));
+        $this->assertEquals(4, $expectedException->getCode());
+        $this->assertEquals('Can\'t resolve "myLeaf2Secret" on item.', $expectedException->getMessage());
     }
 
     /**
@@ -862,9 +862,9 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ModifierException');
-        $this->assertEquals($expectedException->getCode(), 1);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t apply ?consider modifier in a multi-valued path result.');
+        $this->assertEquals('Grabbag\exceptions\ModifierException', get_class($expectedException));
+        $this->assertEquals(1, $expectedException->getCode());
+        $this->assertEquals('Can\'t apply ?consider modifier in a multi-valued path result.', $expectedException->getMessage());
 
     }
 
@@ -922,7 +922,7 @@ final class ItemCollectionTest extends TestCase
                 'myId',
             ]
         ];
-        
+
         $resolverItems = new ItemCollection($testObject);
         $myDebugInfo = NULL;
         $resolverItems->resolve([
@@ -1022,9 +1022,9 @@ final class ItemCollectionTest extends TestCase
             $expectedException = $e;
         }
 
-        $this->assertEquals(get_class($expectedException), 'Grabbag\exceptions\ItemException');
-        $this->assertEquals($expectedException->getCode(), 1);
-        $this->assertEquals($expectedException->getMessage(), 'Can\'t pop an empty stack');
+        $this->assertEquals('Grabbag\exceptions\ItemException', get_class($expectedException));
+        $this->assertEquals(1, $expectedException->getCode());
+        $this->assertEquals('Can\'t pop an empty stack', $expectedException->getMessage());
     }
 
 }
