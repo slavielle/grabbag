@@ -82,7 +82,7 @@ class Modifiers
 
     /**
      * Constructor.
-     * @param $pathArray Path array to get the modifiers from.
+     * @param string[] $pathArray Path array to get the modifiers from.
      */
     public function __construct($pathArray)
     {
@@ -205,8 +205,8 @@ class Modifiers
     /**
      * Helper function to check modifier parameter regarding modifier name.
      * It throws an exception if checking fails.
-     * @param $modifier_name Modifier name.
-     * @param $parameter Parameter to check
+     * @param string $modifier_name Modifier name.
+     * @param mixed $parameter Parameter to check.
      * @throws ModifierException
      */
     private static function checkModifierParamType($modifier_name, $parameter)

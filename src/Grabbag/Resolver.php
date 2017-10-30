@@ -26,10 +26,16 @@ class Resolver
     protected $items;
     protected $defaultValue;
     protected $exceptionEnabled;
+
+    /**
+     * @var Path $appliedPath Path applied to resolver.
+     */
     protected $appliedPath;
 
     /**
      * Constructor.
+     * @param mixed $defaultValue Default value if resolver can't be resolved.
+     * @param bool $exceptionEnabled If exception enabled ResolverException are thrown by resolver.
      * @param Item | mixed $item
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
@@ -42,7 +48,7 @@ class Resolver
 
     /**
      * Setter for defaultValue property.
-     * @param $defaultValue new default value;
+     * @param mixed $defaultValue New default value;
      */
     public function setDefaultValue($defaultValue)
     {
@@ -155,6 +161,7 @@ class Resolver
                 $newItem->pop();
                 return $newItem;
         }
+        return NULL;
     }
 
     /**
@@ -164,8 +171,9 @@ class Resolver
      *
      * @param PathItem $pathItem Path item to resolve.
      * @param Item $item Item to be resolved.
-     * @throws PathException if a keyword is unknown.
      * @return Item[] A set of Resolved item.
+     * @throws PathException If a keyword is unknown.
+     * @throws ResolverException.
      */
     private function resolveKeyword(PathItem $pathItem, Item $item)
     {
@@ -175,7 +183,7 @@ class Resolver
 
             switch ($pathItem->getKey()) {
                 case 'any':
-                    if (is_array($item->get()) || $item->get() instanceof Traversable) {
+                    if (is_array($item->get()) || $item->get() instanceof \Traversable) {
                         foreach ($item->get() as $key => $entry) {
                             $resultObjects[] = self::makeResolverItem($item, $entry, $key);
                         }
@@ -196,6 +204,7 @@ class Resolver
             }
             return $resultObjects;
         }
+        return NULL;
     }
 
     /**

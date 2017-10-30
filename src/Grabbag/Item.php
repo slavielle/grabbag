@@ -61,7 +61,6 @@ class Item
      * Push new item value on stack.
      * @param mixed $value Item value.
      * @param string|integer Item key.
-     * @return mixed
      */
     public function push($value, $key = NULL)
     {

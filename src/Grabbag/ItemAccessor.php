@@ -30,19 +30,18 @@ namespace Grabbag;
 class ItemAccessor
 {
     private $resolverItem;
-    private $allowStringPathOnly;
 
     /**
      * ItemAccessor constructor.
      * @param Item $resolverItem The $resolverItem to be used by the ItemAccessor instance.
+     * @throws \Exception
      */
-    public function __construct(Item $resolverItem, $allowStringPathOnly = FALSE)
+    public function __construct(Item $resolverItem)
     {
         if (!$resolverItem instanceof Item) {
             throw new \Exception('Item instance expected');
         }
         $this->resolverItem = $resolverItem;
-        $this->allowStringPathOnly = $allowStringPathOnly;
     }
 
     /**

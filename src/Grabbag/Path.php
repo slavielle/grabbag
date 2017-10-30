@@ -120,7 +120,7 @@ class Path
 
     /**
      * Move the path item pointer to next position.
-     * @return PathItem | NULL The next path item if any or NULL.
+     * @return PathItem The next path item if any or NULL.
      */
     public function next()
     {

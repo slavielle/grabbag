@@ -20,11 +20,19 @@ class VoidDefaultValue
 {
     private $fallbackDefaultValue;
 
+    /**
+     * VoidDefaultValue constructor.
+     * @param mixed $fallbackDefaultValue
+     */
     public function __construct($fallbackDefaultValue = NULL)
     {
         $this->fallbackDefaultValue = $fallbackDefaultValue;
     }
 
+    /**
+     * Get the fallback default value.
+     * @return mixed
+     */
     public function getFallbackDefaultValue()
     {
         return $this->fallbackDefaultValue;

@@ -291,17 +291,6 @@ class ItemCollection
     }
 
     /**
-     * Extract and prepare modifiers from path-array.
-     * @param array $pathArray User defined path-array.
-     * @return Modifiers
-     */
-    static private function prepareModifiers($pathArray)
-    {
-        $modifiers = new Modifiers($pathArray);
-        return $modifiers;
-    }
-
-    /**
      * Turns query as defined by user to an internal query ready to be resolved.
      * @param array $pathArray User defined Query.
      * @return array
