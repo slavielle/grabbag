@@ -24,14 +24,12 @@ class Path
 
     const PATH_INTERNAL_ID_CHAR = '~';
     const PATH_ID_SEPARATOR = ':';
-    const PATH_KEYWORD_PREFIX = '%';
-    const PATH_NUMERICAL_INDEX_PREFIX = '#';
 
     const REGEX_PATH_INTERNAL_ID_CHAR = self::PATH_INTERNAL_ID_CHAR;
     const REGEX_PATH_ID_SEPARATOR = self::PATH_ID_SEPARATOR;
     const REGEX_PATH_ID_NAME = '[0-9a-zA-Z_-]+';
-    const REGEX_PATH_KEYWORD_PREFIX = self::PATH_KEYWORD_PREFIX;
-    const REGEX_PATH_NUMERICAL_INDEX_PREFIX = self::PATH_NUMERICAL_INDEX_PREFIX;
+    const REGEX_PATH_KEYWORD_PREFIX = PathItem::PATH_ITEM_KEYWORD_PREFIX;
+    const REGEX_PATH_NUMERICAL_INDEX_PREFIX = PathItem::PATH_ITEM_NUMERICAL_INDEX_PREFIX;
     const REGEX_PATH_SPECIAL_CHAR = self::REGEX_PATH_KEYWORD_PREFIX . '|' . self::REGEX_PATH_NUMERICAL_INDEX_PREFIX;
     const REGEX_PATH_NAME = '[0-9a-zA-Z_]+|\.\.|\.';
     const REGEX_PATH_PARAMETER = '\(([^\)]+)\)';
@@ -75,34 +73,6 @@ class Path
             }
         }
         $this->rewind();
-    }
-
-    /**
-     * Parse the path id part of a path.
-     *
-     * In some case, path can have path id part. The path id part is located on start
-     * of the path :
-     *
-     * "thePathId:the/rest/of/my/path"
-     *
-     * @param string $path Path string.
-     * @return string Unconsumed path part.
-     */
-    private function parsePathId($path)
-    {
-        $matches = [];
-        $regex = '/^' .
-            '(' .
-            Path::REGEX_PATH_INTERNAL_ID_CHAR . '?' .
-            Path::REGEX_PATH_ID_NAME .
-            Path::REGEX_PATH_ID_SEPARATOR .
-            ')(.*)$/';
-        $match_result = preg_match($regex, $path, $matches);
-        if ($match_result) {
-            $this->pathId = substr($matches[1], 0, -1);
-            $path = $matches[2];
-        }
-        return $path;
     }
 
     /**
@@ -151,6 +121,34 @@ class Path
     public function isMutipleMatching()
     {
         return $this->mutipleMatching;
+    }
+
+    /**
+     * Parse the path id part of a path.
+     *
+     * In some case, path can have path id part. The path id part is located on start
+     * of the path :
+     *
+     * "thePathId:the/rest/of/my/path"
+     *
+     * @param string $path Path string.
+     * @return string Unconsumed path part.
+     */
+    private function parsePathId($path)
+    {
+        $matches = [];
+        $regex = '/^' .
+            '(' .
+            Path::REGEX_PATH_INTERNAL_ID_CHAR . '?' .
+            Path::REGEX_PATH_ID_NAME .
+            Path::REGEX_PATH_ID_SEPARATOR .
+            ')(.*)$/';
+        $match_result = preg_match($regex, $path, $matches);
+        if ($match_result) {
+            $this->pathId = substr($matches[1], 0, -1);
+            $path = $matches[2];
+        }
+        return $path;
     }
 
 }

@@ -21,10 +21,23 @@ use Grabbag\exceptions\PathException;
  */
 class PathItem
 {
+    const PATH_ITEM_KEYWORD_PREFIX = '%';
+    const PATH_ITEM_NUMERICAL_INDEX_PREFIX = '#';
+    const PATH_ITEM_KEYWORDS_METADATA = [
+        'any' => [
+            'mx' => TRUE,
+        ],
+        'key' => [
+            'mx' => FALSE,
+        ],
+    ];
+    const PATH_ITEM_SPECIAL_CHAR = [
+        self::PATH_ITEM_NUMERICAL_INDEX_PREFIX => [
 
-    const KEYWORDS_METADATA = [
-        'any' => ['mx' => TRUE],
-        'key' => ['mx' => FALSE],
+        ],
+        self::PATH_ITEM_KEYWORD_PREFIX => [
+
+        ]
     ];
 
     private $special;
@@ -40,16 +53,19 @@ class PathItem
      */
     public function __construct($special, $key, $param)
     {
-        $this->special = $special;
+        $this->checkAndSetSpecial($special);
         $this->key = $key;
         if (strlen($param) > 0) {
-            $this->param = $param;
+            $this->checkAndSetParam($param);
         }
 
         // Numeric key value shall be prefixed with numerical index prefix.
-        if ((string)$key === (string)(int)$key && $special !== Path::PATH_NUMERICAL_INDEX_PREFIX) {
+        if ((string)$key === (string)(int)$key && $special !== self::PATH_ITEM_NUMERICAL_INDEX_PREFIX) {
             throw new PathException(PathException::ERR_1);
         }
+
+        // Check item
+        $this->checkItem();
     }
 
     /**
@@ -77,26 +93,7 @@ class PathItem
      */
     public function getParams()
     {
-        $matches = [];
-
-        // String parameter.
-        if (preg_match('/^"([^"]*)"$/', $this->param, $matches)) {
-            return [$matches[1]];
-        }
-
-        // Numeric parameter expected.
-        else {
-
-            // Numeric parameter.
-            if (is_numeric($this->param)) {
-                return [$this->param + 0];
-            }
-
-            // Parse error
-            else {
-                throw new PathException(PathException::ERR_2, [$this->param]);
-            }
-        }
+        return $this->param;
     }
 
     /**
@@ -105,7 +102,7 @@ class PathItem
      */
     public function isKeyword()
     {
-        return $this->special === Path::PATH_KEYWORD_PREFIX;
+        return $this->special === self::PATH_ITEM_KEYWORD_PREFIX;
     }
 
     /**
@@ -141,10 +138,63 @@ class PathItem
      */
     public static function GetKeywordMetadata($keyword)
     {
-        if (array_key_exists($keyword, self::KEYWORDS_METADATA)) {
-            return self::KEYWORDS_METADATA[$keyword];
+        if (array_key_exists($keyword, self::PATH_ITEM_KEYWORDS_METADATA)) {
+            return self::PATH_ITEM_KEYWORDS_METADATA[$keyword];
         }
 
         throw new PathException(PathException::ERR_5, [$keyword]);
+    }
+
+    /**
+     * Check special char is valid and set "special" property.
+     * @param string $special Special char.
+     * @throws PathException
+     */
+    private function checkAndSetSpecial($special)
+    {
+        if ($special !== '' && !array_key_exists($special, self::PATH_ITEM_SPECIAL_CHAR)) {
+            throw new PathException(PathException::ERR_6, [$special]);
+        }
+        $this->special = $special;
+    }
+
+    /**
+     * Check param is valid and set "param" property.
+     * @param string $param Parameter.
+     * @throws PathException
+     */
+    private function checkAndSetParam($param)
+    {
+        $matches = [];
+
+        // String parameter.
+        if (preg_match('/^"([^"]*)"$/', $param, $matches)) {
+            $this->param = [$matches[1]];
+        }
+
+        // Numeric parameter expected.
+        else {
+
+            // Numeric parameter.
+            if (is_numeric($param)) {
+                $this->param = [$param + 0];
+            }
+
+            // Parse error
+            else {
+                throw new PathException(PathException::ERR_2, [$param]);
+            }
+        }
+    }
+
+    private function checkItem()
+    {
+        if ($this->isKeyword() && isset($this->param)) {
+            throw new PathException(PathException::ERR_7, [$this->key, $this->param[0]]);
+        }
+
+        if ($this->isSymbol() && isset($this->param)) {
+            throw new PathException(PathException::ERR_8, [$this->key, $this->param[0]]);
+        }
     }
 }

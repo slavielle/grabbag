@@ -25,6 +25,9 @@ class PathException extends BaseException
     const ERR_3 = 3;
     const ERR_4 = 4;
     const ERR_5 = 5;
+    const ERR_6 = 6;
+    const ERR_7 = 7;
+    const ERR_8 = 8;
 
     // Exception messages
     const MESSAGE = [
@@ -33,5 +36,8 @@ class PathException extends BaseException
         self::ERR_3 => 'Can \'t parse path near "%s".',
         self::ERR_4 => 'Keyword "#%s" is not implemented.',
         self::ERR_5 => 'Unknown keyword "#%s" in path.',
+        self::ERR_6 => 'Unknown special char "%s".',
+        self::ERR_7 => 'Keyword "%s" cannot have parameter "%s".',
+        self::ERR_8 => 'Symbol "%s" cannot have parameter "%s".',
     ];
 }

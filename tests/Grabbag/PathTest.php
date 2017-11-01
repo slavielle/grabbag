@@ -62,4 +62,12 @@ class PathTest extends \PHPUnit_Framework_TestCase
 
 
     }
+
+    function testIsMultipleMatching()
+    {
+        $path = new Path('this/is/my/path');
+        $this->assertEquals(FALSE, $path->isMutipleMatching());
+        $path2 = new Path('this/is/%any/path');
+        $this->assertEquals(TRUE, $path2->isMutipleMatching());
+    }
 }

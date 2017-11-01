@@ -25,7 +25,7 @@ class Grabbag
      * Grabbag constructor.
      * @param Item | mixed $item Target Grabbag item.
      */
-    function __construct($item)
+    public function __construct($item)
     {
         $this->items = new ItemCollection($item);
     }
