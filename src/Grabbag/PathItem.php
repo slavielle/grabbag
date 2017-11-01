@@ -131,12 +131,22 @@ class PathItem
     }
 
     /**
+     * Check if a keword exists and throw an error if not.
+     * @param $keyword
+     */
+    public static function requireKeywordExists($keyword)
+    {
+        // if $keyword does not exists GetKeywordMetadata throws an exception.
+        self::GetKeywordMetadata($keyword);
+    }
+
+    /**
      * Get metadata for a given keyword.
      * @param string $keyword Keyword.
      * @return array Metadata.
      * @throws PathException
      */
-    public static function GetKeywordMetadata($keyword)
+    private static function GetKeywordMetadata($keyword)
     {
         if (array_key_exists($keyword, self::PATH_ITEM_KEYWORDS_METADATA)) {
             return self::PATH_ITEM_KEYWORDS_METADATA[$keyword];

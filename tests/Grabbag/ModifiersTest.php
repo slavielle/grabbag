@@ -191,7 +191,7 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test exist with non targetted modifiers
+     * Test exists method with non targetted modifiers.
      */
     public function testExist()
     {
@@ -210,7 +210,7 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test exist with targetted modifiers
+     * Test exists method with targetted modifiers.
      */
     public function testExist2()
     {
@@ -228,7 +228,7 @@ class ModifiersTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test exist with targetted modifiers
+     * Test getUnmatchedPath method.
      */
     public function testGetUnmatchedPath()
     {

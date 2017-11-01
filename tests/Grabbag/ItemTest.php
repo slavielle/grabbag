@@ -130,7 +130,7 @@ class ItemTest extends \PHPUnit_Framework_TestCase
     /**
      * Test normalizeResolverItem helper.
      */
-    public function testnormalizeResolverItem()
+    public function testNormalizeResolverItem()
     {
 
         // Adding a value must return an array with one Item instance.

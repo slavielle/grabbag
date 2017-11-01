@@ -158,4 +158,31 @@ class PathItemTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    function testIsMutipleMatching()
+    {
+        $pathItem = new PathItem('%', 'any', '');
+        $this->assertEquals(TRUE, $pathItem->isMutipleMatching());
+
+        $pathItem = new PathItem('%', 'key', '');
+        $this->assertEquals(FALSE, $pathItem->isMutipleMatching());
+    }
+
+    public function testCheckKeywordExists()
+    {
+        // Does nothing as long as keyword exist.
+        PathItem::requireKeywordExists('any');
+        PathItem::requireKeywordExists('key');
+
+        // Throws an error if
+        $expectedException = NULL;
+        try {
+            PathItem::requireKeywordExists('non-existing-keyword');
+        } catch (PathException $e) {
+            $expectedException = $e;
+        }
+        $this->assertEquals('Grabbag\exceptions\PathException', get_class($expectedException));
+        $this->assertEquals(5, $expectedException->getCode());
+        $this->assertEquals('Unknown keyword "#non-existing-keyword" in path.', $expectedException->getMessage());
+    }
 }
+
