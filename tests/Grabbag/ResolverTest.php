@@ -323,7 +323,7 @@ class ResolverTest extends TestCase
     /**
      * Test resolving path with %any keyword
      */
-    public function testResolverWithAny()
+    public function testResolverWithAnyOnArray()
     {
         $testObject = SourceDataHelper::getDataIndexedL1();
 
@@ -331,6 +331,35 @@ class ResolverTest extends TestCase
             'getAllObjects/%any/getName',
             'allObjects/%any/getName',
             'objects/%any/getName',
+        ];
+
+        foreach ($pathList as $path) {
+            $resolver = new Resolver($testObject);
+            $result = $resolver->resolve(new Path($path));
+            $this->assertEquals(
+                ['test 0', 'test 1', 'test 2', 'test 3', 'test 4'],
+                $result->getValue()
+            );
+        }
+    }
+
+    /**
+     * Test resolving path with %any keyword
+     */
+    public function testResolverWithAnyOnObject()
+    {
+        $testObject = [
+            'values' => (object)[
+                ['value' => 'test 0'],
+                ['value' => 'test 1'],
+                ['value' => 'test 2'],
+                ['value' => 'test 3'],
+                ['value' => 'test 4'],
+            ]
+        ];
+
+        $pathList = [
+            'values/%any/value'
         ];
 
         foreach ($pathList as $path) {

@@ -184,7 +184,7 @@ class Resolver
 
         switch ($pathItem->getKey()) {
             case 'any':
-                if (is_array($item->get()) || $item->get() instanceof \Traversable) {
+                if (is_array($item->get()) || is_object($item->get())) {
                     foreach ($item->get() as $key => $entry) {
                         $resultObjects[] = self::makeResolverItem($item, $entry, $key);
                     }
