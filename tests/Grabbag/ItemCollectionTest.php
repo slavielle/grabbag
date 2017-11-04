@@ -589,7 +589,7 @@ final class ItemCollectionTest extends TestCase
         $testObject = SourceDataHelper::getDataNamedL2();
 
         $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
-
+        
         // Assertion using non-targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
@@ -600,6 +600,7 @@ final class ItemCollectionTest extends TestCase
                 },
             ]
         ]);
+
         $this->assertEquals($expected, $resolverItems->getValue());
 
         // Assertion using targeted modifier
@@ -614,6 +615,55 @@ final class ItemCollectionTest extends TestCase
         ]);
         $this->assertEquals($expected, $resolverItems->getValue());
 
+
+    }
+
+    /**
+     * Test callback function prototype for ?transform, ?call, ?consider.
+     */
+    public function testTransformModifierParams()
+    {
+
+        $testObject = SourceDataHelper::getDataNamedL2();
+
+        $expected = [
+            [
+                'value' => 'ID#0',
+                'id' => "~myId",
+                'valueAccessor' => "Grabbag\ItemAccessor",
+                'allValuesAccessors' => [
+                    '~myId' => "Grabbag\ItemAccessor"
+                ]
+            ]
+        ];
+
+        foreach (['?transform', '?transform@~myId', '?call', '?call@~myId', '?consider', '?consider@~myId'] as $modifier) {
+            $paramsInfo = [];
+            $resolverItems = new ItemCollection($testObject);
+            $resolverItems->resolve([
+                'getAllObjects/my_value_1' => [
+                    '~myId:myId',
+                    $modifier => function ($value, $id, $valueAccessor, $allValuesAccessors) use (&$paramsInfo) {
+                        $info = [
+                            'value' => $value,
+                            'id' => $id,
+                            'valueAccessor' => get_class($valueAccessor),
+                            'allValuesAccessors' => [],
+                        ];
+
+                        foreach ($allValuesAccessors as $key => $valuesAccessor) {
+                            $info['allValuesAccessors'][$key] = get_class($valuesAccessor);
+                        }
+
+                        $paramsInfo[] = $info;
+
+                        return 'transformed ' . $id . '-' . $value;
+                    },
+                ]
+            ]);
+
+            $this->assertEquals($expected, $paramsInfo);
+        }
 
     }
 
@@ -739,9 +789,9 @@ final class ItemCollectionTest extends TestCase
             'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '?unique',
-                '?consider' => function ($item, $id) {
+                '?consider' => function ($value, $id) {
                     if ($id === "~myId") {
-                        return $item->get() !== 'ID#6';
+                        return $value !== 'ID#6';
                     }
                 },
             ],
@@ -755,8 +805,8 @@ final class ItemCollectionTest extends TestCase
             'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '?unique',
-                '?consider@~myId' => function ($item) {
-                    return $item->get() !== 'ID#6';
+                '?consider@~myId' => function ($value) {
+                    return $value !== 'ID#6';
                 }
 
             ],
@@ -852,9 +902,9 @@ final class ItemCollectionTest extends TestCase
             $resolverItems->resolve([
                 '~myId:getAllObjects/%any/getAllObjects/%any/../../myId',
                 '?unique',
-                '?consider' => function ($item, $id) {
+                '?consider' => function ($value, $id) {
                     if ($id === "~myId") {
-                        return $item->get() !== 'ID#6';
+                        return $value !== 'ID#6';
                     }
                 }
             ]);
@@ -884,11 +934,11 @@ final class ItemCollectionTest extends TestCase
             'getAllObjects/%any/getAllObjects/%any/../../myId' => [
                 '~myId:.',
                 '~myId2:.',
-                '?consider@~myId' => function ($item) {
-                    return $item->get() !== 'ID#6';
+                '?consider@~myId' => function ($value) {
+                    return $value !== 'ID#6';
                 },
-                '?consider@~myId2' => function ($item) {
-                    return $item->get() !== 'ID#12';
+                '?consider@~myId2' => function ($value) {
+                    return $value !== 'ID#12';
                 }
 
             ],

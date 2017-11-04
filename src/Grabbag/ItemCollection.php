@@ -122,7 +122,7 @@ class ItemCollection
         }
         $this->items = $newItems;
 
-        // Keep only unique if requiered.
+        // Keep only unique if required.
         if (($modifiers->exists('unique') && $modifiers->getDefault('unique'))) {
             try {
                 $this->items = self::keepUniqueValuesOnly($this->items);
@@ -252,7 +252,7 @@ class ItemCollection
                 }
                 $keep = call_user_func_array(
                     $modifiers->get('consider', $pathId),
-                    [new ItemAccessor($beforeModifiersValue), $pathId]
+                    [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
                 );
 
                 // NULL returned by callback means keep.

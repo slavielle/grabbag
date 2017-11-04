@@ -27,9 +27,9 @@ $json = json_encode(
             // Get all fruits they love.
             'fruits-they-like:%any/food/liked/fruits/%any' => [
                 '~fruit:.',
-                '?consider' => function ($item, $id) use ($hatedFruit) {
+                '?consider' => function ($value, $id) use ($hatedFruit) {
                     if ($id === '~fruit') {
-                        return !in_array($item->get(), $hatedFruit);
+                        return !in_array($value, $hatedFruit);
                     }
                 },
 

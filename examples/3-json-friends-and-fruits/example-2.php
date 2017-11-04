@@ -22,9 +22,9 @@ $json = json_encode(
             // Get my friends selection.
             'my-friends:%any' => [
                 '~name:name',
-                '?consider' => function ($item, $id) use ($filterFriends) {
+                '?consider' => function ($value, $id) use ($filterFriends) {
                     if ($id === '~name') {
-                        return in_array($item->get(), $filterFriends);
+                        return in_array($value, $filterFriends);
                     }
                 },
             ],
@@ -34,7 +34,7 @@ $json = json_encode(
 
                 '~fruit:.',
 
-                '?consider' => function ($item, $id) use ($filterFriends) {
+                '?consider' => function ($value, $id, $item) use ($filterFriends) {
                     if ($id === '~fruit') {
                         return in_array($item->grab('../../../../name'), ['Mary', 'Tom']);
                     }
