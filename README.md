@@ -28,9 +28,10 @@ $result = $node->get('field_media_image')->first()->get('entity')->getTarget()->
 echo $result;
 ```
 
-### Using Grabbag
+### Using Grabbag
 
 Using Grabbag allows to get access to objects/arrays chains using a path expression
+
 ```php
 $result = Grabbag::grab($node, 'get("field_media_image")/first/get("entity")/target/value/get("field_image")/entity/fileUri');
 echo $result;
@@ -38,7 +39,7 @@ echo $result;
 
 ### Both approach comparision 
 * The Raw PHP approach is not implicitly secure : Some of the methods/properties along the expression can return or be NULL in some case and then cause an exception. If you really want to secure expression, you would have to test some of the values before accessing them. That's a really boring point developer often have to deal with : it's repetitive, unappealing, can induce bugs and makes code less readable. 
-* Grabbag approach is implicitly secure. If it's not possible to walk along the object chain, result will be NULL by default, or set to a default-value to be specified or you can also let the exception pops.
+* Grabbag approach is implicitly secure. If it's not possible to walk along the objects/arrays chain, result will be NULL by default or set to a default-value to be specified.
 
 ## Multiple values result using %any
 
@@ -49,9 +50,9 @@ $result = Grabbag::grab($node, 'get("field_media_image")/%any/get("entity")/targ
 var_dump($result);
 ```
 if the value corresponding to ```%any``` in the path can be used with ```foreach``` (if it's an array or a [traversable object](http://php.net/manual/en/class.traversable.php)), 
-```%any``` will resolve the path considering each values.
+```%any``` will resolve the path considering each values and will produce a multi-valued result.
 
-For instance if 
+For instance if
 ```php
 $node->get('field_media_image') 
 ```
@@ -112,7 +113,7 @@ Grabbag can be used in most of PHP project.
 
 You can use it simply to secure access to objects/array chain or in a more complex manner to produce structured results.
 
-Grabbag is particularly useful for project built on top of object oriented frameworks/CMS such as Drupal 8, Symfony, 
+Grabbag is particularly useful for projects built on top of object oriented frameworks/CMS such as Drupal 8, Symfony, 
 Laravel and so on, and can be used everywhere you would have to manipulate values from PHP objects/arrays.
 
 A quick list for possible usage I have in mind are : 
