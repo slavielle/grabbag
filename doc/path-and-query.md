@@ -2,13 +2,12 @@
 
 * [Path principle](#path-principle)
     * [Path items](#path-items)
-    * [Path items syntax](#path-items-syntax)
-* [Query, a quick overview](#query-a-quick-overview)
+* [Query, a first overview](#query-a-quick-overview)
     * [path-arrays](#path-arrays)
-* [Path ids](#path-ids)
-    * [Usage](#usage)
-    * [Explicit or internal id](#explicit-or-internal-id)
-    * [Ids and modifiers](#ids-and-modifiers)     
+    * [Path ids](#path-ids)
+        * [Usage](#usage)
+        * [Explicit or internal id](#explicit-or-internal-id)
+        * [Ids and modifiers](#ids-and-modifiers)     
 * [Query, let's go further](#query-lets-go-further)
     * [Embedded path-arrays](#embedded-path-arrays)
     * [Result scope](#result-scope)
@@ -20,24 +19,23 @@
 
 ## Path principle
 
-Grabbag offer an alternative to PHP chain to get value from PHP elements (objects or arrays).
-It principle is to use a path that acts similarly to PHP chain but with some benefits.
+Grabbag offers an alternative to raw PHP object/array chain expressions by using path that acts similarly but with some benefits.
 
 for example, a PHP chain such as : 
 ```php
-$element->getThat()->is['a']['path'];
+$result = $element->getThat()->is['a']['path'];
 ```
-
+can be written this way using Grabbag : 
 ```php
 $result = Grabbag::grab($element, 'that/is/a/path');
 ```
 
-Grabbag Path are directly [inspired from Linux path syntax](faq.md#why-choosing-linux-path-like-syntax). That was made on purpose to look familiar for developers and make Grabbag basic usage as easiest as possible.
+Grabbag path syntax is directly [inspired from Linux path syntax](faq.md#why-choosing-linux-path-like-syntax). That was made on purpose to look familiar for developers and make Grabbag basic usage as easiest as possible.
 
 
 ### Path items
 
-Path items are separated by slashes (so are the directories in linux path) an refer to a PHP element (objet, array, method or variable).
+Path items are separated by slashes an refer to PHP elements (array, array key, object, object property, method).
 
 Array keys or object properties can be accessed the same way : 
 ```
@@ -49,7 +47,7 @@ No need to use distinct syntax as in raw PHP :
 $myObject->myProperty; // Accessing an object's public property.
 $myArray['myKey'];     // Accessing an array keyed item.
 ```
-When path item refers an object getter method, 'get' can be omitted so can be the parenthesis if no parameter is required.
+When a path item refers to an object getter method, the leading 'get' can be omitted so can be the parenthesis if no parameter is required.
 
 Following paths are equivalent. 
 
@@ -58,26 +56,24 @@ Following paths are equivalent.
 /myObject/something()
 /myObject/something
 ```
-Method items can have one but [only one parameter provided](faq.md#why-only-one-parameter-for-method-path-items) (for now) : Method items aims to access getter method. one parameter is all we need in that case.  
+Method items can have one but [only one parameter provided](faq.md#why-only-one-parameter-for-method-path-items) (for now) : Method items aims to access getter method : one parameter is all we need in that case.  
 
 Following paths are equivalent. 
 ```
 /myObject/getSometing("param")
 /myObject/something("param")
 ```
-Path item allowing to access directly to a PHP element is called an accessor. There is some other types of path items (keywords and symbols) we'll see later.
-## Query, a quick overview
+Path item allowing to access directly to a PHP element is called an *accessor*. There is some other types of path items (*keywords* and *symbols*) that will be detailed later.
+## Query, a first overview
 
-We talked about path till now ? flub! we would have talk about query !
+We talked about path till now, but we should have talked about query : The second parameter ```Grabbag::grab``` method accepts is in fact a query.
+A path is the simpler form of a query and to keep things clear we talked about path.
 
-In fact, the second parameter Grabbag::grab method accepts is not a path but a query.
-All will be explained as soon as i tell you the simplest form of a query is a path.
-
-So now the question is : what a query could be if it's non (only) a path !
+So now let's see what query could be if it's non only a path !
 
 ### path-arrays
 
-path-arrays gather paths in order to produce structured arrays.
+A *path-array* meant to gather paths in order to produce structured arrays.
 
 **Example :**
 ```php
@@ -90,24 +86,24 @@ $result = Grabbag::grab($subject, [
 ```php
 ['my value #1', 'my value #2',]
 ```
-In query, paths are often prefixed with a path id (See Path ids) allowing to produce a keyed value in the result.
+In *query*, paths are often prefixed with a *path id* (See Path ids) allowing to produce a keyed value in the result.
 
-## Path ids
+### Path ids
 
-### Usage
+#### Usage
 
-Path ids are used to identify a path in a query and are located on start of the path and ends with a ':'
+*Path ids* are used to identify a path in a *path array*. They are located on start of the path and ends with a ':' and are optional.
 
-It can have 2 usages : 
+They can have 2 usages : 
 
-* Usage 1 : It can be used to specify the value key in the result scope
-* Usage 2 : It can be used in a __modifier__ to refer to a path value.
+* Usage 1 : Specify the value key in the result.
+* Usage 2 : In a *modifier*, to refer to a path value.
 
-### Explicit or internal id
+#### Explicit or internal id
 
-By default, a path id is explicit. It means id is used in the result scope as a key for the value(s) the path collect.
+By default, a *path id* is explicit. It means id is used in the result array as a key for the path result value.
 
-If you want to avoid the key to be used in result scope you must prefix it with "~". Such ids are called internal ids.
+If you want to avoid the *path id* to be used as a key in the result array, you must prefix it with "~". Such ids are called internal ids.
 
 Usage 1 example : 
 
@@ -126,7 +122,7 @@ Result example :
      "lv-3" => "Result 3"
 ]
 ```
-### Ids and modifiers
+#### Ids and modifiers
 
 Internal or explicit ids can be used with modifiers to alter the path result.
 
