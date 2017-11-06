@@ -14,6 +14,11 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
+  - composer satooshi/php-coveralls:dev-master
   - composer install --prefer-dist
 
-script: composer test
+script:
+  - ./vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
+
+after_script:
+  - php vendor/bin/coveralls -v
