@@ -3,8 +3,12 @@
 namespace Grabbag;
 
 use Grabbag\exceptions\ModifierException;
+use PHPUnit\Framework\TestCase;
 
-class ModifiersTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers Grabbag\Modifiers
+ */
+final class ModifiersTest extends testCase
 {
     public function testBasic()
     {

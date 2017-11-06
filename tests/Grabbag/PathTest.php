@@ -10,7 +10,10 @@ namespace Grabbag;
 
 use PHPUnit\Framework\TestCase;
 
-class PathTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers Grabbag\Path
+ */
+final class PathTest extends testCase
 {
     function testNextRewind()
     {

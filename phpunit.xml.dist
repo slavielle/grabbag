@@ -6,4 +6,9 @@
             <directory>tests/Grabbag/</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/Grabbag</directory>
+        </whitelist>
+    </filter>
 </phpunit>

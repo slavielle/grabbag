@@ -11,7 +11,10 @@ namespace Grabbag;
 use Grabbag\exceptions\PathException;
 use PHPUnit\Framework\TestCase;
 
-class PathItemTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers Grabbag\PathItem
+ */
+final class PathItemTest extends testCase
 {
     function testGetKey()
     {

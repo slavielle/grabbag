@@ -14,7 +14,10 @@ use Grabbag\Resolver;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use PHPUnit\Framework\TestCase;
 
-class ResolverTest extends TestCase
+/**
+ * @covers Grabbag\Resolver
+ */
+final class ResolverTest extends TestCase
 {
 
     /**

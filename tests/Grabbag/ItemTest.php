@@ -12,7 +12,10 @@ use Grabbag\Item;
 use PHPUnit\Framework\TestCase;
 
 
-class ItemTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers Grabbag\Item
+ */
+final class ItemTest extends testCase
 {
     public function testGet()
     {

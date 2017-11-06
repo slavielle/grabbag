@@ -12,12 +12,11 @@ require_once 'testData/TestDataHelper.php';
 
 use Grabbag\Grabbag;
 use Grabbag\ItemCollection;
-use Grabbag\Resolver;
 use Grabbag\tests\sourceData\SourceDataHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Resolver
+ * @covers Grabbag\Grabbag
  */
 final class GrabbagTest extends TestCase
 {

@@ -29,7 +29,7 @@ use Grabbag\exceptions\ModifierException;
 
 
 /**
- * @covers Resolver
+ * @covers Grabbag\ItemCollection
  */
 final class ItemCollectionTest extends TestCase
 {
@@ -589,7 +589,7 @@ final class ItemCollectionTest extends TestCase
         $testObject = SourceDataHelper::getDataNamedL2();
 
         $expected = ['transformed ~myId-ID#0', 'transformed ~myId-ID#6', 'transformed ~myId-ID#12'];
-        
+
         // Assertion using non-targeted modifier
         $resolverItems = new ItemCollection($testObject);
         $resolverItems->resolve([
