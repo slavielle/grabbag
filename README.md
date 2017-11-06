@@ -1,7 +1,7 @@
 # Grabbag - Grab objects with ease for PHP
 [![Build Status](https://travis-ci.org/slavielle/grabbag.svg?branch=master)](https://travis-ci.org/slavielle/grabbag)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/slavielle/grabbag.svg?style=flat-square)](https://img.shields.io/packagist/v/slavielle/grabbag.svg)
-[![Project License](https://img.shields.io/github/license/slavielle/grabbag.svg)](https://github.com/slavielle/grabbag/blob/dev/LICENSE)
+[![license](https://img.shields.io/github/license/slavielle/grabbag.svg)](https://github.com/slavielle/grabbag/blob/master/LICENSE)
 [![Maintainability](https://api.codeclimate.com/v1/badges/35360fdf935fc9804e3c/maintainability)](https://codeclimate.com/github/slavielle/grabbag/maintainability)
 ## Installation
 ```
