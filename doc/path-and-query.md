@@ -2,7 +2,7 @@
 
 * [Path principle](#path-principle)
     * [Path items](#path-items)
-* [Query, a first overview](#query-a-quick-overview)
+* [Query, a first overview](#query-a-first-overview)
     * [path-arrays](#path-arrays)
     * [Path ids](#path-ids)
         * [Usage](#usage)
@@ -10,7 +10,6 @@
         * [Ids and modifiers](#ids-and-modifiers)     
 * [Query, let's go further](#query-lets-go-further)
     * [Embedded path-arrays](#embedded-path-arrays)
-    * [Result scope](#result-scope)
     * [Single value path-array](#single-value-path-array)
 * [Symbols](#symbols)
 * [Keywords](#keywords)
