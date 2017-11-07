@@ -94,7 +94,10 @@ In *query*, paths are often prefixed with *path ids* allowing to produce a keyed
 
 *Path ids* are used to identify a *path* in a *path array*. They are located before the *path* itself, end with a ':' and are optional.
 
+A *path id* name may be composed of several characters matching the following regexp : ```[0-9a-zA-Z_-]+```
+
 They main usage is to specify a keyed value in the result array.
+
 
 Example :
 ```php
@@ -241,20 +244,22 @@ In this case the value returned is the value itself an not an array containing t
 
 ## Symbols
 
-* . : The element corresponding to the current path item
-* .. : The element corresponding to the previout path item
+Symbols are *path items* that point to an element not using its name, but using a symbol
+
+* . : The element corresponding to the current element (last element matched by last path item)
+* .. : The element corresponding to the previout element (before last element matched by before last path item)
 
 ## Keywords
 
-Keywords are path items prefixed by "#" that implements special behaviors.
+Keywords are *path items* prefixed by "#" that implements special behaviors.
 
 * [\%any](path-keywords/any-keyword.md)
 * [\%key](path-keywords/key-keyword.md)
 
 ## Modifiers
 
-In a query, path-arrays can contain modifiers.
-Modifiers are prefixed using "?" and allows to alter values or behavior inside the path-array.
+In a *query*, *path arrays* can contain *modifiers*.
+*Modifiers* are prefixed using "?" and allow to alter values or behavior inside the *path array*.
 
 ### modifier types
 
@@ -262,7 +267,7 @@ There is different type of modifiers :
 
 * **Path modifier** that applies on a given path in the path array such as ?transform, ?consider ?call and ?default-value.
 * **Path-array modifier** that applies on the all path-array such as ?unique, ?keep-array.
-* **Up-propagating modifier** that applies on the current path-array and all of its nested path-array such as ?exception-enabled.
+* **Propagating modifier** that applies on the current path-array and all of its nested path-array such as ?exception-enabled.
 
 ### Un-targeted/targeted Path modifiers
 
@@ -286,7 +291,7 @@ $result = Grabbag::grab($subject, [
 ]);
 ```
 
-How does that works
+How does that work
 
 A targeted path modifiers is used for path having its id specified after the "@" char in the modifier name. 
 If there is no targeted path modifier, the un-targeted path modifier will be used if exists.
