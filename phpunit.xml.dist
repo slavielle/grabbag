@@ -9,6 +9,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src/Grabbag</directory>
+            <exclude>
+                <directory suffix=".php">src/Grabbag/exceptions</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
