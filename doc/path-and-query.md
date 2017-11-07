@@ -69,7 +69,7 @@ Following paths are equivalent.
 We talked about *path* till now, but we should have talked about *query* : The second parameter ```Grabbag::grab``` method accepts is in fact a *query*:
 A path is just the simpler form query can take - to keep things clear we talked about path.
 
-So now let's see what query could be if it's not only a path !
+So now let's see what a query could be if it's not only a path !
 
 ### path-arrays
 
