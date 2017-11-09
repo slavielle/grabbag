@@ -22,6 +22,8 @@ use Grabbag\exceptions\ResolverException;
  */
 class Resolver
 {
+    const PATH_ITEM_IS_KEYWORD = 1;
+    const PATH_ITEM_IS_SYMBOL = 2;
 
     protected $items;
     protected $defaultValue;
@@ -99,13 +101,15 @@ class Resolver
     private function resolveEach(PathItem $pathItem, $items)
     {
         $allResultObjects = [];
+        $specialItem = $pathItem->isKeyword() ? self::PATH_ITEM_IS_KEYWORD : ($pathItem->isSymbol() ? self::PATH_ITEM_IS_SYMBOL : NULL);
+
         foreach ($items as $item) {
 
-            $resultObjects = $this->catchExceptionIfNeed(function () use ($item, $pathItem) {
-                if ($pathItem->isKeyword()) {
+            $resultObjects = $this->catchExceptionIfNeed(function () use ($item, $pathItem, $specialItem) {
+                if ($specialItem === self::PATH_ITEM_IS_KEYWORD) {
                     $resultObjects = $this->resolveKeyword($pathItem, $item);
                 }
-                else if ($pathItem->isSymbol()) {
+                else if ($specialItem === self::PATH_ITEM_IS_SYMBOL) {
                     $resultObjects = $this->resolveSymbol($pathItem, $item);
                 }
                 else if (is_object($item->get())) {
@@ -123,7 +127,9 @@ class Resolver
 
             // The path item returned a array (multi-matching path item).
             if (is_array($resultObjects)) {
-                $allResultObjects = array_merge($allResultObjects, $resultObjects);
+                foreach ($resultObjects as $resultObject) {
+                    $allResultObjects[] = $resultObject;
+                }
             }
 
             // The path item returned non-void item.
