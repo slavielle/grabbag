@@ -21,7 +21,6 @@ $result = Grabbag::grab($input_data, [
     'name:companies/#0/staff/#0/list/#0/first_name',
     'age:companies/#0/staff/#0/list/#0/age',
 ]);
-
 ```
 Result:
 ```
@@ -30,6 +29,7 @@ Result:
   'age' => '46',
 ]
 ```
+[See example source here](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-company/example-1.php)
 
 You can write previous query this way too : 
 
@@ -40,8 +40,8 @@ $result = Grabbag::grab($input_data, [
         'age:age',
     ]
 ]);
-
 ```
+[See example source here](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-company/example-2.php)
 
 ## Grabbing array and object using %any
 
@@ -68,6 +68,7 @@ Result:
   ],
 ]
 ```
+[See example source here](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-company/example-3.php)
 
 ## Structured result
 Grabbag Queries allow to go a step further by gathering paths in order to produce structured results.
@@ -131,6 +132,7 @@ will produce a structured array such as :
   ],
 ]
 ```
+[See example source here](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-company/example-4.php)
 
 ## Want to know more about ?
 
