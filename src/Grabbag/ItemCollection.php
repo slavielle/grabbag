@@ -72,6 +72,7 @@ class ItemCollection
         else {
             $resultValue = $this->items;
         }
+
         return count($resultValue) === 1 && !$this->forceArray ? $resultValue[0] : $resultValue;
     }
 
@@ -95,6 +96,7 @@ class ItemCollection
                 throw new \Exception('Unexpected type');
             }
         }
+
         return $resultArray;
     }
 
@@ -122,6 +124,15 @@ class ItemCollection
         }
         $this->items = $newItems;
 
+        // Post process items
+        $this->resolvePostProcessing($modifiers);
+
+        // Chaining pattern.
+        return $this;
+    }
+
+    private function resolvePostProcessing($modifiers)
+    {
         // Keep only unique if required.
         if (($modifiers->exists('unique') && $modifiers->getDefault('unique'))) {
             try {
@@ -134,8 +145,9 @@ class ItemCollection
             }
         }
 
-        // Chaining pattern.
-        return $this;
+        if ($modifiers->exists('get-one') && $modifiers->getDefault('get-one')) {
+            $this->items = is_array($this->items) ? $this->items[0] : $this->items;
+        }
     }
 
     /**
@@ -150,144 +162,156 @@ class ItemCollection
      */
     private function resolveEach(Item $item, $preparedPaths, Modifiers $modifiers, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-        $exceptionEnabled = $modifiers->exists('exception-enabled') ? $modifiers->getDefault('exception-enabled') : $exceptionEnabled;
-
-        // Init Resolver.
-        $resolver = new Resolver($item,
-            NULL,
-            $exceptionEnabled
-        );
-
-        //Resolving loop.
-        $beforeModifiersValues = [];
-        foreach ($preparedPaths as $preparedPath) {
-
-            $pathId = $preparedPath['pathObject']->getPathId();
-
-            $resolver->setDefaultValue($modifiers->exists('default-value') ? $modifiers->get('default-value', $pathId) : $defaultValue);
-
-            // Resolve the path
-            $resolvedItems = $resolver->resolve($preparedPath['pathObject']);
-
-            // Recurse if need.
-            if ($preparedPath['pathArray'] !== NULL) {
-                $resolvedItems->resolve($preparedPath['pathArray'], NULL, $exceptionEnabled);
-            }
-
-            $value = $resolvedItems->getItems();
-
-            if ($pathId !== NULL) {
-                $beforeModifiersValues[$pathId] = $value;
-            }
-            else {
-                $beforeModifiersValues[] = $value;
-            }
-
+        $keep_level = TRUE;
+        if ($modifiers->exists('keep-when')) {
+            $keep_level = call_user_func_array(
+                $modifiers->get('keep-when'),
+                [$item->get(), new ItemAccessor($item)]
+            );
         }
 
-        // Prepare limited accessors for every path value in the path-array.
-        $beforeModifiersValueAccessors = [];
-        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+        if ($keep_level) {
+            $exceptionEnabled = $modifiers->exists('exception-enabled') ? $modifiers->getDefault('exception-enabled') : $exceptionEnabled;
 
-            if ($beforeModifiersValue instanceof Item) {
-                $itemAccessor = new ItemAccessor($beforeModifiersValue);
-            }
-            else {
-                // Multi-valued paths are not supported.
-                $itemAccessor = NULL;
-            }
+            // Init Resolver.
+            $resolver = new Resolver($item,
+                NULL,
+                $exceptionEnabled
+            );
 
-            if (NULL !== ($pathId = is_integer($key) ? NULL : $key)) {
-                $beforeModifiersValueAccessors[$pathId] = $itemAccessor;
-            }
-            else {
-                $beforeModifiersValueAccessors[] = $itemAccessor;
-            }
-        }
+            //Resolving loop.
+            $beforeModifiersValues = [];
+            foreach ($preparedPaths as $preparedPath) {
 
-        //After-resolving modifiers loop.
-        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+                $pathId = $preparedPath['pathObject']->getPathId();
 
-            $pathId = is_integer($key) ? NULL : $key;
+                $resolver->setDefaultValue($modifiers->exists('default-value') ? $modifiers->get('default-value', $pathId) : $defaultValue);
 
-            // Transform modifier
-            // Restriction : Transform modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
-            // instance of Item).
-            if ($modifiers->exists('transform') && $beforeModifiersValue instanceof Item) {
-                $beforeModifiersValue->update(call_user_func_array(
-                        $modifiers->get('transform', $pathId),
-                        [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
-                    )
-                );
-            }
+                // Resolve the path
+                $resolvedItems = $resolver->resolve($preparedPath['pathObject']);
 
-            // Call modifier
-            // Restriction : Call modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
-            // instance of Item).
-            if ($modifiers->exists('call') && $beforeModifiersValue instanceof Item) {
-                call_user_func_array(
-                    $modifiers->get('call', $pathId),
-                    [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
-                );
-            }
-
-            // Debug modifier
-            if ($modifiers->exists('debug')) {
-                self::debugVariable(
-                    $modifiers->get('debug', $pathId),
-                    $beforeModifiersValue->get(), $pathId);
-            }
-        }
-
-        // Keep loop.
-        $resultValues = [];
-        foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
-            $pathId = is_integer($key) ? NULL : $key;
-
-            // Consider modifier
-            $keep = TRUE;
-            if ($modifiers->exists('consider') && $pathId !== NULL) {
-                if (is_array($beforeModifiersValue)) {
-                    throw new ModifierException(ModifierException::ERR_1);
+                // Recurse if need.
+                if ($preparedPath['pathArray'] !== NULL) {
+                    $resolvedItems->resolve($preparedPath['pathArray'], NULL, $exceptionEnabled);
                 }
-                $keep = call_user_func_array(
-                    $modifiers->get('consider', $pathId),
-                    [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
-                );
 
-                // NULL returned by callback means keep.
-                $keep = $keep === NULL ? TRUE : $keep;
-            }
+                $value = $resolvedItems->getItems();
 
-            // Value is to be kept.
-            if ($keep) {
-
-                // Append value
-                if ($pathId !== NULL && substr($pathId, 0, 1) !== Path::PATH_INTERNAL_ID_CHAR) {
-                    $resultValues[$pathId] = $beforeModifiersValue;
+                if ($pathId !== NULL) {
+                    $beforeModifiersValues[$pathId] = $value;
                 }
                 else {
-                    $resultValues[] = $beforeModifiersValue;
+                    $beforeModifiersValues[] = $value;
+                }
+
+            }
+
+            // Prepare limited accessors for every path value in the path-array.
+            $beforeModifiersValueAccessors = [];
+            foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+
+                if ($beforeModifiersValue instanceof Item) {
+                    $itemAccessor = new ItemAccessor($beforeModifiersValue);
+                }
+                else {
+                    // Multi-valued paths are not supported.
+                    $itemAccessor = NULL;
+                }
+
+                if (NULL !== ($pathId = is_integer($key) ? NULL : $key)) {
+                    $beforeModifiersValueAccessors[$pathId] = $itemAccessor;
+                }
+                else {
+                    $beforeModifiersValueAccessors[] = $itemAccessor;
                 }
             }
+
+            //After-resolving modifiers loop.
+            foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+
+                $pathId = is_integer($key) ? NULL : $key;
+
+                // Transform modifier
+                // Restriction : Transform modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
+                // instance of Item).
+                if ($modifiers->exists('transform') && $beforeModifiersValue instanceof Item) {
+                    $beforeModifiersValue->update(call_user_func_array(
+                            $modifiers->get('transform', $pathId),
+                            [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
+                        )
+                    );
+                }
+
+                // Call modifier
+                // Restriction : Call modifier cannot be called on multi-valued path (if $beforeModifiersValue is an array and not an
+                // instance of Item).
+                if ($modifiers->exists('call') && $beforeModifiersValue instanceof Item) {
+                    call_user_func_array(
+                        $modifiers->get('call', $pathId),
+                        [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
+                    );
+                }
+
+                // Debug modifier
+                if ($modifiers->exists('debug')) {
+                    self::debugVariable(
+                        $modifiers->get('debug', $pathId),
+                        $beforeModifiersValue->get(), $pathId);
+                }
+            }
+
+            // Keep loop.
+            $resultValues = [];
+            foreach ($beforeModifiersValues as $key => $beforeModifiersValue) {
+                $pathId = is_integer($key) ? NULL : $key;
+
+                // Consider modifier
+                $keep = TRUE;
+                if ($modifiers->exists('consider') && $pathId !== NULL) {
+                    if (is_array($beforeModifiersValue)) {
+                        throw new ModifierException(ModifierException::ERR_1);
+                    }
+                    $keep = call_user_func_array(
+                        $modifiers->get('consider', $pathId),
+                        [$beforeModifiersValue->get(), $pathId, new ItemAccessor($beforeModifiersValue), $beforeModifiersValueAccessors]
+                    );
+
+                    // NULL returned by callback means keep.
+                    $keep = $keep === NULL ? TRUE : $keep;
+                }
+
+                // Value is to be kept.
+                if ($keep) {
+
+                    // Append value
+                    if ($pathId !== NULL && substr($pathId, 0, 1) !== Path::PATH_INTERNAL_ID_CHAR) {
+                        $resultValues[$pathId] = $beforeModifiersValue;
+                    }
+                    else {
+                        $resultValues[] = $beforeModifiersValue;
+                    }
+                }
+            }
+
+            // Return a single value instead of an array containing just one single value, in following circumstance ...
+            $returnSingleValue =
+
+                // if there is only one result,
+                count($resultValues) === 1
+
+                // and if there is ony one path in the path-array,
+                && count($preparedPaths) === 1
+
+                // and if the single result has a numeric index (not a key),
+                && array_keys($resultValues)[0] === 0
+
+                // and if there's no keep-array modifier in the path-array,
+                && !($modifiers->exists('keep-array') && $modifiers->getDefault('keep-array'));
+
+
+            return $returnSingleValue ? $resultValues[0] : $resultValues;
         }
-
-        // Return a single value instead of an array containing just one single value, in following circumstance ...
-        $returnSingleValue =
-
-            // if there is only one result,
-            count($resultValues) === 1
-
-            // and if there is ony one path in the path-array,
-            && count($preparedPaths) === 1
-
-            // and if the single result has a numeric index (not a key),
-            && array_keys($resultValues)[0] === 0
-
-            // and if there's no keep-array modifier in the path-array,
-            && !($modifiers->exists('keep-array') && $modifiers->getDefault('keep-array'));
-
-        return $returnSingleValue ? $resultValues[0] : $resultValues;
+        return [];
     }
 
     /**
@@ -371,7 +395,7 @@ class ItemCollection
     }
 
     /**
-     * Implement ?debug modifier behavior : Build debug info array and pass it as agument to a callable.
+     * Implement ?debug modifier behavior : Build debug info array and pass it as argument to a callable.
      * @param $callable
      * @param $value
      * @param $key

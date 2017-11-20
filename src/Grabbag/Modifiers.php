@@ -34,6 +34,11 @@ class Modifiers
 
     // Modifiers info
     const MODIFIERS_INFO_LIST = [
+        'keep-when' => [
+            'param_type' => 'callback',
+            'empty_param_allowed' => FALSE,
+            'targettable' => FALSE,
+        ],
         'call' => [
             'param_type' => 'callback',
             'empty_param_allowed' => FALSE,
@@ -70,6 +75,11 @@ class Modifiers
             'targettable' => TRUE,
         ],
         'unique' => [
+            'param_type' => 'bool',
+            'empty_param_allowed' => TRUE,
+            'targettable' => FALSE,
+        ],
+        'get-one' => [
             'param_type' => 'bool',
             'empty_param_allowed' => TRUE,
             'targettable' => FALSE,
