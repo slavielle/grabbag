@@ -42,7 +42,6 @@ class Resolver
      */
     public function __construct($item, $defaultValue = NULL, $exceptionEnabled = FALSE)
     {
-
         $this->items = Item::normalizeResolverItem($item);
         $this->exceptionEnabled = $exceptionEnabled;
         $this->setDefaultValue($defaultValue);
@@ -68,7 +67,7 @@ class Resolver
 
         $this->appliedPath = $path;
 
-        $itemCollection = new ItemCollection($this->resolveRecurse($path, $this->items), FALSE);
+        $itemCollection = new ItemCollection($this->resolvePath($path, $this->items), FALSE);
 
         // If a path is meant to match multiple values, we must force array when output.
         $itemCollection->setForceArray($path->isMutipleMatching());
@@ -77,28 +76,27 @@ class Resolver
     }
 
     /**
-     * Resolve recursively for each PathItem instance in the $path.
+     * Resolve Path.
      * @param Path $path Path to resolve.
      * @param Item[] $items Items to be resolved.
      * @return Item[] A set of resolved items.
      */
-    private function resolveRecurse(Path $path, $items)
+    private function resolvePath(Path $path, $items)
     {
-        if ((NULL !== ($pathItem = $path->next()))) {
-            $resultObjects = $this->resolveEach($pathItem, $items);
-            return $this->resolveRecurse($path, $resultObjects);
+        while ((NULL !== ($pathItem = $path->next()))) {
+            $items = $this->resolvePathItem($pathItem, $items);
         }
         return $items;
     }
 
     /**
-     * Resolve for each item in $items regarding provided path item.
+     * Resolve Path item.
      * @param PathItem $pathItem Path item to resolve.
      * @param Item[] $items Item to be resolved.
      * @return Item[] A set of resolved items.
      * @throws ResolverException
      */
-    private function resolveEach(PathItem $pathItem, $items)
+    private function resolvePathItem(PathItem $pathItem, $items)
     {
         $allResultObjects = [];
         $specialItem = $pathItem->isKeyword() ? self::PATH_ITEM_IS_KEYWORD : ($pathItem->isSymbol() ? self::PATH_ITEM_IS_SYMBOL : NULL);
