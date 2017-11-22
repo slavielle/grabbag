@@ -5,17 +5,21 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/slavielle/grabbag.svg?style=flat-square)](https://img.shields.io/packagist/v/slavielle/grabbag.svg)
 [![license](https://img.shields.io/github/license/slavielle/grabbag.svg)](https://github.com/slavielle/grabbag/blob/master/LICENSE)
 
-Grabbag is a PHP library that aims to gather and transform data from PHP arrays and objects using paths and queries.
-Grabbag can reminds you of Xpath or JsonPath or again Symfony PropertyAccess or cakePHP Hash in a way, but Grabbag aims to offer a proper approach and features.
-
 ## Installation
 ```
 $ composer require slavielle/grabbag
 ```
 
+## About
+Grabbag is a PHP library that aims to gather and transform data from PHP arrays and objects using paths and queries.
+Grabbag can reminds you of Xpath or JsonPath or again Symfony PropertyAccess or cakePHP Hash in a way, but Grabbag aims to offer a proper approach and features.
+
+
 ## Grabbing values
 
-Grabbag allows to fetch values using path and collect them in an array
+Let's consider [this example array](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-first-try/data.php).
+
+Grabbag allows to fetch values using path expressions and collect them in an target array.
 ```php
 $result = Grabbag::grab($input_data, [
     'name:companies/#0/staff/#0/list/#0/first_name',
@@ -45,7 +49,7 @@ $result = Grabbag::grab($input_data, [
 
 ## Grabbing array and object using %any
 
-Grabbag can collect more than one simple value using ```%any``` keyword in path.
+Grabbag can collect data walking arrays and objects using ```%any``` keyword in path expressions.
 Let's consider the following example that looks like the previous one except for the ```%any``` keyword usage :
 ```php
 $result = Grabbag::grab($input_data, [
@@ -85,7 +89,7 @@ $result = Grabbag::grab($input_data, [
     ],
 ]);
 ```
-will produce a structured array such as : 
+This will produce a structured array such as : 
 ```php
 [ 
   [
@@ -133,6 +137,12 @@ will produce a structured array such as :
 ]
 ```
 [See example source here](https://github.com/slavielle/grabbag-playground/blob/master/examples/1-first-try/example-4.php)
+
+## Discover it by yourself
+
+You have a fiew extra minutes right now ? Best to kwow what Grabbag is capable of is testing it by yourself.
+
+You can git it a try instantly by using the [Grabbag playground](https://github.com/slavielle/grabbag-playground) repository containing examples ready to run and fiddle with.
 
 ## Want to know more about ?
 
